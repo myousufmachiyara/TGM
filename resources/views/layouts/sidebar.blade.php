@@ -1,72 +1,113 @@
-<div class="logo-details">
-    <i class="bx bxl-c-plus-plus"></i>
-    <span class="logo_name">CodingLab</span>
+<div class="sidebar-logo">
+  <!-- Logo Header -->
+  <div class="logo-header" data-background-color="dark">
+    <a href="index.html" class="logo">
+      <img src="assets/img/kaiadmin/logo_white.avif" alt="navbar brand" class="navbar-brand" height="70" />
+    </a>
+    <div class="nav-toggle">
+      <button class="btn btn-toggle toggle-sidebar">
+        <i class="gg-menu-right"></i>
+      </button>
+      <button class="btn btn-toggle sidenav-toggler">
+        <i class="gg-menu-left"></i>
+      </button>
+    </div>
+    <button class="topbar-toggler more">
+      <i class="gg-more-vertical-alt"></i>
+    </button>
+  </div>
+  <!-- End Logo Header -->
 </div>
-<ul class="nav-links">
-    <li>
-        <a href="#" class="active">
-        <i class="bx bx-grid-alt"></i>
-        <span class="links_name">Dashboard</span>
+<div class="sidebar-wrapper scrollbar scrollbar-inner">
+  <div class="sidebar-content">
+    <ul class="nav nav-secondary">
+      <li class="nav-item active">
+        <a href="#"  aria-expanded="false" >
+          <i class="fas fa-home"></i>
+          <p>Dashboard</p>
         </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-box"></i>
-        <span class="links_name">Product</span>
+      </li>
+      <li class="nav-item">
+        <a data-bs-toggle="collapse" href="#acc">
+          <i class="fa fa-book"></i>
+          <p>Accounts</p>
+          <span class="caret"></span>
         </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-list-ul"></i>
-        <span class="links_name">Order list</span>
+        <div class="collapse" id="acc">
+          <ul class="nav nav-collapse">
+            <li>
+            <a href="#">
+                <span class="sub-item">Head Of Accounts</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="sub-item">Subhead Of Accounts</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="sub-item">All COA</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a data-bs-toggle="collapse" href="#products">
+          <i class="fa fa-tags"></i>
+          <p>Products</p>
+          <span class="caret"></span>
         </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-pie-chart-alt-2"></i>
-        <span class="links_name">Analytics</span>
+        <div class="collapse" id="products">
+          <ul class="nav nav-collapse">
+            <li>
+              <a href="#">
+
+                <span class="sub-item">Units</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+
+                <span class="sub-item">Categories</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="sub-item">Colors</span>
+              </a>
+            </li>
+            <li>
+             <a href="#">
+                <span class="sub-item">Fabrics</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="sub-item">Accessories</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="sub-item">Finish Goods</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-section">
+        <span class="sidebar-mini-icon">
+          <i class="fa fa-ellipsis-h"></i>
+        </span>
+        <h4 class="text-section">Purchasing</h4>
+      </li>
+      <li class="nav-item">
+        <a href="#"  aria-expanded="false" >
+          <i class="fas fa-sticky-note"></i>
+          <p>Purchase Order</p>
         </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-coin-stack"></i>
-        <span class="links_name">Stock</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-book-alt"></i>
-        <span class="links_name">Total order</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-user"></i>
-        <span class="links_name">Team</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-message"></i>
-        <span class="links_name">Messages</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-heart"></i>
-        <span class="links_name">Favrorites</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-        <i class="bx bx-cog"></i>
-        <span class="links_name">Setting</span>
-        </a>
-    </li>
-    <li class="log_out">
-        <a href="#">
-        <i class="bx bx-log-out"></i>
-        <span class="links_name">Log out</span>
-        </a>
-    </li>
-</ul>
+      </li>
+    </ul>
+  </div>
+</div>
