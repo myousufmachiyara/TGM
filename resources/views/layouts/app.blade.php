@@ -10,7 +10,6 @@
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('assets/css/plugins.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     </head>
@@ -26,7 +25,7 @@
                         <div class="logo-header" data-background-color="dark">
                             <a href="index.html" class="logo">
                                 <img
-                                src="assets/img/kaiadmin/logo_light.svg"
+                                src="{{ asset('assets/img/logo_white.avif') }}"
                                 alt="navbar brand"
                                 class="navbar-brand"
                                 height="20"
@@ -86,7 +85,7 @@
                             <li class="nav-item topbar-user dropdown hidden-caret">
                                 <a class="dropdown-toggle profile-pic"  data-bs-toggle="dropdown" href="#" aria-expanded="false">
                                     <div class="avatar-sm">
-                                        <img src="assets/img/profile.jpg"  alt="..." class="avatar-img rounded-circle" />
+                                        <img src="{{ asset('assets/img/profile.jpg') }}" alt="..." class="avatar-img rounded-circle" />
                                     </div>
                                     <span class="profile-username">
                                         <span class="op-7">Hi,</span>
@@ -98,8 +97,7 @@
                                         <li>
                                             <div class="user-box">
                                                 <div class="avatar-lg">
-                                                    <img
-                                                    src="assets/img/profile.jpg"
+                                                    <img src="{{ asset('assets/img/profile.jpg') }}"
                                                     alt="image profile"
                                                     class="avatar-img rounded"
                                                     />
@@ -142,7 +140,7 @@
         <footer>
             @include('layouts.footer')
         </footer>
-
+        
         <script src="{{ asset('assets/js/app.js') }}"></script>
         <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
         <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
@@ -150,15 +148,6 @@
 
         <!-- jQuery Scrollbar -->
         <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
-
-        <!-- Chart JS -->
-        <script src="{{ asset('assets/js/plugin/chart.js/chart.min.js') }}"></script>
-
-        <!-- jQuery Sparkline -->
-        <script src="{{ asset('assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js') }}"></script>
-
-        <!-- Chart Circle -->
-        <script src="{{ asset('assets/js/plugin/chart-circle/circles.min.js') }}"></script>
 
         <!-- Datatables -->
         <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
@@ -170,13 +159,12 @@
         <script src="{{ asset('assets/js/plugin/jsvectormap/jsvectormap.min.js') }}"></script>
         <script src="{{ asset('assets/js/plugin/jsvectormap/world.js') }}"></script>
 
-        <!-- Sweet Alert -->
-        <script src="{{ asset('assets/js/plugin/sweetalert/sweetalert.min.js') }}"></script>
-
         <!-- Kaiadmin JS -->
         <script src="{{ asset('assets/js/kaiadmin.min.js') }}"></script>
-
-        <!-- Kaiadmin DEMO methods, don't include it in your project! -->
-        <script src="{{ asset('assets/js/setting-demo.js') }}"></script>
+        <script>
+      $(document).ready(function () {
+        $("#basic-datatables").DataTable({});
+      });
+    </script>
     </body>
 </html>
