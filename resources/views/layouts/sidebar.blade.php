@@ -62,17 +62,17 @@
         <div class="collapse" id="products">
           <ul class="nav nav-collapse">
             <li>
-              <a href="#">
-                <span class="sub-item">Units</span>
+              <a href="{{ route('entity.index', ['entity' => 'product_measurement_units']) }}">
+                <span class="sub-item">Measurement Units</span>
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="{{ route('entity.index', ['entity' => 'product_categories']) }}">
                 <span class="sub-item">Categories</span>
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="{{ route('entity.index', ['entity' => 'product_colors']) }}">
                 <span class="sub-item">Colors</span>
               </a>
             </li>

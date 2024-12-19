@@ -5,29 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\PurPO;
 use App\Http\Resources\PurPOResource;
 use Illuminate\Http\Request;
+use App\Models\ProductCategory;
 
 class PurPOController extends Controller
 {
-    /**
-     * Display a listing of the resource for web.
-     */
+
     public function index()
     {
         $purpos = PurPO::all();
         return view('purchasing.po.index', compact('purpos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('purchasing.po.create');
+        $prodCat = ProductCategory::all();  // Get all records for the specified entity
+        return view('purchasing.po.create', compact('prodCat'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([

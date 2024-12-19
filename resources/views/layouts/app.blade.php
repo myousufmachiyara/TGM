@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>@yield('title', 'Default Title')</title>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- CSS Files -->
         <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
@@ -12,6 +13,11 @@
         <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+        <script src="{{ asset('assets/js/app.js') }}"></script>
+        <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
+        <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+        <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
     </head>
     <body>
         <div class="wrapper">
@@ -140,11 +146,6 @@
         <footer>
             @include('layouts.footer')
         </footer>
-        
-        <script src="{{ asset('assets/js/app.js') }}"></script>
-        <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
-        <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-        <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
 
         <!-- jQuery Scrollbar -->
         <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
@@ -161,10 +162,12 @@
 
         <!-- Kaiadmin JS -->
         <script src="{{ asset('assets/js/kaiadmin.min.js') }}"></script>
+        <script src="{{ asset('assets/js/plugin/sweetalert/sweetalert.min.js') }}"></script>
+
         <script>
-      $(document).ready(function () {
-        $("#basic-datatables").DataTable({});
-      });
+        $(document).ready(function () {
+            $("#basic-datatables").DataTable({});
+        });
     </script>
     </body>
 </html>
