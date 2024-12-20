@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pur_pos', function (Blueprint $table) {
-            $table->id();
-            $table->string('fabric');               // A string for fabric name or type
-            $table->decimal('rate', 10, 2);         // A decimal for rate, with 10 digits and 2 decimal places
-            $table->decimal('quantity', 10, 2);     // A decimal for quantity, with 10 digits and 2 decimal places
-            $table->string('payment_term');         // A string for payment term, it can also be text depending on length
-            $table->date('delivery_date');          // A date column for the delivery date
-            $table->string('vendor_name');          // A string for vendor name
-            $table->timestamps();
+            $table->id(); // Primary key
+            $table->string('vendor_name'); // A string for vendor name
+            $table->date('order_date'); // A date column for the order date
+            $table->date('delivery_date'); // A date column for the delivery date
+            $table->string('payment_term'); // A string for payment term
+            $table->unsignedBigInteger('created_by')->default(1); // Use unsignedBigInteger for foreign keys or IDs
+            $table->timestamps(); // Adds created_at and updated_at columns
         });
     }   
 

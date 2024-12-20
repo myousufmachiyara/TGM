@@ -2,101 +2,119 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PurPO;
-use App\Http\Resources\PurPOResource;
-use Illuminate\Http\Request;
+use App\Models\PurPo;
+use App\Models\PurPosDetail;
 use App\Models\ProductCategory;
+use App\Models\ProductMeasurementUnit;
+use Illuminate\Http\Request;
 
 class PurPOController extends Controller
 {
 
     public function index()
     {
-        $purpos = PurPO::all();
+        $purpos = PurPo::with('details')->get(); // Include details with the purchase orders
         return view('purchasing.po.index', compact('purpos'));
     }
 
     public function create()
     {
-        $prodCat = ProductCategory::all();  // Get all records for the specified entity
-        return view('purchasing.po.create', compact('prodCat'));
+        $prodCat = ProductCategory::all();  // Get all product categories
+        $produnits = ProductMeasurementUnit::all();  // Get all product categories
+        return view('purchasing.po.create', compact('prodCat','produnits'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'fabric' => 'required|string|max:255',
-            'rate' => 'required|numeric|min:0',
-            'quantity' => 'required|numeric|min:0',
-            'payment_term' => 'required|string|max:255',
-            'delivery_date' => 'required|date',
             'vendor_name' => 'required|string|max:255',
+            'order_date' => 'required|date',
+            'delivery_date' => 'required|date',
+            'payment_term' => 'required|string|max:255',
+            'details.*.item_name' => 'required|string|max:255',
+            'details.*.category_id' => 'required|exists:product_categories,id',
+            'details.*.unit_id' => 'required|exists:product_measurement_units,id',
+            'details.*.item_rate' => 'required|numeric|min:0',
+            'details.*.item_qty' => 'required|numeric|min:0',
         ]);
 
-        PurPO::create($validated);
+        // Create the Purchase Order
+        $purpo = PurPo::create($validated);
 
-        return redirect()->route('purchasing.po.index')->with('success', 'Purchase Order created successfully!');
+        // Create associated details
+        foreach ($validated['details'] as $detail) {
+            $detail['pur_pos_id'] = $purpo->id; // Set the foreign key
+            PurPosDetail::create($detail);
+        }
+
+        return redirect()->route('purpos.index')->with('success', 'Purchase Order created successfully!');
     }
 
-    /**
-     * Display the specified resource for web.
-     */
-    public function show(PurPO $purpo)
+    public function show(PurPos $purpo)
     {
-        return view('purchasing.po.show', compact('purpo'));
+        $purpo->load('details'); // Eager load details
+        return view('purpos.show', compact('purpo'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PurPO $purpo)
+    public function edit(PurPo $purpo)
     {
-        return view('purchasing.po.edit', compact('purpo'));
+        $purpo->load('details'); // Eager load details
+        $prodCat = ProductCategory::all();
+        $produnits = ProductMeasurementUnit::all();
+
+        return view('purchasing.po.edit', compact('purpo', 'prodCat', 'produnits'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, PurPO $purpo)
+    public function update(Request $request, PurPos $purpo)
     {
         $validated = $request->validate([
-            'fabric' => 'required|string|max:255',
-            'rate' => 'required|numeric|min:0',
-            'quantity' => 'required|numeric|min:0',
-            'payment_term' => 'required|string|max:255',
-            'delivery_date' => 'required|date',
             'vendor_name' => 'required|string|max:255',
+            'order_date' => 'required|date',
+            'delivery_date' => 'required|date',
+            'payment_term' => 'required|string|max:255',
+            'details.*.id' => 'nullable|exists:pur_pos_details,id',
+            'details.*.fabric' => 'required|string|max:255',
+            'details.*.category_id' => 'required|exists:categories,id',
+            'details.*.rate' => 'required|numeric|min:0',
+            'details.*.quantity' => 'required|numeric|min:0',
         ]);
 
+        // Update Purchase Order
         $purpo->update($validated);
 
-        return redirect()->route('purchasing.po.index')->with('success', 'Purchase Order updated successfully!');
+        // Update or create associated details
+        foreach ($validated['details'] as $detail) {
+            if (isset($detail['id'])) {
+                // Update existing detail
+                $detailModel = PurPosDetail::findOrFail($detail['id']);
+                $detailModel->update($detail);
+            } else {
+                // Create a new detail
+                $detail['pur_pos_id'] = $purpo->id;
+                PurPosDetail::create($detail);
+            }
+        }
+
+        return redirect()->route('purpos.index')->with('success', 'Purchase Order updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PurPO $purpo)
+    public function destroy(PurPo $purpo)
     {
-        $purpo->delete();
+        $purpo->details()->delete(); // Delete associated details
+        $purpo->delete(); // Delete the Purchase Order
 
-        return redirect()->route('purchasing.po.index')->with('success', 'Purchase Order deleted successfully!');
+        return redirect()->route('purpos.index')->with('success', 'Purchase Order deleted successfully!');
     }
 
-    /**
-     * API: Display a listing of the resource.
-     */
     public function indexAPI()
     {
         $purpos = PurPO::paginate(10); // Add pagination for large datasets
         return PurPOResource::collection($purpos);
     }
 
-    /**
-     * API: Display the specified resource.
-     */
     public function showAPI(PurPO $purpo)
     {
         return new PurPOResource($purpo);
     }
+    
 }

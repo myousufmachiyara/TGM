@@ -13,18 +13,19 @@ class PurPO extends Model
 
     // Specify the fillable fields (columns you want to be mass-assignable)
     protected $fillable = [
-        'fabric', 
-        'rate', 
-        'quantity', 
         'payment_term', 
         'delivery_date', 
+        'order_date',
         'vendor_name'
     ];
 
     // If you need to cast any fields (e.g., rate or quantity), you can use the $casts property
     protected $casts = [
-        'rate' => 'decimal:2',  // Ensures that rate is treated as a decimal
-        'quantity' => 'decimal:2', // Ensures that quantity is treated as a decimal
         'delivery_date' => 'date', // Ensures that delivery_date is treated as a date
     ];
+
+    public function details()
+    {
+        return $this->hasMany(PurPosDetail::class, 'pur_pos_id');
+    }
 }
