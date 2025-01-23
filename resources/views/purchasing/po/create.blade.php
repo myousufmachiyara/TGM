@@ -3,38 +3,32 @@
 @section('title', 'Purchasing | New PO')
 
 @section('content')
-  <div class="page-header d-flex justify-content-end">
-    <ul class="breadcrumbs mb-3">
-      <li class="nav-home"><a href="#"> <i class="fa fa-home"></i></a></li>
-      <li class="separator"> <i class="fa fa-chevron-right"></i></li>
-      <li class="nav-item"> <a href="#">Purchasing</a></li>
-      <li class="separator"><i class="fa fa-chevron-right"></i></li>
-      <li class="nav-item"> <a href="#">New PO</a></li>
-    </ul>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card">
-        <form action="{{ route('purpos.store') }}" method="POST">
-          @csrf
-          <div class="card-header">
-            <div class="card-title">New PO</div>
-          </div>
+    <div class="row">
+      <div class="col">
+      <form action="{{ route('purpos.store') }}" method="POST">
+        @csrf
+        <section class="card">
+          <header class="card-header" style="display: flex;justify-content: space-between;">
+            <h2 class="card-title">New PO</h2>
+            <div class="card-actions">
+              <button type="button" class="btn btn-primary" onclick="addNewRow_btn()"> <i class="fas fa-plus"></i> Add New Row </button>
+            </div>
+          </header>
           <div class="card-body">
             <div class="row">
-              <div class="col-12 col-md-3 form-group">
+              <div class="col-12 col-md-3">
                 <label>Vendor Name</label>
                 <input type="text" name="vendor_name" class="form-control" placeholder="Vendor Name" required/>
               </div>
-              <div class="col-12 col-md-3 form-group">
+              <div class="col-12 col-md-3">
                 <label>Order Date</label>
                 <input type="date" name="order_date" class="form-control" placeholder="Order Date" required/>
               </div>
-              <div class="col-12 col-md-3 form-group">
+              <div class="col-12 col-md-3">
                 <label>Delivery Date</label>
                 <input type="date" name="delivery_date" class="form-control" placeholder="Delivery Date" required/>
               </div>
-              <div class="col-12 col-md-3 form-group">
+              <div class="col-12 col-md-3">
                 <label>Payment Term</label>
                 <select class="form-control"  name="payment_term" required>
                   <option selected disabled>Select Payment Term</option>
@@ -46,6 +40,7 @@
               </div>
             </div>
           </div>
+
           <div class="card-body" style="max-height:400px; overflow-y:auto">
             <div class="card-title mb-3">Item Details</div>
             <table class="table table-bordered" id="myTable">
@@ -90,25 +85,25 @@
             </table>
           </div>
 
-          <div class="card-body">
+          <footer class="card-footer pb-3">
             <div class="card-title mb-3">Summary</div>
             <div class="row">
-              <div class="col-12 col-md-2 form-group">
+              <div class="col-12 col-md-2">
                 <label>Total Quantity</label>
                 <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
               </div>
-              <div class="col-12 col-md-2 form-group">
+              <div class="col-12 col-md-2">
                 <label>Total Amount</label>
                 <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
               </div>
             </div>
-          </div>
-          <div class="card-action text-end">
+          </footer>
+          <footer class="card-footer text-end">
             <a class="btn btn-danger" href="{{ route('purpos.index') }}" >Discard</a>
             <button type="submit" class="btn btn-primary">Create</button>
-          </div>
-        </form>
-      </div>
+          </footer>
+        </section>
+      </form>
     </div>
   </div>
   <script>

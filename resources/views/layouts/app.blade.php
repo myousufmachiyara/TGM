@@ -1,173 +1,190 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="fixed js flexbox flexboxlegacy no-touch csstransforms csstransforms3d no-overflowscrolling webkit chrome win js no-mobile-device custom-scroll sidebar-left-collapsed">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>@yield('title', 'Default Title')</title>
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- CSS Files -->
-        <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/css/plugins.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-        <script src="{{ asset('assets/js/app.js') }}"></script>
-        <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
-        <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-        <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+		<!-- Web Fonts  -->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+		<!-- Vendor CSS -->
+        
+		<link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/css/bootstrap.css') }}" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/animate/animate.compat.css') }}" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/font-awesome/css/all.min.css') }}" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/boxicons/css/boxicons.min.css') }}" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/magnific-popup/magnific-popup.css') }}" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/datatables/media/css/dataTables.bootstrap5.css') }}" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/select2/css/select2.css') }}" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/select2-bootstrap-theme/select2-bootstrap.min.css') }}" />
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/bootstrap-multiselect/css/bootstrap-multiselect.css') }}" />
+
+		<!-- Theme CSS -->
+        <link rel="stylesheet" href="{{ asset('/assets/css/theme.css') }}" />
+
+		<!-- Skin CSS -->
+        <link rel="stylesheet" href="{{ asset('/assets/css/skins/default.css') }}" />
+
+		<!-- Theme Custom CSS -->
+        <link rel="stylesheet" href="{{ asset('/assets/css/custom.css') }}" />
+        <style>
+            #loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            #loader.hidden {
+                display: none;
+            }
+            .cust-pad {
+                padding-top: 0; /* or any other default padding */
+            }
+            @media (min-width: 768px) {
+                .cust-pad {
+                    padding: 85px 20px 0px 20px;
+                }
+                .home-cust-pad {
+                    padding: 60px 15px 0px 15px;
+                }
+                .sidebar-logo{
+                    width:50%;
+                }	
+                
+            }
+        </style>
     </head>
     <body>
-        <div class="wrapper">
-            <!-- Sidebar -->
-            <div class="sidebar" data-background-color="dark">
-                @include('layouts.sidebar')
-            </div>
-            <div class="main-panel">
-                <div class="main-header">
-                    <div class="main-header-logo">
-                        <div class="logo-header" data-background-color="dark">
-                            <a href="index.html" class="logo">
-                                <img
-                                src="{{ asset('assets/img/logo_white.avif') }}"
-                                alt="navbar brand"
-                                class="navbar-brand"
-                                height="20"
-                                />
-                            </a>
-                            <div class="nav-toggle">
-                                <button class="btn btn-toggle toggle-sidebar">
-                                <i class="gg-menu-right"></i>
-                                </button>
-                                <button class="btn btn-toggle sidenav-toggler">
-                                <i class="gg-menu-left"></i>
-                                </button>
-                            </div>
-                            <button class="topbar-toggler more">
-                                <i class="gg-more-vertical-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
-                        <div class="container-fluid">
-                        <nav class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <button type="submit" class="btn btn-search pe-1">
-                                    <i class="fa fa-search search-icon"></i>
-                                    </button>
-                                </div>
-                                <input type="text" placeholder="Search ..." class="form-control" />
-                            </div>
-                        </nav>
-
-                        <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                            <li class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none" >
-                                <a
-                                    class="nav-link dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    href="#"
-                                    role="button"
-                                    aria-expanded="false"
-                                    aria-haspopup="true"
-                                >
-                                    <i class="fa fa-search"></i>
-                                </a>
-                                <ul class="dropdown-menu dropdown-search animated fadeIn">
-                                    <form class="navbar-left navbar-form nav-search">
-                                    <div class="input-group">
-                                        <input
-                                        type="text"
-                                        placeholder="Search ..."
-                                        class="form-control"
-                                        />
-                                    </div>
-                                    </form>
-                                </ul>
-                            </li>
-                        
-                            <li class="nav-item topbar-user dropdown hidden-caret">
-                                <a class="dropdown-toggle profile-pic"  data-bs-toggle="dropdown" href="#" aria-expanded="false">
-                                    <div class="avatar-sm">
-                                        <img src="{{ asset('assets/img/profile.jpg') }}" alt="..." class="avatar-img rounded-circle" />
-                                    </div>
-                                    <span class="profile-username">
-                                        <span class="op-7">Hi,</span>
-                                        <span class="fw-bold">Hizrian</span>
-                                    </span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-user animated fadeIn">
-                                    <div class="dropdown-user-scroll scrollbar-outer">
-                                        <li>
-                                            <div class="user-box">
-                                                <div class="avatar-lg">
-                                                    <img src="{{ asset('assets/img/profile.jpg') }}"
-                                                    alt="image profile"
-                                                    class="avatar-img rounded"
-                                                    />
-                                                </div>
-                                                <div class="u-text">
-                                                    <h4>Hizrian</h4>
-                                                    <p class="text-muted">hello@example.com</p>
-                                                    <a
-                                                    href="profile.html"
-                                                    class="btn btn-xs btn-secondary btn-sm"
-                                                    >View Profile</a
-                                                    >
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">My Profile</a>
-                                            <a class="dropdown-item" href="#">My Balance</a>
-                                            <a class="dropdown-item" href="#">Inbox</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Account Setting</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Logout</a>
-                                        </li>
-                                    </div>
-                                </ul>
-                            </li>
-                        </ul>
-                        </div>
-                    </nav>
-                </div>
-                <div class="container">
-                    <div class="page-inner">
-                        @yield('content')
-                    </div>
-                </div>
+        <div id="loader">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
             </div>
         </div>
+        
+        <div id="changePassword" class="zoom-anim-dialog modal-block modal-block-danger mfp-hide">
+            <form id="changePasswordForm" method="post" style="width: 75%" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
+                @csrf
+                <header class="card-header">
+                    <h2 class="card-title">Change Password</h2>
+                </header>
+                <div class="card-body">
+                    <div class="row form-group">    
+                        <div class="col-12 mb-2">
+                            <label>Current Password</label>
+                            <input type="password" class="form-control" placeholder="Current Password" id="current_password" name="current_password" required>
+                        </div> 
+                        <div class="col-12 mb-2">
+                            <label>New Password</label>
+                            <input type="password" class="form-control" placeholder="New Password" id="new_password" minlength="8" name="new_password" required>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label>Confirm New Password</label>
+                            <input type="password" class="form-control" placeholder="Confirm New Password" minlength="8" id="confirm_new_password" required>
+                        </div>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <div class="row">
+                        <div class="col-md-12 text-end">
+                            <button type="submit" class="btn btn-primary">Change Password</button>
+                            <button type="button" class="btn btn-default modal-dismiss">Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </form>
+        </div>
+
+        <header class="page-header">
+            <div class="logo-container d-none d-md-block">
+                <div id="userbox" class="userbox" style="float:right !important;">
+                    <a class="btn btn-success" > POS System</a>
+
+                    <a href="#" data-bs-toggle="dropdown" style="margin-right: 20px;">
+                        <div class="profile-info"> 
+                            <span class="name">{{session('user_name')}}</span>
+                            <span class="role">{{session('role_name')}}</span>
+                        </div>
+                        <i class="fa custom-caret"></i>
+                    </a>
+                    <div class="dropdown-menu" >
+                        <ul class="list-unstyled">
+                            <li>
+                                <a role="menuitem" tabindex="-1" href="#changePassword" class="mb-1 mt-1 me-1 modal-with-zoom-anim ws-normal"><i class="bx bx-lock"></i> Change Password</a>
+                            </li>
+                            <li>	
+                                <form action="/logout" method="POST">
+                                    @csrf
+                                    <button style="background: transparent;border: none;font-size: 14px;" type="submit" role="menuitem" tabindex="-1"><i class="bx bx-power-off"></i> Logout</button>
+                                </form>
+                            </li>
+                            <!-- <li>
+                                <a role="menuitem" tabindex="-1"><i class="bx bx-cloud-download"></i> DB Backup</a>
+                            </li>
+                            <li>
+                                <a role="menuitem" tabindex="-1"><i class="bx bx-file"></i> Files Backup</a>
+                            </li> -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="logo-container d-md-none">
+                <a href="/" class="logo ">
+                    <img src="/assets/img/logo.png" width="70px" alt="MFI Logo" />
+                </a>
+                <div id="userbox" class="userbox" style="float:right !important;">
+                    <a href="#" data-bs-toggle="dropdown" style="margin-right: 20px;">
+                        <div class="profile-info"> 
+                            <span class="name">{{session('user_name')}}</span>
+                            <span class="role">{{session('role_name')}}</span>
+                        </div>
+                        <i class="fa custom-caret"></i>
+                    </a>
+                    <div class="dropdown-menu" >
+                        <ul class="list-unstyled">
+                            <li>
+                                <a role="menuitem" tabindex="-1" href="#changePassword" class="mb-1 mt-1 me-1 modal-with-zoom-anim ws-normal"><i class="bx bx-lock"></i> Change Password</a>
+                            </li>
+                            <!-- <li>	
+                                <form action="/logout" method="POST">
+                                    @csrf
+                                    <button style="background: transparent;border: none;font-size: 14px;" type="submit" role="menuitem" tabindex="-1"><i class="bx bx-power-off"></i> Logout</button>
+                                </form>
+                            </li> -->
+                        </ul>
+                    </div>
+                    <i class="fas fa-bars toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened" aria-label="Toggle sidebar"></i>
+                </div>
+
+            </div>
+        </header>
+        <section class="body">
+            <div class="inner-wrapper cust-pad">
+                @include('layouts.sidebar')
+                <section role="main" class="content-body"> 
+                    @yield('content')
+                </section>
+            </div>
+        </section>
         <footer>
             @include('layouts.footer')
+            <div class="text-end">  
+                <div>
+                Powered By
+                <a target="_blank" href="#">Team TGM</a> 
+                </div>
+            </div>
         </footer>
-
-        <!-- jQuery Scrollbar -->
-        <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
-
-        <!-- Datatables -->
-        <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
-
-        <!-- Bootstrap Notify -->
-        <script src="{{ asset('assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
-
-        <!-- jQuery Vector Maps -->
-        <script src="{{ asset('assets/js/plugin/jsvectormap/jsvectormap.min.js') }}"></script>
-        <script src="{{ asset('assets/js/plugin/jsvectormap/world.js') }}"></script>
-
-        <!-- Kaiadmin JS -->
-        <script src="{{ asset('assets/js/kaiadmin.min.js') }}"></script>
-        <script src="{{ asset('assets/js/plugin/sweetalert/sweetalert.min.js') }}"></script>
-
-        <script>
-        $(document).ready(function () {
-            $("#basic-datatables").DataTable({});
-        });
-    </script>
     </body>
 </html>
