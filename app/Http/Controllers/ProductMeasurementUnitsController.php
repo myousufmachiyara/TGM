@@ -4,63 +4,58 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ProductMeasurementUnit;
+use Illuminate\Database\QueryException;
 
 class ProductMeasurementUnitsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+  
     public function index()
     {
         $items = ProductMeasurementUnit::all(); // Retrieve all products
-        return view('products.index', compact('items')); // Return the view
+        return view('product-attributes.measurement-units', compact('items')); // Return the view
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        try {
+            // Validate the incoming request data
+            $request->validate([
+                'name' => 'required|string|unique:product_measurement_units|max:255',
+            ]);
+    
+            // Create a new measurement unit
+            ProductMeasurementUnit::create($request->only('name'));
+    
+            // Redirect to the index route with a success message
+            return redirect()->route('product-measurement-units.index') // Ensure this route matches your route file
+                ->with('success', 'Measurement Unit created successfully.');
+        } catch (QueryException $e) {
+            // Handle database-related exceptions
+            return back()->withErrors(['error' => 'A database error occurred while creating the Measurement Unit. Please try again.']);
+        } catch (\Exception $e) {
+            // Handle any other exceptions
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|unique:product_measurement_units,name,' . $id . '|max:255',
+        ]);
+
+        $item = ProductMeasurementUnit::findOrFail($id); // Find the unit by ID
+        $item->update($request->all()); // Update the measurement unit
+
+        return redirect()->route('measurement-units.index')
+            ->with('success', 'Measurement Unit updated successfully.'); // Redirect with success message
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $item = ProductMeasurementUnit::findOrFail($id); // Find the unit by ID
+        $item->delete(); // Delete the measurement unit
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('product-measurement-units.index')->with('success', 'Measurement Unit deleted successfully.'); // Redirect with success message
     }
 }

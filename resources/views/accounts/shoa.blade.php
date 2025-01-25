@@ -43,36 +43,6 @@
         </div>
       </section>
 
-      <div id="deleteModal" class="zoom-anim-dialog modal-block modal-block-danger mfp-hide">
-            <form method="post" action="" enctype="multipart/form-data">
-                @csrf
-                <section class="card">
-                    <header class="card-header">
-                        <h2 class="card-title">Delete COA Group</h2>
-                    </header>
-                    <div class="card-body">
-                        <div class="modal-wrapper">
-                            <div class="modal-icon">
-                                <i class="fas fa-question-circle"></i>
-                            </div>
-                            <div class="modal-text">
-                                <p class="mb-0">Are you sure that you want to delete this COA Group?</p>
-                                <input name="acc_group_cod" id="deleteID" hidden>
-                            </div>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <div class="row">
-                            <div class="col-md-12 text-end">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                                <button class="btn btn-default modal-dismiss">Cancel</button>
-                            </div>
-                        </div>
-                    </footer>
-                </section>
-            </form>
-        </div>
-
         <div id="addModal" class="modal-block modal-block-primary mfp-hide">
             <section class="card">
                 <form method="post" action="{{ route('shoa.store') }}" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">

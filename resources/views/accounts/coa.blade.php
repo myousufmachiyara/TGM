@@ -30,7 +30,6 @@
                             <th>Address</th>
                             <th>Credit Limit</th>
                             <th>Days Limit</th>
-                            <th>Group</th>
                             <th>Account Type</th>
                             <th>Att.</th>
                             <th>Action</th>
@@ -40,18 +39,18 @@
                         @foreach ($chartOfAccounts as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td><strong>{{ $item->ac_name }}</strong></td>
-                            @if (substr(strval($item->rec_able), strpos(strval($item->rec_able), '.') + 1) > 0)
-                            <td>{{ rtrim(rtrim(number_format($item->rec_able, 10, '.', ','), '0'), '.') }}</td>
+                            <td><strong>{{ $item->name }}</strong></td>
+                            @if (substr(strval($item->receivables), strpos(strval($item->receivables), '.') + 1) > 0)
+                            <td>{{ rtrim(rtrim(number_format($item->receivables, 10, '.', ','), '0'), '.') }}</td>
                             @else
-                            <td>{{ number_format(intval($item->rec_able)) }}</td>
+                            <td>{{ number_format(intval($item->receivables)) }}</td>
                             @endif
-                            @if (substr(strval($item->pay_able), strpos(strval($item->pay_able), '.') + 1) > 0)
-                            <td>{{ rtrim(rtrim(number_format($item->pay_able, 10, '.', ','), '0'), '.') }}</td>
+                            @if (substr(strval($item->payables), strpos(strval($item->payables), '.') + 1) > 0)
+                            <td>{{ rtrim(rtrim(number_format($item->payables, 10, '.', ','), '0'), '.') }}</td>
                             @else
-                            <td>{{ number_format(intval($item->pay_able)) }}</td>
+                            <td>{{ number_format(intval($item->payables)) }}</td>
                             @endif
-                            <td>{{ \Carbon\Carbon::parse($item->opp_date)->format('d-m-y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->opening_date)->format('d-m-y') }}</td>
                             <td>{{ $item->remarks }}</td>
                             <td>{{ $item->address }} {{ $item->phone_no }}</td>
                             @if (substr(strval($item->credit_limit), strpos(strval($item->credit_limit), '.') + 1) > 0)
@@ -60,8 +59,7 @@
                             <td style="color: rgb(156, 32, 32);"><strong>{{ number_format(intval($item->credit_limit)) }}</strong></td>
                             @endif
                             <td style="color: rgb(156, 32, 32);"><strong>{{ $item->days_limit }}-Days</strong></td>
-                            <td>{{ $item->group_name }}</td>
-                            <td><strong>{{ $item->sub }}</strong></td>
+                            <td>{{ $item->subHeadOfAccount->name }}</td>
                             <td>
                                 <a class="mb-1 mt-1 me-1 modal-with-zoom-anim ws-normal text-dark" onclick="getAttachements({{ $item->ac_code }})" href="#attModal"><i class="fa fa-eye"> </i></a>
                                 <span class="separator"> | </span>

@@ -38,8 +38,8 @@
               <span>Products</span>
             </a>
             <ul class="nav nav-children">
-              <li><a class="nav-link" href="{{ route('product-categories.index')}}">Measurement Units</a></li>	
-              <li><a class="nav-link" href="{{ route('product-measurement-units.index')}}">Categories</a></li>
+              <li><a class="nav-link" href="{{ route('product-measurement-units.index')}}">Measurement Units</a></li>	
+              <li><a class="nav-link" href="{{ route('product-categories.index')}}">Categories</a></li>
               <li><a class="nav-link" href="{{ route('product-colors.index')}}">Colors</a></li>
               <li><a class="nav-link" href="{{ route('products.index')}}">All Products</a></li>	
             </ul>

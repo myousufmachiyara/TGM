@@ -22,7 +22,7 @@ class COAController extends Controller
         try {
             $request->validate([
                 'shoa_id' => 'required|exists:sub_head_of_accounts,id',
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:chart_of_accounts',
                 'receivables' => 'required|numeric',
                 'payables' => 'required|numeric',
                 'opening_date' => 'required|date',
@@ -38,7 +38,7 @@ class COAController extends Controller
             return redirect()->route('coa.index')->with('success', 'Chart of Account created successfully.');
 
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'An error occurred while creating the Chart of Account. Please try again.']);
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
