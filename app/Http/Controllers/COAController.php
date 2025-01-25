@@ -19,23 +19,27 @@ class COAController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'shoa_id' => 'required|exists:sub_head_of_accounts,id',
-            'name' => 'required|string|max:255',
-            'receivables' => 'required|numeric',
-            'payables' => 'required|numeric',
-            'opening_date' => 'required|date',
-            'remarks' => 'nullable|string|max:800',
-            'address' => 'nullable|string|max:250',
-            'phone_no' => 'nullable|string|max:250',
-            'credit_limit' => 'required|numeric',
-            'days_limit' => 'required|integer',
-            'created_by' => 'required|integer',
-        ]);
+        try {
+            $request->validate([
+                'shoa_id' => 'required|exists:sub_head_of_accounts,id',
+                'name' => 'required|string|max:255',
+                'receivables' => 'required|numeric',
+                'payables' => 'required|numeric',
+                'opening_date' => 'required|date',
+                'remarks' => 'nullable|string|max:800',
+                'address' => 'nullable|string|max:250',
+                'phone_no' => 'nullable|string|max:250',
+                'credit_limit' => 'required|numeric',
+                'days_limit' => 'required|integer',
+            ]);
+        
+            ChartOfAccounts::create($request->all());
+        
+            return redirect()->route('coa.index')->with('success', 'Chart of Account created successfully.');
 
-        ChartOfAccounts::create($request->all());
-
-        return redirect()->route('coa.index')->with('success', 'Chart of Account created successfully.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'An error occurred while creating the Chart of Account. Please try again.']);
+        }
     }
 
     public function show($id)

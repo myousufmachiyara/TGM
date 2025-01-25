@@ -6,10 +6,16 @@
   <div class="row">
     <div class="col">
       <section class="card">
-        <header class="card-header" style="display: flex;justify-content: space-between;">
-            <h2 class="card-title">All Accounts</h2>
-            <button type="button" class="modal-with-form btn btn-primary" href="#addModal"> <i class="fas fa-plus"></i> Add Account</button>
+        <header class="card-header">
+            <div style="display: flex;justify-content: space-between;">
+                <h2 class="card-title">All Accounts</h2>
+                <button type="button" class="modal-with-form btn btn-primary" href="#addModal"> <i class="fas fa-plus"></i> Add Account</button>
+            </div>
+            @if ($errors->has('error'))
+                <strong class="text-danger">{{ $errors->first('error') }}</strong>
+            @endif
         </header>
+       
         <div class="card-body">
           <div class="modal-wrapper table-scroll">
                 <table class="table table-bordered table-striped mb-0" id="cust-datatable-default">
@@ -33,58 +39,37 @@
                     <tbody>
                         @foreach ($chartOfAccounts as $item)
                         <tr>
-                            <td>{{ $loop->iteration }}</td> <!-- S.NO Column -->
+                            <td>{{ $loop->iteration }}</td>
                             <td><strong>{{ $item->ac_name }}</strong></td>
-
-                            <!-- Receivable Column -->
                             @if (substr(strval($item->rec_able), strpos(strval($item->rec_able), '.') + 1) > 0)
                             <td>{{ rtrim(rtrim(number_format($item->rec_able, 10, '.', ','), '0'), '.') }}</td>
                             @else
                             <td>{{ number_format(intval($item->rec_able)) }}</td>
                             @endif
-
-                            <!-- Payable Column -->
                             @if (substr(strval($item->pay_able), strpos(strval($item->pay_able), '.') + 1) > 0)
                             <td>{{ rtrim(rtrim(number_format($item->pay_able, 10, '.', ','), '0'), '.') }}</td>
                             @else
                             <td>{{ number_format(intval($item->pay_able)) }}</td>
                             @endif
-
-                            <!-- Date Column -->
                             <td>{{ \Carbon\Carbon::parse($item->opp_date)->format('d-m-y') }}</td>
-
-                            <!-- Remarks Column -->
                             <td>{{ $item->remarks }}</td>
-
-                            <!-- Address and Phone Column -->
                             <td>{{ $item->address }} {{ $item->phone_no }}</td>
-
-                            <!-- Credit Limit Column -->
                             @if (substr(strval($item->credit_limit), strpos(strval($item->credit_limit), '.') + 1) > 0)
                             <td style="color: rgb(156, 32, 32);"><strong>{{ rtrim(rtrim(number_format($item->credit_limit, 10, '.', ','), '0'), '.') }}</strong></td>
                             @else
                             <td style="color: rgb(156, 32, 32);"><strong>{{ number_format(intval($item->credit_limit)) }}</strong></td>
                             @endif
-
-                            <!-- Days Limit Column -->
                             <td style="color: rgb(156, 32, 32);"><strong>{{ $item->days_limit }}-Days</strong></td>
-
-                            <!-- Group Column -->
                             <td>{{ $item->group_name }}</td>
-
-                            <!-- Account Type Column -->
                             <td><strong>{{ $item->sub }}</strong></td>
-
-                            <!-- Actions Column (Attachments and Edit/Delete) -->
                             <td>
                                 <a class="mb-1 mt-1 me-1 modal-with-zoom-anim ws-normal text-dark" onclick="getAttachements({{ $item->ac_code }})" href="#attModal"><i class="fa fa-eye"> </i></a>
                                 <span class="separator"> | </span>
                                 <a class="mb-1 mt-1 me-1 modal-with-zoom-anim ws-normal text-danger" onclick="setAttId({{ $item->ac_code }})" href="#addAttModal"> <i class="fas fa-paperclip"> </i></a>
                             </td>
-
                             <td>
                                 <a href="{{ route('shoa.edit', $item->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                                <form action="{{ route('shoa.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('coa.destroy', $item->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
@@ -109,28 +94,28 @@
                     <div class="row form-group">
                         <div class="col-lg-6 mb-2">
                             <label>Account Name<span style="color: red;"><strong>*</strong></span></label>
-                            <input type="text" class="form-control" placeholder="Account Name" name="ac_name" required>
+                            <input type="text" class="form-control" placeholder="Account Name" name="name" required>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <label>Account Type<span style="color: red;"><strong>*</strong></span></label>
-                            <select data-plugin-selecttwo class="form-control select2-js"  name="AccountType" required>
+                            <select data-plugin-selecttwo class="form-control select2-js"  name="shoa_id" required>
                                 <option value="" disabled selected>Select Account Type</option>
                                 @foreach($subHeadOfAccounts as $key => $row)	
-                                    <option value="{{$row->id}}">{{$row->sub}}</option>
+                                    <option value="{{$row->id}}">{{$row->name}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <label>Receivables<span style="color: red;"><strong>*</strong></span></label>
-                            <input type="number" class="form-control" placeholder="Receivables" value="0" name="rec_able" step=".00001" required>
+                            <input type="number" class="form-control" placeholder="Receivables" value="0" name="receivables" step="any" required>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <label>Payables<span style="color: red;"><strong>*</strong></span></label>
-                            <input type="number" class="form-control" placeholder="Payables" value="0" name="pay_able" step=".00001" required>
+                            <input type="number" class="form-control" placeholder="Payables" value="0" name="payables" step="any" required>
                         </div>
                         <div class="col-lg-6 mb-2">
                             <label>Date</label>
-                            <input type="date" class="form-control" placeholder="Date" name="opp_date" value="<?php echo date('Y-m-d'); ?>" required>
+                            <input type="date" class="form-control" placeholder="Date" name="opening_date" value="<?php echo date('Y-m-d'); ?>" required>
                         </div>  
                         <div class="col-lg-6 mb-2">
                             <label>Remarks</label>
@@ -152,12 +137,10 @@
                             <label>Credit Days<span style="color: red;"><strong>*</strong></span></label>
                             <input type="text" class="form-control"  placeholder="Credit Days" value="0" name="days_limit" required >
                         </div>
-
                         <div class="col-lg-12 mb-2">
                             <label>Attachement</label>
                             <input type="file" class="form-control" name="att[]" multiple accept="application/pdf, image/png, image/jpeg">
                         </div>
-
                     </div>
                 </div>
                 <footer class="card-footer">
