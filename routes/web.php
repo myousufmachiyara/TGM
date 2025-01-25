@@ -21,11 +21,13 @@ Route::get('/shopify/products/{productId}', [ShopifyController::class, 'show']);
 Route::resource('shoa', SubHeadOfAccController::class);
 Route::resource('coa', COAController::class);
 
-// Products & Attributes
-Route::resource('product-categories', ProductCategoriesController::class);
-Route::resource('product-measurement-units', ProductMeasurementUnitsController::class);
+// Product Attributes
 Route::resource('product-colors', ProductColorsController::class);
+Route::resource('product-measurement-units', ProductMeasurementUnitsController::class);
+
+// Products
 Route::resource('products', ProductsController::class);
+Route::resource('product-categories', ProductCategoriesController::class);
 
 // Purchase Orders
 Route::resource('purpos', PurPOController::class);
