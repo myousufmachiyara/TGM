@@ -12,6 +12,7 @@
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script src="{{ asset('/assets/vendor/bootstrapv5-multiselect/js/bootstrap-multiselect.js') }}"></script>
+<script src="{{ asset('/assets/vendor/dropzone/dropzone.js') }}"></script>
 
 <!-- Vendor -->
 <script src="{{ asset('/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

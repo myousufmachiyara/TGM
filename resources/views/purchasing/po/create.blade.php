@@ -18,7 +18,12 @@
             <div class="row">
               <div class="col-12 col-md-3">
                 <label>Vendor Name</label>
-                <input type="text" name="vendor_name" class="form-control" placeholder="Vendor Name" required/>
+                <select data-plugin-selecttwo class="form-control select2-js" name="vendor_name" required>  <!-- Added name attribute for form submission -->
+                  <option value="" selected disabled>Select Vendor</option>
+                  @foreach ($coa as $item)
+                    <option value="{{ $item->id }}">{{ $item->name }}</option> 
+                  @endforeach
+                </select>
               </div>
               <div class="col-12 col-md-3">
                 <label>Order Date</label>
@@ -38,6 +43,12 @@
                   <option>Credit</option>
                 </select>
               </div>
+
+              <div class="col-12 col-md-3 mt-3">
+                <label>Images</label>
+                <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg">
+              </div>
+
             </div>
           </div>
 
@@ -47,35 +58,24 @@
               <thead>
                 <tr>
                   <th>Item Name</th>
-                  <th>Category</th>
                   <th>Rate</th>
                   <th>Quantity</th>
-                  <th>Unit</th>
                   <th>Total</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody id="PurPOTbleBody">
                 <tr>
-                  <td><input type="text" name="details[0][item_name]" class="form-control" placeholder="Item Name" required/></td>
                   <td>
-                  <select class="form-control" name="details[0][category_id]">  <!-- Added name attribute for form submission -->
-                    <option value="" selected disabled>Select Category</option>
-                    @foreach ($prodCat as $item)
-                      <option value="{{ $item->id }}">{{ $item->name }}</option>  <!-- Use category ID as the value and name as the display text -->
-                    @endforeach
-                  </select>
+                    <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_name]" required>  <!-- Added name attribute for form submission -->
+                      <option value="" selected disabled>Select Item</option>
+                      @foreach ($products as $item)
+                        <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
+                      @endforeach
+                    </select>  
                   </td>
                   <td><input type="number" name="details[0][item_rate]"  id="item_rate1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Rate" required/></td>
                   <td><input type="number" name="details[0][item_qty]"   id="item_qty1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Quantity" required/></td>
-                  <td>
-                  <select class="form-control" name="details[0][unit_id]">  <!-- Added name attribute for form submission -->
-                    <option value="" selected disabled>Select Unit</option>
-                    @foreach ($produnits as $item)
-                      <option value="{{ $item->id }}">{{ $item->name }}</option>  <!-- Use category ID as the value and name as the display text -->
-                    @endforeach
-                  </select>
-                  </td>
                   <td><input type="number" id="item_total1" class="form-control" placeholder="Total" disabled/></td>
                   <td>
 										<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button>
@@ -85,7 +85,7 @@
             </table>
           </div>
 
-          <footer class="card-footer pb-3">
+          <footer class="card-footer">
             <div class="card-title mb-3">Summary</div>
             <div class="row">
               <div class="col-12 col-md-2">
@@ -95,6 +95,20 @@
               <div class="col-12 col-md-2">
                 <label>Total Amount</label>
                 <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
+              </div>
+              <div class="col-12 col-md-2">
+                <label>Other Expenses</label>
+                <input type="number" class="form-control" id="other_exp" placeholder="Other Expenses" />
+              </div>
+              <div class="col-12 col-md-2">
+                <label>Bill Discount</label>
+                <input type="number" class="form-control" id="bill_disc" placeholder="Bill Discount"  />
+              </div>
+              <div class="col-12 pb-sm-3 pb-md-0 text-end">
+                <h3 class="font-weight-bold mt-3 mb-0 text-5 text-primary">Net Amount</h3>
+                <span>
+                  <strong class="text-4 text-primary">PKR <span id="netTotal" class="text-4 text-danger">0.00 </span></strong>
+                </span>
               </div>
             </div>
           </footer>
@@ -133,26 +147,17 @@
         var cell3 = newRow.insertCell(2);
         var cell4 = newRow.insertCell(3);
         var cell5 = newRow.insertCell(4);
-        var cell6 = newRow.insertCell(5);
-        var cell7 = newRow.insertCell(6);
 
-        cell1.innerHTML  = '<input type="text" name="details['+index+'][item_name]"  class="form-control" placeholder="Item Name" required/>';
-        cell2.innerHTML  = '<select class="form-control" name="details['+index+'][category_id]">'+
+        cell1.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="details['+index+'][item_name]">'+
                             '<option value="" disabled selected>Select Category</option>'+
-                            @foreach ($prodCat as $item)
-                              '<option value="{{ $item->id }}">{{ $item->name }}</option>'+
+                            @foreach ($products as $item)
+                              '<option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option>'+
                             @endforeach
                           '</select>';
-        cell3.innerHTML  = '<input type="number" name="details['+index+'][item_rate]" step="any" id="item_rate'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
-        cell4.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell5.innerHTML  = '<select class="form-control" name="details['+index+'][unit_id]">'+
-                            '<option value="" disabled selected>Select Unit</option>'+
-                            @foreach ($produnits as $item)
-                              '<option value="{{ $item->id }}">{{ $item->name }}</option>'+
-                            @endforeach
-                          '</select>';
-        cell6.innerHTML  = '<input type="number" id="item_total'+index+'" class="form-control" placeholder="Total" disabled/>';
-        cell7.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button> '+
+        cell2.innerHTML  = '<input type="number" name="details['+index+'][item_rate]" step="any" id="item_rate'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
+        cell3.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
+        cell4.innerHTML  = '<input type="number" id="item_total'+index+'" class="form-control" placeholder="Total" disabled/>';
+        cell5.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button> '+
                           '<button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
         index++;
         tableTotal();
@@ -177,8 +182,8 @@
 
       for (var i = 0; i < tableRows; i++) {
         var currentRow =  table.rows[i];
-        totalQuantity = totalQuantity + Number(currentRow.cells[3].querySelector('input').value);
-        totalAmount = totalAmount + Number(currentRow.cells[5].querySelector('input').value);
+        totalQuantity = totalQuantity + Number(currentRow.cells[2].querySelector('input').value);
+        totalAmount = totalAmount + Number(currentRow.cells[3].querySelector('input').value);
       }
 
       $('#total_qty').val(totalQuantity);

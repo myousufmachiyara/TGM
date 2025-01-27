@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\ProductAttributes;
 
 class ProductsController extends Controller
 {
@@ -25,7 +27,10 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        $prodCat = ProductCategory::all();  // Get all product categories
+        $attributes = ProductAttributes::with('values')->get();
+
+        return view('products.create', compact('prodCat'));
     }
 
     /**

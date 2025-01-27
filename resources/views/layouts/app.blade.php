@@ -23,7 +23,8 @@
 		<link rel="stylesheet" href="{{ asset('/assets/vendor/select2/css/select2.css') }}" />
 		<link rel="stylesheet" href="{{ asset('/assets/vendor/select2-bootstrap-theme/select2-bootstrap.min.css') }}" />
 		<link rel="stylesheet" href="{{ asset('/assets/vendor/bootstrap-multiselect/css/bootstrap-multiselect.css') }}" />
-
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/dropzone/basic.css') }}"/>
+		<link rel="stylesheet" href="{{ asset('/assets/vendor/dropzone/dropzone.css') }}" />
 		<!-- Theme CSS -->
         <link rel="stylesheet" href="{{ asset('/assets/css/theme.css') }}" />
 

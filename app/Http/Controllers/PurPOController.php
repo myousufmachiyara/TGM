@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\PurPo;
 use App\Models\PurPosDetail;
 use App\Models\ProductCategory;
-use App\Models\ProductMeasurementUnit;
+use App\Models\ChartOfAccounts;
+use App\Models\Product;
+
 use Illuminate\Http\Request;
 
 class PurPOController extends Controller
@@ -20,8 +22,11 @@ class PurPOController extends Controller
     public function create()
     {
         $prodCat = ProductCategory::all();  // Get all product categories
-        $produnits = ProductMeasurementUnit::all();  // Get all product categories
-        return view('purchasing.po.create', compact('prodCat','produnits'));
+        $coa = ChartOfAccounts::all();  // Get all product categories
+        $products = Product::all();  // Get all product categories
+
+        
+        return view('purchasing.po.create', compact('prodCat', 'coa', 'products'));
     }
 
     public function store(Request $request)
@@ -33,15 +38,12 @@ class PurPOController extends Controller
             'payment_term' => 'required|string|max:255',
             'details.*.item_name' => 'required|string|max:255',
             'details.*.category_id' => 'required|exists:product_categories,id',
-            'details.*.unit_id' => 'required|exists:product_measurement_units,id',
             'details.*.item_rate' => 'required|numeric|min:0',
             'details.*.item_qty' => 'required|numeric|min:0',
         ]);
-
-        // Create the Purchase Order
+        
         $purpo = PurPo::create($validated);
 
-        // Create associated details
         foreach ($validated['details'] as $detail) {
             $detail['pur_pos_id'] = $purpo->id; // Set the foreign key
             PurPosDetail::create($detail);

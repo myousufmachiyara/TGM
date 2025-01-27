@@ -38,9 +38,8 @@
               <span>Products</span>
             </a>
             <ul class="nav nav-children">
-              <li><a class="nav-link" href="{{ route('product-measurement-units.index')}}">Measurement Units</a></li>	
+              <li><a class="nav-link" href="{{ route('product-attributes.index')}}">Attributes</a></li>
               <li><a class="nav-link" href="{{ route('product-categories.index')}}">Categories</a></li>
-              <li><a class="nav-link" href="{{ route('product-colors.index')}}">Colors</a></li>
               <li><a class="nav-link" href="{{ route('products.index')}}">All Products</a></li>	
             </ul>
           </li>
@@ -52,6 +51,7 @@
             </a>
             <ul class="nav nav-children">
               <li><a class="nav-link" href="{{ route('purpos.index') }}"> Purchase Order</a></li>	
+              <li><a class="nav-link"> F.G Purchase Order</a></li>	
             </ul>
           </li>
         </ul>	

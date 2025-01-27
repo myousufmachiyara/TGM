@@ -20,5 +20,14 @@ class DatabaseSeeder extends Seeder
             ['id' => 4, 'name' => 'Revenue'],
             ['id' => 5, 'name' => 'Equity'],
         ]);
+
+        DB::table('product_categories')->insert([
+            ['id' => 1, 'name' => "Men's Fabric"],
+            ['id' => 2, 'name' => "Men's Finish Goods"],
+            ['id' => 3, 'name' => 'Abaya Fabric'],
+            ['id' => 4, 'name' => 'Ladies Finish Goods'],
+            ['id' => 5, 'name' => 'Kids Finish Goods'],
+            ['id' => 6, 'name' => 'Accessories'],
+        ]);
     }
 }
