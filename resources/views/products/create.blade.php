@@ -1,252 +1,288 @@
 @extends('layouts.app')
 
-@section('title', 'Products | All Products')
+@section('title', 'Products | New Product')
 
 @section('content')
   <div class="row">
         <div class="col">
-			<form class="ecommerce-form action-buttons-fixed" action="#" method="post">
-				<div class="row">
-					<div class="col-4">
-						<section class="card card-modern card-big-info">
-							<div class="card-body">
-								<div class="row ">
-									<div class="pb-3">
-										<div class="mb-2">
-											<label class="text-lg-end mb-0">Product Name <span style="color: red;"><strong>*</strong></span></label>
-											<input type="text" class="form-control" placeholder="Account Name" name="name" required>
-										</div>
-										<div class="row">
-											<div class="mb-2 col-6">
-												<label>Categories<span style="color: red;"><strong>*</strong></span></label>
-												<select data-plugin-selecttwo class="form-control select2-js" name="details[0][category_id]">  <!-- Added name attribute for form submission -->
-													<option value="" selected disabled>Select Category</option>
-													@foreach ($prodCat as $item)
-														<option value="{{ $item->id }}">{{ $item->name }}</option> 
-													@endforeach
-												</select>
-											</div>
-
-											<div class="mb-2 col-6">
-												<label>Units<span style="color: red;"><strong>*</strong></span></label>
-												<select data-plugin-selecttwo class="form-control select2-js" name="details[0][category_id]">  <!-- Added name attribute for form submission -->
-													<option value="" selected disabled>Select Category</option>
-													<option value="mtr">meter</option>
-													<option value="pcs">pieces</option> 
-													<option value="yrd">yards</option> 
-													<option value="rd">round</option> 
-												</select>
-											</div>
-										</div>
-
-										<div class="mb-2">
-											<label>Description<span style="color: red;"><strong>*</strong></span></label>
-											<textarea type="text" class="form-control" rows="5" placeholder="Address" name="address"></textarea>
-										</div>
-										
-										<div>
-											<label>Images</label>
-											<input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg">
-										</div>
-									</div>
-								</div>
+			<form action="{{ route('products.store') }}" method="POST">				
+				@csrf
+				<section class="card">
+					<header class="card-header" style="display: flex;justify-content: space-between;">
+						<h2 class="card-title">New Product</h2>
+						<div class="card-actions">
+						</div>
+					</header>
+					<div class="card-body">
+						<div class="row pb-3">
+							<div class="col-12 col-md-2 mb-2">
+								<label class="text-lg-end mb-0">Product Name <span style="color: red;"><strong>*</strong></span></label>
+								<input type="text" class="form-control" placeholder="Product Name" name="name" required>
 							</div>
-						</section>
-					</div>
-					<div class="col-8">
-						<section class="card card-modern card-big-info">
-							<div class="card-body">
-								<div class="tabs-modern row">
-									<div class="col-lg-2-5 col-xl-1-5">
-										<div class="nav flex-column tabs" id="tab" role="tablist" aria-orientation="vertical">
-											<a class="nav-link active" id="price-tab" data-bs-toggle="pill" data-bs-target="#price" role="tab" aria-controls="price" aria-selected="true">Price</a>
-											<a class="nav-link" id="inventory-tab" data-bs-toggle="pill" data-bs-target="#inventory" role="tab" aria-controls="inventory" aria-selected="false">Inventory</a>
-											<a class="nav-link" id="shipping-tab" data-bs-toggle="pill" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Shipping</a>
-											<a class="nav-link" id="linked-products-tab" data-bs-toggle="pill" data-bs-target="#linked-products" role="tab" aria-controls="linked-products" aria-selected="false">Linked Products</a>
-											<a class="nav-link" id="attributes-tab" data-bs-toggle="pill" data-bs-target="#attributes" role="tab" aria-controls="attributes">Attributes</a>
-											<a class="nav-link" id="advanced-tab" data-bs-toggle="pill" data-bs-target="#advanced" role="tab" aria-controls="advanced">Advanced</a>
-										</div>
-									</div>
-									<div class="col-lg-3-5 col-xl-4-5">
-										<div class="tab-content" id="tabContent">
-											<div class="tab-pane fade show active" id="price" role="tabpanel" aria-labelledby="price-tab">
-												<div class="form-group row align-items-center pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Regular Price ($)</label>
-													<div class="col-lg-7 col-xl-6">
-														<input type="text" class="form-control form-control-modern" name="regularPrice" value="" required />
-													</div>
-												</div>
-												<div class="form-group row align-items-center">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Sale Price ($)</label>
-													<div class="col-lg-7 col-xl-6">
-														<input type="text" class="form-control form-control-modern" name="salePrice" value="" />
-													</div>
-												</div>
-											</div>
-											<div class="tab-pane fade" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
-												<div class="form-group row align-items-center pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">SKU</label>
-													<div class="col-lg-7 col-xl-6">
-														<input type="text" class="form-control form-control-modern" name="sku" value="" required />
-													</div>
-												</div>
-												<div class="form-group row align-items-center pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Manage Stock?</label>
-													<div class="col-lg-7 col-xl-6">
-														<div class="checkbox">
-															<label class="my-2">
-																<input type="checkbox" value="">
-																Enable stock management at product level
-															</label>
-														</div>
-													</div>
-												</div>
-												<div class="form-group row align-items-center pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Stock Status</label>
-													<div class="col-lg-7 col-xl-6">
-														<select class="form-control form-control-modern" name="stockStatus">
-															<option value="in-stock" selected>In Stock</option>
-															<option value="out-of-stock">Out of Stock</option>
-															<option value="on-backorder">On Backorder</option>
-														</select>
-													</div>
-												</div>
-												<div class="form-group row align-items-center">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Sold Individually</label>
-													<div class="col-lg-7 col-xl-6">
-														<div class="checkbox">
-															<label class="my-2">
-																<input type="checkbox" value="">
-																Enable this to only allow one of this item to be bought in a single order
-															</label>
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
-												<div class="form-group row align-items-center pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Weight (oz)</label>
-													<div class="col-lg-7 col-xl-6">
-														<input type="text" class="form-control form-control-modern" name="weight" value="" />
-													</div>
-												</div>
-												<div class="form-group row align-items-center pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Dimensions (in)</label>
-													<div class="col-lg-7 col-xl-6">
-														<div class="row">
-															<div class="col-xl-4 mb-3 mb-xl-0">
-																<input type="text" class="form-control form-control-modern" name="dimensionsLength" value="" placeholder="Length" />
-															</div>
-															<div class="col-xl-4 mb-3 mb-xl-0">
-																<input type="text" class="form-control form-control-modern" name="dimensionsWidth" value="" placeholder="Width" />
-															</div>
-															<div class="col-xl-4">
-																<input type="text" class="form-control form-control-modern" name="dimensionsHeight" value="" placeholder="Height" />
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="form-group row align-items-center">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Shipping Class</label>
-													<div class="col-lg-7 col-xl-6">
-														<select class="form-control form-control-modern" name="shippingclass">
-															<option value="in-stock" selected>No Shipping Class</option>
-															<option value="out-of-stock">International</option>
-															<option value="on-backorder">National</option>
-														</select>
-													</div>
-												</div>
-											</div>
-											<div class="tab-pane fade" id="linked-products" role="tabpanel" aria-labelledby="linked-products-tab">
-												<div class="form-group row align-items-center pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Upsells</label>
-													<div class="col-lg-7 col-xl-6">
-														<select multiple data-plugin-selectTwo class="form-control form-control-modern" name="upSells" data-plugin-options='{ "placeholder": "Search for a product..." }'>
-															<option value=""></option>
-															<option value="product1">Porto Bag</option>
-															<option value="product2">Porto Shoes</option>
-															<option value="product3">Porto Jacket</option>
-														</select>
-													</div>
-												</div>
-												<div class="form-group row align-items-center">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Cross-sells</label>
-													<div class="col-lg-7 col-xl-6">
-														<select multiple data-plugin-selectTwo class="form-control form-control-modern" name="crossSells" data-plugin-options='{ "placeholder": "Search for a product..." }'>
-															<option value=""></option>
-															<option value="product1">Porto Bag</option>
-															<option value="product2">Porto Shoes</option>
-															<option value="product3">Porto Jacket</option>
-														</select>
-													</div>
-												</div>
-											</div>
-											<div class="tab-pane fade" id="attributes" role="tabpanel" aria-labelledby="attributes-tab">
-												<div class="ecommerce-attributes-wrapper">
-													<div class="form-group row justify-content-center ecommerce-attribute-row pb-3">
-														<div class="col-xl-3">
-															<label class="control-label">Name</label>
-															<input type="text" class="form-control form-control-modern" name="attName" value="Size" />
-															<div class="checkbox mt-3 mb-3 mb-lg-0">
-																<label class="my-2">
-																	<input type="checkbox" name="attVisible" value="1" checked>
-																	Visible on the product page
-																</label>
-															</div>
-														</div>
-														<div class="col-xl-6">
-															<a href="#" class="ecommerce-attribute-remove text-color-danger float-end">Remove</a>
-															<label class="control-label">Value(s)</label>
-															<textarea class="form-control form-control-modern" name="attValue" rows="4" placeholder="Enter some text, or some attributes by | separating values">Small|Medium|Big</textarea>
-														</div>
-													</div>
-													
-												</div>
-												<div class="row justify-content-center mt-4">
-													<div class="col-xl-9 text-end">
-														<a href="#" class="ecommerce-attribute-add-new btn btn-primary btn-px-4 btn-py-2">+ Add New</a>
-													</div>
-												</div>
-											</div>
-											<div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
-												<div class="form-group row pb-3">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end pt-2 mt-1 mb-0">Purchase Note</label>
-													<div class="col-lg-7 col-xl-6">
-														<textarea class="form-control form-control-modern" name="purchaseNote" rows="6"></textarea>
-													</div>
-												</div>
-												<div class="form-group row align-items-center">
-													<label class="col-lg-5 col-xl-3 control-label text-lg-end mb-0">Menu Order</label>
-													<div class="col-lg-7 col-xl-6">
-														<input type="text" class="form-control form-control-modern" name="menuOrder" value="" />
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
+
+							<div class="col-12 col-md-2 mb-2">
+								<label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
+								<input type="text" class="form-control" placeholder="Product SKU" name="sku" required />
 							</div>
-						</section>
-					</div>
-				</div>
+							<div class="col-12 col-md-2 mb-2">
+								<label>Category<span style="color: red;"><strong>*</strong></span></label>
+								<select data-plugin-selecttwo class="form-control select2-js" name="details[0][category_id]">  <!-- Added name attribute for form submission -->
+									<option value="" selected disabled>Select Category</option>
+									@foreach ($prodCat as $item)
+										<option value="{{ $item->id }}">{{ $item->name }}</option> 
+									@endforeach
+								</select>
+							</div>
+							<div class="col-12 col-md-2 mb-2">
+								<label>Unit<span style="color: red;"><strong>*</strong></span></label>
+								<select data-plugin-selecttwo class="form-control select2-js" name="details[0][category_id]">  <!-- Added name attribute for form submission -->
+									<option value="" selected disabled>Select Measurement Unit</option>
+									<option value="mtr">meter</option>
+									<option value="pcs">pieces</option> 
+									<option value="yrd">yards</option> 
+									<option value="rd">round</option> 
+								</select>
+							</div>
+							<div class="col-12 col-md-2 mb-2">
+								<label>Purchase Price<span style="color: red;"><strong>*</strong></span></label>
+								<input type="number"  step=".00" class="form-control" name="price" required />
+							</div>
+							<div class="col-12 col-md-2 mb-2">
+								<label>Sale Price<span style="color: red;"><strong>*</strong></span></label>
+								<input type="number"  step=".00" class="form-control" name="sale_price" required />
+							</div>
 
+							<div class="col-12 col-md-6 mb-2">
+								<label>Description<span style="color: red;"><strong>*</strong></span></label>
+								<textarea type="text" class="form-control" rows="3" placeholder="Description" name="description"></textarea>
+							</div>
 
-				<div class="row action-buttons">
-					<div class="col-12 col-md-auto">
-						<button type="submit" class="submit-button btn btn-primary btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1" data-loading-text="Loading...">
-							<i class="bx bx-save text-4 me-2"></i> Save Product
-						</button>
+							<div class="col-12 col-md-6 mb-2">
+								<label>Purchase Note<span style="color: red;"><strong>*</strong></span></label>
+								<textarea type="text" class="form-control" rows="3" placeholder="Purchase Note" name="purchase_note"></textarea>
+							</div>
+							
+							<div class="col-12 col-md-3 mb-2">
+								<label>Images</label>
+								<input type="file" class="form-control" name="prod_att[]" multiple accept="image/png, image/jpeg, image/jpg">
+							</div>
+						</div>
 					</div>
-					<div class="col-12 col-md-auto px-md-0 mt-3 mt-md-0">
-						<a href="ecommerce-products-list.html" class="cancel-button btn btn-light btn-px-4 py-3 border font-weight-semibold text-color-dark text-3">Cancel</a>
+					<div class="card-body" style="max-height:400px; overflow-y:auto">
+						<div class="card-title mb-3" style="display:inline-block">
+							<input type="checkbox" id="toggleTableSwitch" checked onchange="toggleTable()">
+							Product Variations
+						</div>
+						
+						<!-- <table class="table table-bordered" id="prodVariations">
+							<thead>
+								<tr>
+									<th>Variation Type</th>
+									<th>Values</th>
+									<th>Price</th>
+									<th>Stock</th>
+								</tr>
+							</thead>
+							<tbody id="PurPOTbleBody">
+								<tr>
+									<td>
+										<select data-plugin-selectTwo class="form-control select2-js attribute-select" id="attributes" name="attribute_id" required onchange="updateValuesDropdown(this)">
+											<option value="" disabled selected>Select Attribute</option>
+											@foreach($attributes as $attribute)
+												<option value="{{ $attribute->id }}" data-values='@json($attribute->values)'>
+													{{ $attribute->name }}
+												</option>
+											@endforeach
+										</select>
+									</td>
+									<td>
+										<select multiple data-plugin-selectTwo class="form-select values-select" id="values" name="value_id[]" multiple required>
+											<option value="" disabled>Select Values</option>
+										</select>
+									</td>
+									<td><input type="number" name="details[0][item_qty]"   id="item_qty1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Price" required/></td>
+									<td><input type="number" id="item_total1" class="form-control" placeholder="Quantity"/></td>
+									<td>
+										<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button>
+										<button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>
+									</td>
+								</tr>
+							</tbody>
+						</table> -->
+
+						<table class="table table-bordered" id="attributes-table">
+							<thead>
+								<tr>
+									<th>Attribute</th>
+									<th>Values</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- Dynamic Rows Will Be Added Here -->
+							</tbody>
+						</table>
+            			<button type="button" class="btn btn-primary" id="add-row-btn">Add Attribute</button>
 					</div>
-					<div class="col-12 col-md-auto ms-md-auto mt-3 mt-md-0 ms-auto">
-						<a href="#" class="delete-button btn btn-danger btn-px-4 py-3 d-flex align-items-center font-weight-semibold line-height-1">
-							<i class="bx bx-trash text-4 me-2"></i> Delete Product
-						</a>
-					</div>
-				</div>
+					<footer class="card-footer text-end">
+						<a class="btn btn-danger" href="{{ route('products.index') }}" >Discard</a>
+						<button type="submit" class="btn btn-primary">Create</button>
+					</footer>
+				</section>
 			</form>
         </div>
     </div>
+	<script>
+		var index=2;
+
+		// function toggleTable() {
+        //     const table = document.getElementById('prodVariations');
+        //     const isVisible = table.style.display !== 'none';
+        //     table.style.display = isVisible ? 'none' : 'table';
+        // }
+
+		// function removeRow(button) {
+		// 	var tableRows = $("#prodVariations tr").length;
+		// 	if(tableRows>1){
+		// 		var row = button.parentNode.parentNode;
+		// 		row.parentNode.removeChild(row);
+		// 		index--;	
+		// 	} 
+		// 	tableTotal();
+		// }
+
+		
+		// function addNewRow(){
+		// 	var lastRow =  $('#prodVariations tr:last');
+		// 	latestValue=lastRow[0].cells[0].querySelector('select').value;
+
+		// 	if(latestValue!=""){
+		// 		var table = document.getElementById('prodVariations').getElementsByTagName('tbody')[0];
+		// 		var newRow = table.insertRow(table.rows.length);
+
+		// 		var cell1 = newRow.insertCell(0);
+		// 		var cell2 = newRow.insertCell(1);
+		// 		var cell3 = newRow.insertCell(2);
+		// 		var cell4 = newRow.insertCell(3);
+		// 		var cell5 = newRow.insertCell(4);
+
+		// 		cell1.innerHTML  = '<select data-plugin-selectTwo class="form-control select2-js attribute-select" id="attributes" name="attribute_id" required onchange="updateValuesDropdown(this)">'+
+		// 									'<option value="" disabled selected>Select Attribute</option>'+
+		// 									@foreach($attributes as $attribute)
+		// 										'<option value="{{ $attribute->id }}" data-values="@json($attribute->values)">'{{ $attribute->name }}'</option>'+
+		// 									@endforeach
+		// 								'</select>';
+								
+		// 		cell2.innerHTML  = '<select multiple data-plugin-selectTwo class="form-select values-select" id="values" name="value_id[]" required>'+
+		// 									'<option value="" disabled>Select Values</option>'+
+		// 								'</select>';
+		// 		cell3.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
+		// 		cell4.innerHTML  = '<input type="number" id="item_total'+index+'" class="form-control" placeholder="Total" disabled/>';
+		// 		cell5.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button> '+
+		// 						'<button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
+		// 		index++;
+		// 		tableTotal();
+		// 	}
+		// }
+
+		// function rowTotal(index){
+		// 	var item_rate = parseFloat($('#item_rate'+index+'').val());
+		// 	var item_qty = parseFloat($('#item_qty'+index+'').val());   
+		// 	var item_total = item_rate * item_qty;
+
+		// 	$('#item_total'+index+'').val(item_total.toFixed());
+			
+		// 	tableTotal();
+		// }
+
+		// function tableTotal(){
+		// 	var totalQuantity=0;
+		// 	var totalAmount=0;
+		// 	var tableRows = $("#PurPOTbleBody tr").length;
+		// 	var table = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+
+		// 	for (var i = 0; i < tableRows; i++) {
+		// 		var currentRow =  table.rows[i];
+		// 		totalQuantity = totalQuantity + Number(currentRow.cells[2].querySelector('input').value);
+		// 		totalAmount = totalAmount + Number(currentRow.cells[3].querySelector('input').value);
+		// 	}
+
+		// 	$('#total_qty').val(totalQuantity);
+		// 	$('#total_amt').val(totalAmount.toFixed());
+		// }
+
+		const attributes = @json($attributes);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const tableBody = document.querySelector("#attributes-table tbody");
+        const addRowBtn = document.getElementById("add-row-btn");
+
+        // Function to add a new row
+        function addRow() {
+            const rowIndex = tableBody.rows.length;
+
+            const row = document.createElement("tr");
+
+            // Attribute Dropdown
+            const attributeCell = document.createElement("td");
+            const attributeSelect = document.createElement("select");
+            attributeSelect.className = "form-select attribute-select";
+            attributeSelect.name = `attributes[${rowIndex}][attribute_id]`;
+            attributeSelect.required = true;
+            attributeSelect.innerHTML = `<option value="" disabled selected>Select Attribute</option>`;
+            attributes.forEach(attribute => {
+                attributeSelect.innerHTML += `<option value="${attribute.id}" data-values='${JSON.stringify(attribute.values)}'>${attribute.name}</option>`;
+            });
+            attributeSelect.addEventListener("change", function () {
+                updateValuesDropdown(this, rowIndex);
+            });
+            attributeCell.appendChild(attributeSelect);
+            row.appendChild(attributeCell);
+
+            // Values Dropdown
+            const valuesCell = document.createElement("td");
+            const valuesSelect = document.createElement("select");
+            valuesSelect.className = "form-select values-select";
+            valuesSelect.name = `attributes[${rowIndex}][value_ids][]`;
+            valuesSelect.multiple = true;
+            valuesCell.appendChild(valuesSelect);
+            row.appendChild(valuesCell);
+
+            // Action Cell (Remove Button)
+            const actionCell = document.createElement("td");
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "btn btn-danger btn-sm";
+            removeBtn.textContent = "Remove";
+            removeBtn.type = "button";
+            removeBtn.addEventListener("click", function () {
+                row.remove();
+            });
+            actionCell.appendChild(removeBtn);
+            row.appendChild(actionCell);
+
+            tableBody.appendChild(row);
+        }
+
+        // Function to update the values dropdown
+        function updateValuesDropdown(attributeSelect, rowIndex) {
+            const selectedOption = attributeSelect.options[attributeSelect.selectedIndex];
+            const values = JSON.parse(selectedOption.dataset.values || "[]");
+            const valuesSelect = tableBody.rows[rowIndex].querySelector(".values-select");
+
+            // Clear existing options
+            valuesSelect.innerHTML = "";
+
+            // Populate new options
+            values.forEach(value => {
+                const option = document.createElement("option");
+                option.value = value.id;
+                option.textContent = value.value;
+                valuesSelect.appendChild(option);
+            });
+        }
+
+        // Add initial row on page load
+        addRowBtn.addEventListener("click", addRow);
+    });
+	</script>
 @endsection

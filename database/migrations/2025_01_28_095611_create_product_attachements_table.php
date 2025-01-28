@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('product_attachements', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('price', 8, 2);
-            $table->text('description')->nullable();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete(); // Foreign key to products
+            $table->string('att_path'); // Path to the attachements
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('product_attachements');
     }
 };

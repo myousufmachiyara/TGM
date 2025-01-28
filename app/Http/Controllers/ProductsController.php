@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\Products;
 use App\Models\ProductCategory;
 use App\Models\ProductAttributes;
 
@@ -16,7 +16,7 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        $products = Product::all(); // Retrieve all products
+        $products = Products::all(); // Retrieve all products
         return view('products.index', compact('products')); // Return the view
     }
 
@@ -30,7 +30,7 @@ class ProductsController extends Controller
         $prodCat = ProductCategory::all();  // Get all product categories
         $attributes = ProductAttributes::with('values')->get();
 
-        return view('products.create', compact('prodCat'));
+        return view('products.create', compact('prodCat','attributes'));
     }
 
     /**

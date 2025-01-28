@@ -6,7 +6,7 @@ use App\Models\PurPo;
 use App\Models\PurPosDetail;
 use App\Models\ProductCategory;
 use App\Models\ChartOfAccounts;
-use App\Models\Product;
+use App\Models\Products;
 
 use Illuminate\Http\Request;
 
@@ -23,7 +23,7 @@ class PurPOController extends Controller
     {
         $prodCat = ProductCategory::all();  // Get all product categories
         $coa = ChartOfAccounts::all();  // Get all product categories
-        $products = Product::all();  // Get all product categories
+        $products = Products::all();  // Get all product categories
 
         
         return view('purchasing.po.create', compact('prodCat', 'coa', 'products'));

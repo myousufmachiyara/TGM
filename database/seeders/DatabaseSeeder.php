@@ -29,5 +29,20 @@ class DatabaseSeeder extends Seeder
             ['id' => 5, 'name' => 'Kids Finish Goods'],
             ['id' => 6, 'name' => 'Accessories'],
         ]);
+
+        DB::table('product_attributes')->insert([
+            ['id' => 1, 'name' => "Size"],
+            ['id' => 2, 'name' => "Colors"],
+        ]);
+
+        DB::table('product_attributes_values')->insert([
+            ['id' => 1, 'product_attributes_id' => 1 , 'value' => "52"],
+            ['id' => 2, 'product_attributes_id' => 1 , 'value' => "54"],
+            ['id' => 3, 'product_attributes_id' => 1 , 'value' => "56"],
+            ['id' => 4, 'product_attributes_id' => 1 , 'value' => "58"],
+            ['id' => 5, 'product_attributes_id' => 1 , 'value' => "60"],
+            ['id' => 6, 'product_attributes_id' => 2 , 'value' => "Black"],
+            ['id' => 7, 'product_attributes_id' => 2 , 'value' => "Blue"],
+        ]);  
     }
 }
