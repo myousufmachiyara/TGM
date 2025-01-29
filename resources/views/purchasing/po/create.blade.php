@@ -5,15 +5,18 @@
 @section('content')
     <div class="row">
       <div class="col">
-      <form action="{{ route('purpos.store') }}" method="POST">
+      <form action="{{ route('purpos.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <section class="card">
-          <header class="card-header" style="display: flex;justify-content: space-between;">
-            <h2 class="card-title">New PO</h2>
-            <div class="card-actions">
+          <header class="card-header">
+						<div style="display: flex;justify-content: space-between;">
+              <h2 class="card-title">New PO</h2>
               <button type="button" class="btn btn-primary" onclick="addNewRow_btn()"> <i class="fas fa-plus"></i> Add New Row </button>
-            </div>
-          </header>
+						</div>
+						@if ($errors->has('error'))
+							<strong class="text-danger">{{ $errors->first('error') }}</strong>
+						@endif
+					</header>
           <div class="card-body">
             <div class="row">
               <div class="col-12 col-md-3">
@@ -27,25 +30,15 @@
               </div>
               <div class="col-12 col-md-3">
                 <label>Order Date</label>
-                <input type="date" name="order_date" class="form-control" placeholder="Order Date" required/>
+                <input type="date" name="order_date" class="form-control" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
               </div>
               <div class="col-12 col-md-3">
                 <label>Delivery Date</label>
                 <input type="date" name="delivery_date" class="form-control" placeholder="Delivery Date" required/>
               </div>
+             
               <div class="col-12 col-md-3">
-                <label>Payment Term</label>
-                <select class="form-control"  name="payment_term" required>
-                  <option selected disabled>Select Payment Term</option>
-                  <option>Advance</option>
-                  <option>Partial</option>
-                  <option>On Delivery</option>
-                  <option>Credit</option>
-                </select>
-              </div>
-
-              <div class="col-12 col-md-3 mt-3">
-                <label>Images</label>
+                <label>Attachements</label>
                 <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg">
               </div>
 
@@ -67,7 +60,7 @@
               <tbody id="PurPOTbleBody">
                 <tr>
                   <td>
-                    <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_name]" required>  <!-- Added name attribute for form submission -->
+                    <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_id]" required>  <!-- Added name attribute for form submission -->
                       <option value="" selected disabled>Select Item</option>
                       @foreach ($products as $item)
                         <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
@@ -98,11 +91,11 @@
               </div>
               <div class="col-12 col-md-2">
                 <label>Other Expenses</label>
-                <input type="number" class="form-control" id="other_exp" placeholder="Other Expenses" />
+                <input type="number" class="form-control" name="other_exp" id="other_exp" onchange="netTotal()" value=0 placeholder="Other Expenses" />
               </div>
               <div class="col-12 col-md-2">
                 <label>Bill Discount</label>
-                <input type="number" class="form-control" id="bill_disc" placeholder="Bill Discount"  />
+                <input type="number" class="form-control" name="bill_discount" id="bill_disc" onchange="netTotal()" value=0 placeholder="Bill Discount"  />
               </div>
               <div class="col-12 pb-sm-3 pb-md-0 text-end">
                 <h3 class="font-weight-bold mt-3 mb-0 text-5 text-primary">Net Amount</h3>
@@ -136,7 +129,7 @@
 
     function addNewRow(){
       var lastRow =  $('#PurPOTbleBody tr:last');
-      latestValue=lastRow[0].cells[1].querySelector('select').value;
+      latestValue=lastRow[0].cells[0].querySelector('select').value;
 
       if(latestValue!=""){
         var table = document.getElementById('myTable').getElementsByTagName('tbody')[0];
@@ -162,6 +155,8 @@
         index++;
         tableTotal();
       }
+      $('#myTable select[data-plugin-selecttwo]').select2();
+
     }
 
     function rowTotal(index){
@@ -188,6 +183,25 @@
 
       $('#total_qty').val(totalQuantity);
       $('#total_amt').val(totalAmount.toFixed());
+
+      netTotal();
+    }
+
+    function netTotal(){
+      var netTotal = 0;
+      var total = Number($('#total_amt').val());
+      var other_exp = Number($('#other_exp').val());
+      var bill_discount = Number($('#bill_disc').val());
+
+      netTotal = total + other_exp - bill_discount;
+      netTotal = netTotal.toFixed(0);
+      FormattednetTotal = formatNumberWithCommas(netTotal);
+      document.getElementById("netTotal").innerHTML = '<span class="text-4 text-danger">'+FormattednetTotal+'</span>';
+      $('#net_amount').val(netTotal);
+    }
+    function formatNumberWithCommas(number) {
+      // Convert number to string and add commas
+      return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
   </script>

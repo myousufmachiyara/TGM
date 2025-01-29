@@ -27,4 +27,5 @@ Route::resource('products', ProductsController::class);
 
 // Purchase Orders
 Route::resource('purpos', PurPOController::class);
+Route::get('purpos/{purpo}/print', [PurPoController::class, 'print'])->name('purpos.print'); // Exceptional Route
 

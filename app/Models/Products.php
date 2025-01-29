@@ -14,12 +14,13 @@ class Products extends Model
 
     protected $fillable = [
         'name',
+        'sku',
         'description',
         'category_id',
         'measurement_unit',
-        'pur_price',
+        'price',
         'sale_price',
-        'status',
+        'purchase_note',
     ];
 
     public function category()
@@ -35,19 +36,5 @@ class Products extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
-    }
-    public function scopeInStock($query)
-    {
-        return $query->where('status', 'in_stock');
-    }
-
-    public function scopeBackorder($query)
-    {
-        return $query->where('status', 'backorder');
-    }
-
-    public function scopeOutOfStock($query)
-    {
-        return $query->where('status', 'out_of_stock');
     }
 }

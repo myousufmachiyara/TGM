@@ -20,13 +20,27 @@
                 <table class="table table-bordered table-striped mb-0" id="cust-datatable-default">
                 <thead>
                     <tr>
-                    <th>S.No</th>
-                    <th>Name</th>
-                    <th>Action</th>
+                      <th>S.No</th>
+                      <th>Name</th>
+                      <th>SKU</th>
+                      <th>Category</th>
+                      <th>Measurement Unit</th>
+                      <th>Price</th>
+                      <th>sale Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    
+                  @foreach ($products as $item)
+                    <tr>
+                      <td>{{ $loop->iteration }}</td>
+                      <td><strong>{{ $item->name }}</strong></td>
+                      <td>{{ $item->sku }}</td>
+                      <td>{{ $item->category ? $item->category->name : 'No Category' }}</td>
+                      <td>{{ $item->measurement_unit }}</td>
+                      <td>{{ $item->price }}</td>
+                      <td>{{ $item->sale_price }}</td>
+                    </tr>
+                  @endforeach
                 </tbody>
                 </table>
             </div>

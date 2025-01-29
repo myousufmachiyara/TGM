@@ -18,7 +18,6 @@
                 <option value="1">by Delivery Date</option>
                 <option value="2">by Order Date</option>
                 <option value="3">by Vendor</option>
-                <option value="4">by Payment Term</option>
               </select>
               <input type="text" class="form-control" id="columnSearch" placeholder="Search By Column"/>
 
@@ -30,10 +29,9 @@
               <thead>
                 <tr>
                   <th>S.No</th>
-                  <th>Delivery Date</th>
-                  <th>Order Date</th>
                   <th>Vendor</th>
-                  <th>Payment Term</th>
+                  <th>Order Date</th>
+                  <th>Delivery Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -41,12 +39,11 @@
                 @foreach ($purpos as $key => $row)
                   <tr>
                     <td>{{$key+1}}</td>
-                    <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
+                    <td>{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
-                    <td>{{$row->vendor_name}}</td>
-                    <td>{{$row->payment_term}}</td>
+                    <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
                     <td>
-                      <a href="{{ route('purpos.edit', $row->id) }}" class="btn btn-primary btn-sm">
+                      <a href="{{ route('purpos.print', $row->id) }}" class="btn btn-primary btn-sm">
                         <i class="fa fa-print"></i>
                       </a>
                       <a href="{{ route('purpos.edit', $row->id) }}" class="btn btn-warning btn-sm">

@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('pur_pos_details', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->unsignedBigInteger('pur_pos_id'); // Foreign key to 'pur_pos' table
-            $table->string('item_name'); // item name
-            $table->decimal('item_rate', 10, 2); // Decimal column for rate
-            $table->decimal('item_qty', 10, 2); // Decimal column for quantity
-            $table->timestamps(); // Adds created_at and updated_at columns
+            $table->unsignedBigInteger('pur_pos_id');
+            $table->unsignedBigInteger('item_id');
+            $table->decimal('item_rate', 10, 2);
+            $table->decimal('item_qty', 10, 2); 
+            $table->timestamps(); 
         
             // Foreign key constraints
+            $table->foreign('item_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('pur_pos_id')->references('id')->on('pur_pos')->onDelete('cascade');
         });
     }

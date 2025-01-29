@@ -17,10 +17,9 @@ return new class extends Migration
             $table->string('sku');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('category_id');
-            $table->string('measurement_unit');
-            $table->decimal('price', 10, 2);
-            $table->decimal('sale_price', 10, 2);
-            $table->enum('status', ['out_of_stock', 'backorder', 'in_stock'])->default('in_stock');
+            $table->string('measurement_unit')->nullable();
+            $table->decimal('price', 10, 2)->nullable()->default(0);
+            $table->decimal('sale_price', 10, 2)->nullable()->default(0);
             $table->text('purchase_note')->nullable();
             $table->softDeletes();
             $table->timestamps();

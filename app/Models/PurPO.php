@@ -3,29 +3,35 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PurPO extends Model
 {
     use HasFactory;
 
-    // Define the table if it doesn't follow Laravel's convention (plural form of model)
     protected $table = 'pur_pos';
 
-    // Specify the fillable fields (columns you want to be mass-assignable)
     protected $fillable = [
-        'payment_term', 
         'delivery_date', 
         'order_date',
-        'vendor_name'
+        'vendor_name',
+        'other_exp',
+        'bill_discount'
     ];
 
-    // If you need to cast any fields (e.g., rate or quantity), you can use the $casts property
     protected $casts = [
-        'delivery_date' => 'date', // Ensures that delivery_date is treated as a date
+        'order_date' => 'date', 
+        'delivery_date' => 'date',
     ];
 
     public function details()
     {
         return $this->hasMany(PurPosDetail::class, 'pur_pos_id');
     }
+
+    public function vendor()
+    {
+        return $this->belongsTo(ChartOfAccounts::class, 'vendor_name', 'id'); 
+    }
+
 }
