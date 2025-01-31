@@ -40,8 +40,8 @@ class myPDF extends TCPDF
         $pageWidth = $this->getPageWidth();
         
         // Content and positions
-        $companyName = 'Memon Fabrication And Installation';
-        $websiteLink = 'mfi.com.pk';
+        $companyName = 'TGM - The Great Master';
+        $websiteLink = 'tgmstore.pk';
         $pageNumber = 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages();
     
         // Calculate text widths

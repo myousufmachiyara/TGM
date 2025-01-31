@@ -50,8 +50,8 @@
               <span>Purchasing</span>
             </a>
             <ul class="nav nav-children">
-              <li><a class="nav-link" href="{{ route('purpos.index') }}"> Purchase Order</a></li>	
-              <li><a class="nav-link"> F.G Purchase Order</a></li>	
+              <li><a class="nav-link" href="{{ route('pur-pos.index') }}"> Purchase Order</a></li>	
+              <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> F.G Purchase Order</a></li>	
             </ul>
           </li>
         </ul>	

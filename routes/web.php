@@ -26,6 +26,7 @@ Route::resource('product-categories', ProductCategoriesController::class);
 Route::resource('products', ProductsController::class);
 
 // Purchase Orders
-Route::resource('purpos', PurPOController::class);
-Route::get('purpos/{purpo}/print', [PurPoController::class, 'print'])->name('purpos.print'); // Exceptional Route
+Route::resource('pur-pos', PurPOController::class);
+Route::resource('pur-fgpos', PurFGPOController::class);
+Route::get('pur-pos/print/{id}', [PurPoController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
 

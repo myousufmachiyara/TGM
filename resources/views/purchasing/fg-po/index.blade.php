@@ -8,7 +8,7 @@
       <section class="card">
         <header class="card-header" style="display: flex;justify-content: space-between;">
             <h2 class="card-title">All PO</h2>
-            <a  class="btn btn-primary text-end" href="{{ route('pur-pos.create') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> Add PO</a>
+            <a  class="btn btn-primary text-end" href="{{ route('purpos.create') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> Add PO</a>
         </header>
         <div class="card-body">
           <div>
@@ -29,7 +29,6 @@
               <thead>
                 <tr>
                   <th>S.No</th>
-                  <th>PO #</th>
                   <th>Vendor</th>
                   <th>Order Date</th>
                   <th>Delivery Date</th>
@@ -40,19 +39,18 @@
                 @foreach ($purpos as $key => $row)
                   <tr>
                     <td>{{$key+1}}</td>
-                    <td>PO-{{$row->id}}</td>
                     <td>{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
                     <td>
-                      <a href="{{ route('pur-pos.print', $row->id) }}" class="btn btn-primary btn-sm">
+                      <a href="{{ route('purpos.print', $row->id) }}" class="btn btn-primary btn-sm">
                         <i class="fa fa-print"></i>
                       </a>
-                      <a href="{{ route('pur-pos.edit', $row->id) }}" class="btn btn-warning btn-sm">
+                      <a href="{{ route('purpos.edit', $row->id) }}" class="btn btn-warning btn-sm">
                         <i class="fa fa-edit"></i>
                       </a>
                       <!-- Delete Link (with Confirmation) -->
-                      <form action="{{ route('pur-pos.destroy', $row->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this purchase order?');">
+                      <form action="{{ route('purpos.destroy', $row->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this purchase order?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm">

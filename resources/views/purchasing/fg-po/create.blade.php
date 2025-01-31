@@ -5,7 +5,7 @@
 @section('content')
     <div class="row">
       <div class="col">
-      <form action="{{ route('pur-pos.store') }}" method="POST" enctype="multipart/form-data">
+      <form action="{{ route('purpos.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <section class="card">
           <header class="card-header">
@@ -106,7 +106,7 @@
             </div>
           </footer>
           <footer class="card-footer text-end">
-            <a class="btn btn-danger" href="{{ route('pur-pos.index') }}" >Discard</a>
+            <a class="btn btn-danger" href="{{ route('purpos.index') }}" >Discard</a>
             <button type="submit" class="btn btn-primary">Create</button>
           </footer>
         </section>
