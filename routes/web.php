@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductCategoriesController;
 use App\Http\Controllers\ProductAttributesController;
 use App\Http\Controllers\SubHeadOfAccController;
 use App\Http\Controllers\COAController;
+use App\Http\Controllers\PurFGPOController;
 
 Route::get('/', function () {
     return view('home');
@@ -29,4 +30,5 @@ Route::resource('products', ProductsController::class);
 Route::resource('pur-pos', PurPOController::class);
 Route::resource('pur-fgpos', PurFGPOController::class);
 Route::get('pur-pos/print/{id}', [PurPoController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
+Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
 

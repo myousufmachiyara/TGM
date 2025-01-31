@@ -11,14 +11,13 @@
           <header class="card-header">
 						<div style="display: flex;justify-content: space-between;">
               <h2 class="card-title">New PO</h2>
-              <button type="button" class="btn btn-primary" onclick="addNewRow_btn()"> <i class="fas fa-plus"></i> Add New Row </button>
 						</div>
 						@if ($errors->has('error'))
 							<strong class="text-danger">{{ $errors->first('error') }}</strong>
 						@endif
 					</header>
           <div class="card-body">
-            <div class="row">
+            <div class="row pb-2">
               <div class="col-12 col-md-3">
                 <label>Vendor Name</label>
                 <select data-plugin-selecttwo class="form-control select2-js" name="vendor_name" required>  <!-- Added name attribute for form submission -->
@@ -44,9 +43,17 @@
 
             </div>
           </div>
-
+        </section>
+        <section class="card">
+          <header class="card-header">
+						<div style="display: flex;justify-content: space-between;">
+              <h2 class="card-title">Item Details</h2>
+						</div>
+						@if ($errors->has('error'))
+							<strong class="text-danger">{{ $errors->first('error') }}</strong>
+						@endif
+					</header>
           <div class="card-body" style="max-height:400px; overflow-y:auto">
-            <div class="card-title mb-3">Item Details</div>
             <table class="table table-bordered" id="myTable">
               <thead>
                 <tr>

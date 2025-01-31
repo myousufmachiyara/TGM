@@ -5,114 +5,160 @@
 @section('content')
     <div class="row">
       <div class="col">
-      <form action="{{ route('purpos.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <section class="card">
-          <header class="card-header">
-						<div style="display: flex;justify-content: space-between;">
-              <h2 class="card-title">New PO</h2>
-              <button type="button" class="btn btn-primary" onclick="addNewRow_btn()"> <i class="fas fa-plus"></i> Add New Row </button>
-						</div>
-						@if ($errors->has('error'))
-							<strong class="text-danger">{{ $errors->first('error') }}</strong>
-						@endif
-					</header>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-12 col-md-3">
-                <label>Vendor Name</label>
-                <select data-plugin-selecttwo class="form-control select2-js" name="vendor_name" required>  <!-- Added name attribute for form submission -->
-                  <option value="" selected disabled>Select Vendor</option>
-                  @foreach ($coa as $item)
-                    <option value="{{ $item->id }}">{{ $item->name }}</option> 
-                  @endforeach
-                </select>
+        <form action="{{ route('pur-fgpos.store') }}" method="POST" enctype="multipart/form-data">
+          @csrf
+          <section class="card">
+            <header class="card-header">
+              <div style="display: flex;justify-content: space-between;">
+                <h2 class="card-title">New PO</h2>
               </div>
-              <div class="col-12 col-md-3">
-                <label>Order Date</label>
-                <input type="date" name="order_date" class="form-control" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
-              </div>
-              <div class="col-12 col-md-3">
-                <label>Delivery Date</label>
-                <input type="date" name="delivery_date" class="form-control" placeholder="Delivery Date" required/>
-              </div>
-             
-              <div class="col-12 col-md-3">
-                <label>Attachements</label>
-                <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg">
+              @if ($errors->has('error'))
+                <strong class="text-danger">{{ $errors->first('error') }}</strong>
+              @endif
+            </header>
+            <div class="card-body">
+              <div class="row mb-4">
+                <div class="col-12 col-md-2">
+                  <label>PO #</label>
+                  <input type="number" class="form-control"  placeholder="Order Date" disabled/>
+                </div>
+
+                <div class="col-12 col-md-2">
+                  <label>Vendor Name</label>
+                  <select data-plugin-selecttwo class="form-control select2-js" name="vendor_name" required>  <!-- Added name attribute for form submission -->
+                    <option value="" selected disabled>Select Vendor</option>
+                    @foreach ($coa as $item)
+                      <option value="{{ $item->id }}">{{ $item->name }}</option> 
+                    @endforeach
+                  </select>
+                </div>
+                <div class="col-12 col-md-2">
+                  <label>Order Date</label>
+                  <input type="date" name="order_date" class="form-control" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
+                </div>
               </div>
 
+              <table class="table table-bordered" id="myTable">
+                <thead>
+                  <tr>
+                    <th>Fabric</th>
+                    <th>Rate</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="PurPOTbleBody">
+                  <tr>
+                    <td>
+                      <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_id]" required>  <!-- Added name attribute for form submission -->
+                        <option value="" selected disabled>Select Item</option>
+                        @foreach ($products as $item)
+                          <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
+                        @endforeach
+                      </select>  
+                    </td>
+                    <td><input type="number" name="details[0][item_rate]"  id="item_rate1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Rate" required/></td>
+                    <td><input type="number" name="details[0][item_qty]"   id="item_qty1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Quantity" required/></td>
+                    <td><input type="number" id="item_total1" class="form-control" placeholder="Total" disabled/></td>
+                    <td>
+                      <button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button>
+                      <button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </div>
+          </section>
+          <section class="card">
+            <header class="card-header">
+              <div style="display: flex;justify-content: space-between;">
+                <h2 class="card-title">Item Details</h2>
+              </div>
+            </header>
+            
+            <div class="card-body">
+              <div class="row mb-4">
+                <div class="col-12 col-md-2">
+                  <label>Select Item</label>
+                  <select data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
+                    <option value="" selected disabled>Select Item</option>
+                    @foreach ($products as $item)
+                      <option value="{{ $item->id }}"> {{ $item->sku }} - {{ $item->name }}</option> 
+                    @endforeach
+                  </select>
+                </div>
 
-          <div class="card-body" style="max-height:400px; overflow-y:auto">
-            <div class="card-title mb-3">Item Details</div>
-            <table class="table table-bordered" id="myTable">
-              <thead>
-                <tr>
-                  <th>Item Name</th>
-                  <th>Rate</th>
-                  <th>Quantity</th>
-                  <th>Total</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="PurPOTbleBody">
-                <tr>
-                  <td>
-                    <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_id]" required>  <!-- Added name attribute for form submission -->
-                      <option value="" selected disabled>Select Item</option>
-                      @foreach ($products as $item)
-                        <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
-                      @endforeach
-                    </select>  
-                  </td>
-                  <td><input type="number" name="details[0][item_rate]"  id="item_rate1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Rate" required/></td>
-                  <td><input type="number" name="details[0][item_qty]"   id="item_qty1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Quantity" required/></td>
-                  <td><input type="number" id="item_total1" class="form-control" placeholder="Total" disabled/></td>
-                  <td>
-										<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button>
-                    <button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                <div class="col-12 col-md-2">
+                  <label>Select Variation</label>
+                  <select data-plugin-selecttwo class="form-control select2-js" id="attribute"required>  <!-- Added name attribute for form submission -->
+                    <option value="" selected disabled>Select Variation</option>
+                    @foreach ($attributes as $item)
+                      <option value="{{ $item->id }}">{{ $item->name }}</option> 
+                    @endforeach
+                  </select>
+                </div>
 
-          <footer class="card-footer">
-            <div class="card-title mb-3">Summary</div>
-            <div class="row">
-              <div class="col-12 col-md-2">
-                <label>Total Quantity</label>
-                <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
+                <div class="col-12 col-md-4">
+                  <label>Select Values</label>
+                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="attribute_value"  required>  <!-- Added name attribute for form submission -->
+                    <option value="" disabled>Select Vendor</option>
+
+                  </select>
+                </div>
+                <div class="col-12 col-md-1">
+                  <button type="button" class=" btn btn-success" id="generate-variations-btn" onclick="generateVariations()">Generate</button>
+                </div>
               </div>
-              <div class="col-12 col-md-2">
-                <label>Total Amount</label>
-                <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
-              </div>
-              <div class="col-12 col-md-2">
-                <label>Other Expenses</label>
-                <input type="number" class="form-control" name="other_exp" id="other_exp" onchange="netTotal()" value=0 placeholder="Other Expenses" />
-              </div>
-              <div class="col-12 col-md-2">
-                <label>Bill Discount</label>
-                <input type="number" class="form-control" name="bill_discount" id="bill_disc" onchange="netTotal()" value=0 placeholder="Bill Discount"  />
-              </div>
-              <div class="col-12 pb-sm-3 pb-md-0 text-end">
-                <h3 class="font-weight-bold mt-3 mb-0 text-5 text-primary">Net Amount</h3>
-                <span>
-                  <strong class="text-4 text-primary">PKR <span id="netTotal" class="text-4 text-danger">0.00 </span></strong>
-                </span>
-              </div>
+
+              <table class="table table-bordered" id="variationTable">
+                <thead>
+                  <tr>
+                    <th>Variation</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
             </div>
-          </footer>
-          <footer class="card-footer text-end">
-            <a class="btn btn-danger" href="{{ route('purpos.index') }}" >Discard</a>
-            <button type="submit" class="btn btn-primary">Create</button>
-          </footer>
-        </section>
-      </form>
+
+            <footer class="card-footer">
+              <div class="card-title mb-3 mt-3">Summary</div>
+              <div class="row">
+                <div class="col-12 col-md-2">
+                  <label>Total Quantity</label>
+                  <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
+                </div>
+                <div class="col-12 col-md-2">
+                  <label>Total Amount</label>
+                  <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
+                </div>
+                <div class="col-12 col-md-2">
+                  <label>Other Expenses</label>
+                  <input type="number" class="form-control" name="other_exp" id="other_exp" onchange="netTotal()" value=0 placeholder="Other Expenses" />
+                </div>
+                <div class="col-12 col-md-2">
+                  <label>Bill Discount</label>
+                  <input type="number" class="form-control" name="bill_discount" id="bill_disc" onchange="netTotal()" value=0 placeholder="Bill Discount"  />
+                </div>
+                <div class="col-12 pb-sm-3 pb-md-0 text-end">
+                  <h3 class="font-weight-bold mt-3 mb-0 text-5 text-primary">Net Amount</h3>
+                  <span>
+                    <strong class="text-4 text-primary">PKR <span id="netTotal" class="text-4 text-danger">0.00 </span></strong>
+                  </span>
+                </div>
+              </div>
+            </footer>
+            
+            <footer class="card-footer text-end">
+              <a class="btn btn-danger" href="{{ route('pur-fgpos.index') }}" >Discard</a>
+              <button type="submit" class="btn btn-primary">Create</button>
+            </footer>
+          </section>
+        </form>
+      </div>
     </div>
-  </div>
   <script>
 
     var index=2;
@@ -206,4 +252,53 @@
     }
 
   </script>
+
+<script>
+$(document).ready(function() {
+    $('#attribute').change(function() {
+        let attributeId = $(this).val();
+
+        if (attributeId) {
+            $.ajax({
+                url: `/attributes/${attributeId}/values`,
+                type: 'GET',
+                success: function(response) {
+                    $('#attribute_value').empty().append('<option value="" disabled selected>Select Value</option>');
+
+                    response.forEach(value => {
+                        $('#attribute_value').append(`<option value="${value.id}">${value.value_name}</option>`);
+                    });
+                }
+            });
+        }
+    });
+
+    $('#attribute_value').change(function() {
+        let valueId = $(this).val();
+        let valueName = $("#attribute_value option:selected").text();
+
+        if (valueId) {
+            addRow(valueId, valueName);
+        }
+    });
+});
+
+// Function to dynamically add row
+function addRow(valueId, valueName) {
+    let newRow = `
+        <tr>
+            <td>${valueName}</td>
+            <td><input type="number" name="variations[${valueId}][price]" class="form-control" required></td>
+            <td><input type="number" name="variations[${valueId}][quantity]" class="form-control" required></td>
+            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button></td>
+        </tr>`;
+
+    $('#variationTable tbody').append(newRow);
+}
+
+// Function to remove row
+function removeRow(button) {
+    $(button).closest('tr').remove();
+}
+</script>
 @endsection
