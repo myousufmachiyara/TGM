@@ -280,6 +280,19 @@ class PurPOController extends Controller
         $pdf->SetTextColor(255, 0, 0);
         $pdf->MultiCell(185, 10, $purpos->tc, 0, 'L', 0, 1);
     
+        // Set text color
+        $pdf->SetTextColor(23, 54, 93); // RGB values for #17365D
+        // First Cell
+        $style = array(
+            'T' => array('width' => 0.75),  // Only top border with width 0.75
+        );
+        $pdf->SetXY(15, $pdf->GetY());
+        $pdf->Cell(50, 0, "Approved By", $style, 1, 'C');
+
+        // Second Cell
+        $pdf->SetXY(100, $pdf->GetY());
+        $pdf->Cell(50, 0, "Received By", $style, 1, 'C');
+
         $pdf->Output('Purchase_Order_'.$purpos->id.'.pdf', 'I');
     }
     

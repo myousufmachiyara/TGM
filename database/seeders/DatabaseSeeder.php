@@ -25,9 +25,10 @@ class DatabaseSeeder extends Seeder
             ['id' => 1, 'name' => "Men's Fabric"],
             ['id' => 2, 'name' => "Men's Finish Goods"],
             ['id' => 3, 'name' => 'Abaya Fabric'],
-            ['id' => 4, 'name' => 'Ladies Finish Goods'],
-            ['id' => 5, 'name' => 'Kids Finish Goods'],
-            ['id' => 6, 'name' => 'Accessories'],
+            ['id' => 4, 'name' => 'Abaya'],
+            ['id' => 5, 'name' => 'Ladies Finish Goods'],
+            ['id' => 6, 'name' => 'Kids Finish Goods'],
+            ['id' => 7, 'name' => 'Accessories'],
         ]);
 
         DB::table('product_attributes')->insert([

@@ -24,7 +24,7 @@ class PurFGPOController extends Controller
     {
         $coa = ChartOfAccounts::all();  // Get all product categories
         $products = Products::all();  // Get all product categories
-        $attributes = ProductAttributes::all();
+        $attributes = ProductAttributes::with('values')->get();
         
         return view('purchasing.fg-po.create', compact( 'coa', 'products', 'attributes'));
     }

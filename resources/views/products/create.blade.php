@@ -36,14 +36,22 @@
 									@endforeach
 								</select>
 							</div>
-							<div class="col-12 col-md-2 mb-2">
+							<div class="col-12 col-md-1 mb-2">
 								<label>Unit</label>
 								<select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">  <!-- Added name attribute for form submission -->
-									<option value="" selected disabled>Select Measurement Unit</option>
+									<option value="" selected disabled>Select Unit</option>
 									<option value="mtr">meter</option>
 									<option value="pcs">pieces</option> 
 									<option value="yrd">yards</option> 
 									<option value="rd">round</option> 
+								</select>
+							</div>
+							<div class="col-12 col-md-1 mb-2">
+								<label>Item Type</label>
+								<select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">  <!-- Added name attribute for form submission -->
+									<option value="" selected disabled>Item Type</option>
+									<option value="fg">F.G</option>
+									<option value="raw">Raw</option> 
 								</select>
 							</div>
 							<div class="col-12 col-md-2 mb-2">
