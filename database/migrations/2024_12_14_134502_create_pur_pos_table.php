@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id(); // Primary key
             $table->string('vendor_name'); // A string for vendor name
             $table->date('order_date'); // A date column for the order date
-            $table->date('delivery_date'); // A date column for the delivery date
+            $table->date('delivery_date')->nullable(); // A date column for the delivery date
             $table->decimal('other_exp', 10, 2)->nullable()->default(0);
             $table->decimal('bill_discount', 10, 2)->nullable()->default(0);
             $table->unsignedBigInteger('created_by')->default(1); // Use unsignedBigInteger for foreign keys or IDs

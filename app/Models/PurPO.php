@@ -29,6 +29,11 @@ class PurPO extends Model
         return $this->hasMany(PurPosDetail::class, 'pur_pos_id');
     }
 
+    public function attachments()
+    {
+        return $this->hasMany(PurPoAttachment::class, 'pur_po_id');
+    }
+
     public function vendor()
     {
         return $this->belongsTo(ChartOfAccounts::class, 'vendor_name', 'id'); 

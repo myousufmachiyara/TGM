@@ -7,6 +7,7 @@ use App\Models\PurPosDetail;
 use App\Models\ProductCategory;
 use App\Models\ChartOfAccounts;
 use App\Models\Products;
+use App\Models\PurPoAttachment;
 use App\Services\myPDF;
 
 use Illuminate\Http\Request;
@@ -37,14 +38,14 @@ class PurPOController extends Controller
             $validatedData = $request->validate([
                 'vendor_name' => 'required|exists:chart_of_accounts,id', // Ensure vendor exists
                 'order_date' => 'required|date',
-                'delivery_date' => 'required|date',
+                'delivery_date' => 'date',
                 'details' => 'required|array',
                 'details.*.item_id' => 'required|string|max:255',
                 'details.*.item_rate' => 'required|numeric|min:0',
                 'details.*.item_qty' => 'required|numeric|min:0',
                 'other_exp' => 'nullable|numeric|min:0',
                 'bill_discount' => 'nullable|numeric|min:0',
-                'att.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Image validation
+                'att.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Image validation
             ]);
     
             // Create the Purchase Order
@@ -67,16 +68,16 @@ class PurPOController extends Controller
             }
     
             // Handle Images (if provided)
-            // if ($request->hasFile('att')) {
-            //     foreach ($request->file('att') as $file) {
-            //         $filePath = $file->store('purchase_orders', 'public'); // Store in storage/app/public/purchase_orders
+            if ($request->hasFile('att')) {
+                foreach ($request->file('att') as $file) {
+                    $filePath = $file->store('purchase_orders', 'public'); // Store in storage/app/public/purchase_orders
     
-            //         PurPoAttachment::create([
-            //             'pur_po_id' => $purpo->id,
-            //             'image_path' => $filePath,
-            //         ]);
-            //     }
-            // }
+                    PurPoAttachment::create([
+                        'pur_po_id' => $purpo->id,
+                        'att_path' => $filePath,
+                    ]);
+                }
+            }
     
             return redirect()->route('pur-pos.index')->with('success', 'Purchase Order created successfully!');
     
@@ -154,8 +155,8 @@ class PurPOController extends Controller
     
     public function print($id)
     {
-        // Fetch the purchase order along with related vendor and details
-        $purpos = PurPo::with(['vendor', 'details.category'])->findOrFail($id);
+        // Fetch the purchase order with related data
+        $purpos = PurPo::with(['vendor', 'details.category', 'attachments'])->findOrFail($id);
     
         if (!$purpos) {
             abort(404, 'Purchase Order not found.');
@@ -202,7 +203,6 @@ class PurPOController extends Controller
                 <td width="30%" style="font-size:10px;">'.$purpos->remarks.'</td>
             </tr>
         </table>';
-    
         $pdf->writeHTML($html, true, false, true, false, '');
     
         // Items Table Header
@@ -216,7 +216,6 @@ class PurPOController extends Controller
                 <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
             </tr>
        ';
-        
     
         // Items Table Data
         $total_amount = 0;
@@ -242,59 +241,52 @@ class PurPOController extends Controller
         $pdf->writeHTML($html, true, false, true, false, '');
     
         // Summary Table
-        $pdf->SetFont('helvetica', 'B', 10);
-        $pdf->SetTextColor(23, 54, 93);
-    
-        $pdf->SetXY(120, $pdf->GetY() + 10);
-        $pdf->Cell(45, 5, 'Total Amount', 1,1);
-        $pdf->SetXY(120, $pdf->GetY());
-        $pdf->Cell(45, 5, 'Other Expenses', 1,1);
-        $pdf->SetXY(120, $pdf->GetY());
-        $pdf->Cell(45, 5, 'Discount', 1,1);
-        $pdf->SetXY(120, $pdf->GetY());
-        $pdf->Cell(45, 5, 'Net Amount', 1, 1);
-    
-        $pdf->SetFont('helvetica','', 10);
-        $pdf->SetTextColor(0, 0, 0);
-    
         $net_amount = round($total_amount + $purpos->other_exp - $purpos->bill_discount);
-        $num_to_words = $pdf->convertCurrencyToWords($net_amount);
+        
+        $summary = '<table border="1" cellpadding="5" width="50%">
+            <tr><td><b>Total Amount:</b></td><td>'.$total_amount.'</td></tr>
+            <tr><td><b>Other Expenses:</b></td><td>'.$purpos->other_exp.'</td></tr>
+            <tr><td><b>Discount:</b></td><td>'.$purpos->bill_discount.'</td></tr>
+            <tr><td><b>Net Amount:</b></td><td>'.$net_amount.'</td></tr>
+        </table>';
+        $pdf->writeHTML($summary, true, false, true, false, '');
     
-        $pdf->SetXY(165, $pdf->GetY() - 27.26);
-        $pdf->Cell(35, 5, $total_amount, 1, 'R');
-        $pdf->SetXY(165, $pdf->GetY());
-        $pdf->Cell(35, 5, $purpos->other_exp, 1, 'R');
-        $pdf->SetXY(165, $pdf->GetY());
-        $pdf->Cell(35, 5, $purpos->bill_discount, 1, 'R');
-        $pdf->SetXY(165, $pdf->GetY());
-        $pdf->SetFont('helvetica','B');
-        $pdf->Cell(35, 5, $net_amount, 1, 'R');
+        // Attachments (Images)
+        $pdf->Ln(5);
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
     
-        // Terms & Conditions
-        $pdf->SetFont('helvetica','BIU', 14);
-        $pdf->SetTextColor(23, 54, 93);
-        $pdf->SetXY(10, $pdf->GetY() + 15);
-        // $pdf->Cell(35, 5, 'Terms & Conditions:', 0, 'L');
+        foreach ($purpos->attachments as $attachment) {
+            $imagePath = storage_path('app/public/' . $attachment->att_path);
+            
+            if (file_exists($imagePath)) {
+                $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
+                $pdf->Ln(55); // Move cursor down after each image
+            }
+        }
     
-        $pdf->SetFont('helvetica','', 11);
-        $pdf->SetTextColor(255, 0, 0);
-        $pdf->MultiCell(185, 10, $purpos->tc, 0, 'L', 0, 1);
+        // Signature Section
+        $pdf->Ln(30);
+        $pdf->SetFont('helvetica', '', 12);
+        
+        $lineWidth = 60; // Line width in mm
+        $yPosition = $pdf->GetY(); // Get current Y position for alignment
+        
+        // Draw lines for signatures
+        $pdf->Line(30, $yPosition, 30 + $lineWidth, $yPosition); // Approved By
+        $pdf->Line(130, $yPosition, 130 + $lineWidth, $yPosition); // Received By
     
-        // Set text color
-        $pdf->SetTextColor(23, 54, 93); // RGB values for #17365D
-        // First Cell
-        $style = array(
-            'T' => array('width' => 0.75),  // Only top border with width 0.75
-        );
-        $pdf->SetXY(15, $pdf->GetY());
-        $pdf->Cell(50, 0, "Approved By", $style, 1, 'C');
-
-        // Second Cell
-        $pdf->SetXY(100, $pdf->GetY());
-        $pdf->Cell(50, 0, "Received By", $style, 1, 'C');
-
+        $pdf->Ln(5); // Move cursor below the line
+        
+        // Text below the lines
+        $pdf->SetXY(30, $yPosition + 5);
+        $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
+    
+        $pdf->SetXY(130, $yPosition + 5);
+        $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
+    
+        // Output the PDF
         $pdf->Output('Purchase_Order_'.$purpos->id.'.pdf', 'I');
     }
-    
     
 }

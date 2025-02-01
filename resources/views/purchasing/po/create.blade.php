@@ -33,12 +33,12 @@
               </div>
               <div class="col-12 col-md-3">
                 <label>Delivery Date</label>
-                <input type="date" name="delivery_date" class="form-control" placeholder="Delivery Date" required/>
+                <input type="date" name="delivery_date" class="form-control" placeholder="Delivery Date" />
               </div>
              
               <div class="col-12 col-md-3">
                 <label>Attachements</label>
-                <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg">
+                <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
               </div>
 
             </div>
