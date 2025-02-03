@@ -51,7 +51,17 @@
             </a>
             <ul class="nav nav-children">
               <li><a class="nav-link" href="{{ route('pur-pos.index') }}"> Purchase Order</a></li>	
-              <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> F.G Purchase Order</a></li>	
+              <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> F.G Purchase Order</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-parent">
+            <a class="nav-link" href="#">
+              <i style="font-size:16px" class="fa fa-money-bill" aria-hidden="true"></i>
+              <span>Vouchers</span>
+            </a>
+            <ul class="nav nav-children">
+              <li><a class="nav-link"> All Vouchers</a></li>	
             </ul>
           </li>
         </ul>	

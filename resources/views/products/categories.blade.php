@@ -9,7 +9,9 @@
             <header class="card-header">
                 <div style="display: flex;justify-content: space-between;">
                     <h2 class="card-title">All Categories</h2>
-                    <button type="button" class="modal-with-form btn btn-primary" href="#addModal"> <i class="fas fa-plus"></i> Add Category</button>
+                    <div>
+                        <button type="button" class="modal-with-form btn btn-primary" href="#addModal"> <i class="fas fa-plus"></i> Add Category</button>
+                    </div>
                 </div>
                 @if ($errors->has('error'))
                     <strong class="text-danger">{{ $errors->first('error') }}</strong>

@@ -7,8 +7,12 @@
     <div class="col">
       <section class="card">
         <header class="card-header" style="display: flex;justify-content: space-between;">
-            <h2 class="card-title">All PO</h2>
-            <a  class="btn btn-primary text-end" href="{{ route('pur-fgpos.create') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> Add PO</a>
+          <h2 class="card-title">All PO</h2>
+          <div>
+            <a class="btn btn-danger text-end" href="{{ route('pur-fgpos.new-challan') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> New Challan</a>
+            <a class="btn btn-primary text-end" href="{{ route('pur-fgpos.create') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> New PO</a>
+            <a class="btn btn-success text-end" href="{{ route('pur-fgpos.rec') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> Receiving</a>
+          </div>
         </header>
         <div class="card-body">
           <div>
@@ -43,17 +47,20 @@
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
                     <td>
-                      <a href="{{ route('pur-fgpos.print', $row->id) }}" class="btn btn-primary btn-sm">
+                      <a href="{{ route('pur-fgpos.print', $row->id) }}" class="btn btn-primary btn-xs">
                         <i class="fa fa-print"></i>
                       </a>
-                      <a href="{{ route('pur-fgpos.edit', $row->id) }}" class="btn btn-warning btn-sm">
+                      <a href="{{ route('pur-fgpos.rec', $row->id) }}" class="btn btn-success btn-xs">
+                        <i class="fa fa-download"></i>
+                      </a>
+                      <a href="{{ route('pur-fgpos.edit', $row->id) }}" class="btn btn-warning btn-xs">
                         <i class="fa fa-edit"></i>
                       </a>
                       <!-- Delete Link (with Confirmation) -->
                       <form action="{{ route('pur-fgpos.destroy', $row->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this purchase order?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">
+                        <button type="submit" class="btn btn-danger btn-xs">
                           <i class="fa fa-trash"></i>
                         </button>
                       </form>

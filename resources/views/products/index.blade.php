@@ -8,8 +8,10 @@
       <section class="card">
           <header class="card-header">
               <div style="display: flex;justify-content: space-between;">
-                  <h2 class="card-title">All Products</h2>
+                <h2 class="card-title">All Products</h2>
+                <div>
                   <a href="{{ route('products.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Products </a>
+                </div>
               </div>
               @if ($errors->has('error'))
                   <strong class="text-danger">{{ $errors->first('error') }}</strong>

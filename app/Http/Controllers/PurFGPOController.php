@@ -214,4 +214,19 @@ class PurFGPOController extends Controller
     
         $pdf->Output('Purchase_Order_'.$purpos->id.'.pdf', 'I');
     }
+
+    public function newChallan(){
+        $purpos = PurPo::get('id');
+        $coa = ChartOfAccounts::all();  // Get all product categories
+        $products = Products::all();  // Get all product categories
+        $attributes = ProductAttributes::with('values')->get();
+        
+        return view('purchasing.fg-po.new-challan', compact( 'coa', 'products', 'attributes','purpos'));
+    }
+
+    public function receiving(){
+        $purpos = PurPo::get();
+        return view('purchasing.fg-po.receiving', compact('purpos'));
+    }
+
 }

@@ -8,7 +8,9 @@
       <section class="card">
         <header class="card-header" style="display: flex;justify-content: space-between;">
             <h2 class="card-title">All Sub Head Of Accounts</h2>
-            <button type="button" class="modal-with-form btn btn-primary" href="#addModal"> <i class="fas fa-plus"></i> Add New</button>
+            <div>
+                <button type="button" class="modal-with-form btn btn-primary" href="#addModal"> <i class="fas fa-plus"></i> Add New</button>
+            </div>
         </header>
         <div class="card-body">
           <div class="modal-wrapper table-scroll">
