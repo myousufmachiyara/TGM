@@ -34,7 +34,7 @@
                 </div>
                 
                 <div class="col-12 col-md-2">
-                  <label>Date</label>
+                  <label>Receiving Date</label>
                   <input type="date" name="order_date" class="form-control" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
                 </div>
               </div>
@@ -92,17 +92,6 @@
                 <div class="col-12 col-md-2">
                   <label>Total Quantity</label>
                   <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
-                </div>
-                <div class="col-12 col-md-2">
-                  <label>Total Amount</label>
-                  <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
-                </div>
-                
-                <div class="col-12 pb-sm-2 pb-md-0 text-end">
-                  <h3 class="font-weight-bold mt-3 mb-0 text-5 text-primary">Net Amount</h3>
-                  <span>
-                    <strong class="text-4 text-primary">PKR <span id="netTotal" class="text-4 text-danger">0.00 </span></strong>
-                  </span>
                 </div>
               </div>
             </div>
@@ -175,39 +164,16 @@
 
     function tableTotal(){
       var totalQuantity=0;
-      var totalAmount=0;
       var tableRows = $("#PurPOTbleBody tr").length;
       var table = document.getElementById('myTable').getElementsByTagName('tbody')[0];
 
       for (var i = 0; i < tableRows; i++) {
         var currentRow =  table.rows[i];
         totalQuantity = totalQuantity + Number(currentRow.cells[2].querySelector('input').value);
-        totalAmount = totalAmount + Number(currentRow.cells[3].querySelector('input').value);
       }
 
       $('#total_qty').val(totalQuantity);
-      $('#total_amt').val(totalAmount.toFixed());
-
-      netTotal();
     }
-
-    function netTotal(){
-      var netTotal = 0;
-      var total = Number($('#total_amt').val());
-      var other_exp = Number($('#other_exp').val());
-      var bill_discount = Number($('#bill_disc').val());
-
-      netTotal = total + other_exp - bill_discount;
-      netTotal = netTotal.toFixed(0);
-      FormattednetTotal = formatNumberWithCommas(netTotal);
-      document.getElementById("netTotal").innerHTML = '<span class="text-4 text-danger">'+FormattednetTotal+'</span>';
-      $('#net_amount').val(netTotal);
-    }
-    function formatNumberWithCommas(number) {
-      // Convert number to string and add commas
-      return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
   </script>
 
 @endsection

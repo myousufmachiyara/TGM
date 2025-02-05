@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Products;
 use App\Models\ProductCategory;
 use App\Models\ProductAttributes;
-use App\Models\ProductVariation;
+use App\Models\ProductVariations;
 use App\Models\ProductAttachements;
 
 use Validator;
@@ -31,35 +31,35 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate the incoming request data
+            // Validate the request
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'sku' => 'required|string|max:255|unique:products,sku', // Ensure SKU is unique
+                'sku' => 'required|string|max:255|unique:products,sku',
                 'description' => 'nullable|string',
-                'category_id' => 'required|exists:product_categories,id', // Make sure category exists
+                'category_id' => 'required|exists:product_categories,id',
                 'measurement_unit' => 'nullable|string|max:50',
-                'price' => 'nullable|numeric|min:0',
-                'sale_price' => 'nullable|numeric|min:0',
+                'item_type' => 'nullable|string|max:50',
+                'price' => 'required|numeric|min:0',
+                'sale_price' => 'required|numeric|min:0',
                 'purchase_note' => 'nullable|string',
-                'images' => 'nullable|array',
+                'opening_stock' => 'required|numeric|min:0',
+                'prod_att' => 'nullable|array',
+                'prod_att.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'variations' => 'nullable|array',
+                'variations.*.sku' => 'required|string|max:255|unique:product_variations,sku',
+                'variations.*.price' => 'required|numeric|min:0',
+                'variations.*.stock' => 'required|numeric|min:0',
+                'variations.*.attribute_id' => 'required|exists:attributes,id',
+                'variations.*.value_id' => 'required|exists:attribute_values,id',
             ]);
-
+    
             // Create the product
-            $product = Products::create([
-                'name' => $request->name,
-                'sku' => $request->sku,
-                'description' => $request->description,
-                'category_id' => $request->category_id,
-                'measurement_unit' => $request->measurement_unit,
-                'price' => $request->price,
-                'sale_price' => $request->sale_price,
-                'purchase_note' => $request->purchase_note,
-            ]);
-
-            // Handle variations (if provided)
-            if ($request->has('variations') && is_array($request->variations)) {
+            $product = Products::create($validatedData);
+    
+            // Handle variations
+            if ($request->has('variations')) {
                 foreach ($request->variations as $variation) {
-                    ProductVariation::create([
+                    ProductVariations::create([
                         'product_id' => $product->id,
                         'sku' => $variation['sku'],
                         'price' => $variation['price'],
@@ -69,24 +69,25 @@ class ProductsController extends Controller
                     ]);
                 }
             }
-
-            // Handle images (if provided)
-            if ($request->has('images') && is_array($request->images)) {
-                foreach ($request->images as $image) {
+    
+            // Handle images
+            if ($request->hasFile('prod_att')) {
+                foreach ($request->file('prod_att') as $image) {
+                    $imagePath = $image->store('products/images', 'public');
                     ProductAttachements::create([
                         'product_id' => $product->id,
-                        'image_path' => $image['image_path'],
-                        'is_primary' => $image['is_primary'] ?? false, // If no is_primary is provided, default to false
+                        'image_path' => $imagePath,
+                        'is_primary' => false,
                     ]);
                 }
             }
-
+    
             return redirect()->route('products.index')->with('success', 'Product created successfully.');
-
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
+    
    
     public function show($id)
     {

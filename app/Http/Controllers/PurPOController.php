@@ -26,8 +26,6 @@ class PurPOController extends Controller
         $prodCat = ProductCategory::all();  // Get all product categories
         $coa = ChartOfAccounts::all();  // Get all product categories
         $products = Products::all();  // Get all product categories
-
-        
         return view('purchasing.po.create', compact('prodCat', 'coa', 'products'));
     }
 
@@ -156,7 +154,7 @@ class PurPOController extends Controller
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurPo::with(['vendor', 'details.category', 'attachments'])->findOrFail($id);
+        $purpos = PurPo::with(['vendor', 'details.category', 'attachments','details.product'])->findOrFail($id);
     
         if (!$purpos) {
             abort(404, 'Purchase Order not found.');
@@ -223,14 +221,17 @@ class PurPOController extends Controller
     
         foreach ($purpos->details as $item) {
             $product_name = $item->category->name ?? 'N/A'; // Fetch product name safely
+            $product_m_unit = $item->product->measurement_unit ?? 'N/A'; // Assuming 'measurement_unit' is the column name
+            $description = $item->product->description ?? 'N/A'; // Assuming 'measurement_unit' is the column name
+
             $total = $item->item_rate * $item->item_qty;
             $total_amount += $total;
     
             $html .= '<tr>
                 <td width="6%" style="font-size:10px;text-align:center;">'.$count.'</td>
-                <td width="10%" style="font-size:10px;text-align:center;">'.$item->item_qty.'</td>
+                <td width="10%" style="font-size:10px;text-align:center;">'.$item->item_qty." ".$product_m_unit.'</td>
                 <td width="30%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
-                <td width="30%" style="font-size:10px;"></td>
+                <td width="30%" style="font-size:10px;">'.$description.'</td>
                 <td width="12%" style="font-size:10px;text-align:center;">'.$item->item_rate.'</td>
                 <td width="12%" style="font-size:10px;text-align:center;">'.$total.'</td>
             </tr>';

@@ -58,10 +58,12 @@
           <li class="nav-parent">
             <a class="nav-link" href="#">
               <i style="font-size:16px" class="fa fa-money-bill" aria-hidden="true"></i>
-              <span>Vouchers</span>
+              <span>Finance</span>
             </a>
             <ul class="nav nav-children">
-              <li><a class="nav-link"> All Vouchers</a></li>	
+              <li><a class="nav-link"> Journal Voucher</a></li>	
+              <li><a class="nav-link"> Expenses</a></li>	
+              <li><a class="nav-link"> Post Date Cheques</a></li>	
             </ul>
           </li>
         </ul>	

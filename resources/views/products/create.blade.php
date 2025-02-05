@@ -4,173 +4,231 @@
 
 @section('content')
   <div class="row">
-        <div class="col">
-			<form action="{{ route('products.store') }}" method="POST">				
-				@csrf
-				<section class="card">
-					<header class="card-header">
-						<div style="display: flex;justify-content: space-between;">
-							<h2 class="card-title">New Product</h2>
-						</div>
-						@if ($errors->has('error'))
-							<strong class="text-danger">{{ $errors->first('error') }}</strong>
-						@endif
-					</header>
-					<div class="card-body">
-						<div class="row pb-3">
-							<div class="col-12 col-md-2 mb-2">
-								<label class="text-lg-end mb-0">Product Name <span style="color: red;"><strong>*</strong></span></label>
-								<input type="text" class="form-control" placeholder="Product Name" name="name" required>
-							</div>
+    <div class="col">
+      <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <section class="card">
+          <header class="card-header">
+            <div class="d-flex justify-content-between">
+              <h2 class="card-title">New Product</h2>
+            </div>
+            @if ($errors->has('error'))
+              <strong class="text-danger">{{ $errors->first('error') }}</strong>
+            @endif
+          </header>
+          <div class="card-body">
+            <div class="row pb-3">
+				<div class="col-12 col-md-2 mb-2">
+					<label class="text-lg-end mb-0">Product Name <span style="color: red;"><strong>*</strong></span></label>
+					<input type="text" class="form-control" placeholder="Product Name" name="name" value="{{ old('name') }}" required>
+					@error('name')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
 
-							<div class="col-12 col-md-2 mb-2">
-								<label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
-								<input type="text" class="form-control" id="base-sku" placeholder="Product SKU" name="sku" required />
-							</div>
-							<div class="col-12 col-md-2 mb-2">
-								<label>Category <span style="color: red;"><strong>*</strong></span></label>
-								<select data-plugin-selecttwo class="form-control select2-js" name="category_id">  <!-- Added name attribute for form submission -->
-									<option value="" selected disabled>Select Category</option>
-									@foreach ($prodCat as $item)
-										<option value="{{ $item->id }}">{{ $item->name }}</option> 
-									@endforeach
-								</select>
-							</div>
-							<div class="col-12 col-md-1 mb-2">
-								<label>Unit</label>
-								<select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">  <!-- Added name attribute for form submission -->
-									<option value="" selected disabled>Select Unit</option>
-									<option value="mtr">meter</option>
-									<option value="pcs">pieces</option> 
-									<option value="yrd">yards</option> 
-									<option value="rd">round</option> 
-								</select>
-							</div>
-							<div class="col-12 col-md-1 mb-2">
-								<label>Item Type</label>
-								<select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">  <!-- Added name attribute for form submission -->
-									<option value="" selected disabled>Item Type</option>
-									<option value="fg">F.G</option>
-									<option value="raw">Raw</option> 
-								</select>
-							</div>
-							<div class="col-12 col-md-2 mb-2">
-								<label>Purchase Price</label>
-								<input type="number"  step=".00" class="form-control" name="price" />
-							</div>
-							<div class="col-12 col-md-2 mb-2">
-								<label>Sale Price</label>
-								<input type="number"  step=".00" class="form-control" name="sale_price" />
-							</div>
+				<div class="col-12 col-md-2 mb-2">
+					<label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
+					<input type="text" class="form-control" id="base-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" required />
+					@error('sku')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
 
-							<div class="col-12 col-md-6 mb-2">
-								<label>Description</label>
-								<textarea type="text" class="form-control" rows="3" placeholder="Description" name="description"></textarea>
-							</div>
+				<div class="col-12 col-md-2 mb-2">
+					<label>Category <span style="color: red;"><strong>*</strong></span></label>
+					<select data-plugin-selecttwo class="form-control select2-js" name="category_id" required>
+						<option value="" selected disabled>Select Category</option>
+						@foreach ($prodCat as $item)
+							<option value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+						@endforeach
+					</select>
+					@error('category_id')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
 
-							<div class="col-12 col-md-6 mb-2">
-								<label>Purchase Note</label>
-								<textarea type="text" class="form-control" rows="3" placeholder="Purchase Note" name="purchase_note"></textarea>
-							</div>
-							
-							<div class="col-12 col-md-3 mb-2">
-								<label>Images</label>
-								<input type="file" class="form-control" name="prod_att[]" multiple accept="image/png, image/jpeg, image/jpg">
-							</div>
-						</div>
-					</div>
-					
-					<!-- product variation card body here -->
+				<div class="col-12 col-md-2 mb-2">
+					<label>Unit</label>
+					<select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">
+						<option value="" selected disabled>Select Unit</option>
+						<option value="mtr" {{ old('measurement_unit') == 'mtr' ? 'selected' : '' }}>meter</option>
+						<option value="pcs" {{ old('measurement_unit') == 'pcs' ? 'selected' : '' }}>pieces</option> 
+						<option value="yrd" {{ old('measurement_unit') == 'yrd' ? 'selected' : '' }}>yards</option> 
+						<option value="rd" {{ old('measurement_unit') == 'rd' ? 'selected' : '' }}>round</option> 
+					</select>
+					@error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
 
+				<div class="col-12 col-md-1 mb-2">
+					<label>Item Type</label>
+					<select data-plugin-selecttwo class="form-control select2-js" name="item_type">
+						<option value="" selected disabled>Item Type</option>
+						<option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
+						<option value="raw" {{ old('item_type') == 'raw' ? 'selected' : '' }}>Raw</option> 
+					</select>
+					@error('item_type')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
 
-					<footer class="card-footer text-end">
-						<a class="btn btn-danger" href="{{ route('products.index') }}" >Discard</a>
-						<button type="submit" class="btn btn-primary">Create</button>
-					</footer>
-				</section>
-			</form>
-        </div>
+				<div class="col-12 col-md-1 mb-2">
+					<label>Purchase Price</label>
+					<input type="number" step=".00" class="form-control" value="{{ old('price', '0.00') }}" name="price" required />
+					@error('price')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
+
+				<div class="col-12 col-md-1 mb-2">
+					<label>Sale Price</label>
+					<input type="number" step=".00" class="form-control" value="{{ old('sale_price', '0.00') }}" name="sale_price" required />
+					@error('sale_price')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
+
+				<div class="col-12 col-md-1 mb-2">
+					<label>Opening Stock</label>
+					<input type="number" step=".00" class="form-control" value="{{ old('opening_stock', '0') }}" name="opening_stock" required />
+					@error('opening_stock')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
+
+				<div class="col-12 col-md-6 mb-2">
+					<label>Description</label>
+					<textarea class="form-control" rows="3" placeholder="Description" name="description">{{ old('description') }}</textarea>
+					@error('description')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
+
+				<div class="col-12 col-md-6 mb-2">
+					<label>Purchase Note</label>
+					<textarea class="form-control" rows="3" placeholder="Purchase Note" name="purchase_note">{{ old('purchase_note') }}</textarea>
+					@error('purchase_note')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
+				
+				<div class="col-12 col-md-3 mb-2">
+					<label>Images</label>
+					<input type="file" class="form-control" name="prod_att[]" multiple accept="image/png, image/jpeg, image/jpg">
+					@error('prod_att')<div class="text-danger">{{ $message }}</div>@enderror
+				</div>
+            </div>
+          </div>
+
+          <!-- Product variation card body here -->
+          <div class="card-body">
+            <div class="card-title mb-3" style="display:inline-block">
+              <input type="checkbox" id="toggleTableSwitch" onchange="toggleVariationFields()">
+              Product Variations
+            </div>
+
+            <div id="prodVariationsDiv" style="display:none">
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <label>Variation</label>
+                  <select data-plugin-selecttwo class="form-control select2-js" id="attributeSelect" name="variations[0][attribute_id]" required>
+                    <option value="" selected disabled>Select Variation</option>
+                    @foreach ($attributes as $item)
+                      <option value="{{ $item->id }}" {{ old('variations.0.attribute_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                    @endforeach
+                  </select>
+                  @error('variations.0.attribute_id')<div class="text-danger">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-12 col-md-3 mb-2">
+                  <label>Values</label>
+                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect" name="variations[0][value_id][]" required>
+                    <option value="" disabled>Values</option>
+                  </select>
+                  @error('variations.0.value_id')<div class="text-danger">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                  <button type="button" class="btn btn-success" id="generate-variations-btn">Generate</button>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 col-md-6 mt-3">
+                  <table class="table table-bordered" id="variationsTable">
+                    <thead>
+                      <tr>
+                        <th>Variation</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>SKU</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <footer class="card-footer text-end">
+              <a class="btn btn-danger" href="{{ route('products.index') }}">Discard</a>
+              <button type="submit" class="btn btn-primary">Create</button>
+            </footer>
+          </div>
+        </section>
+      </form>
     </div>
-	<!-- <script>
-		var index=2;
+  </div>
 
-		function toggleTable() {
-            const table = document.getElementById('prodVariations');
-            const isVisible = table.style.display !== 'none';
-            table.style.display = isVisible ? 'none' : 'table';
+<script>
+  // Toggle variation fields
+  function toggleVariationFields() {
+    const isChecked = document.getElementById('toggleTableSwitch').checked;
+    const variationsDiv = document.getElementById('prodVariationsDiv');
+    variationsDiv.style.display = isChecked ? 'block' : 'none';
+  }
+
+  $(document).ready(function () {
+    // Initialize Select2
+    $('.select2-js').select2();
+
+    // Define attribute-values from Laravel Blade
+    let attributeValues = @json($attributes);
+
+    // Populate values dropdown when attribute changes
+    $("#attributeSelect").change(function () {
+      let selectedAttributeId = $(this).val();
+      let valuesDropdown = $("#valueSelect");
+
+      valuesDropdown.empty(); // Clear existing options
+
+      if (selectedAttributeId) {
+        let selectedAttribute = attributeValues.find(attr => attr.id == selectedAttributeId);
+        if (selectedAttribute && selectedAttribute.values.length > 0) {
+          selectedAttribute.values.forEach(function (value) {
+            valuesDropdown.append('<option value="' + value.id + '">' + value.value + '</option>');
+          });
         }
+      }
+      valuesDropdown.trigger("change"); // Refresh Select2 UI
+    });
 
-		function removeRow(button) {
-			var tableRows = $("#prodVariations tr").length;
-			if(tableRows>1){
-				var row = button.parentNode.parentNode;
-				row.parentNode.removeChild(row);
-				index--;	
-			} 
-			tableTotal();
-		}
+    // Add selected variations to the table
+    $("#generate-variations-btn").click(function () {
+      let selectedAttributeText = $("#attributeSelect option:selected").text();
+      let selectedValues = $("#valueSelect").val(); // Get selected values
+      let tableBody = $("#variationsTable tbody");
 
-		function addNewRow(){
-			var lastRow =  $('#prodVariations tr:last');
-			latestValue=lastRow[0].cells[0].querySelector('select').value;
+      if (!selectedAttributeText || selectedValues.length === 0) {
+        alert("Please select an attribute and at least one value.");
+        return;
+      }
 
-			if(latestValue!=""){
-				var table = document.getElementById('prodVariations').getElementsByTagName('tbody')[0];
-				var newRow = table.insertRow(table.rows.length);
+      selectedValues.forEach(valueId => {
+        let valueText = $("#valueSelect option[value='" + valueId + "']").text();
 
-				var cell1 = newRow.insertCell(0);
-				var cell2 = newRow.insertCell(1);
-				var cell3 = newRow.insertCell(2);
-				var cell4 = newRow.insertCell(3);
-				var cell5 = newRow.insertCell(4);
+        // Prevent duplicate entries
+        if ($("#variationsTable tbody tr[data-value='" + valueId + "']").length === 0) {
+          let row = `
+          <tr data-value="${valueId}">
+            <td>${selectedAttributeText}: ${valueText}</td>
+            <td><input type="number" class="form-control" name="variations[0][stock][]" required></td>
+            <td><input type="number" class="form-control" name="variations[0][price][]" required></td>
+            <td><input type="text" class="form-control" name="variations[0][sku][]" required></td>
+            <td><button class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
+          </tr>`;
+          tableBody.append(row);
+        }
+      });
+    });
 
-				cell1.innerHTML  = '<select data-plugin-selectTwo class="form-control select2-js attribute-select" id="attributes" name="attribute_id" required onchange="updateValuesDropdown(this)">'+
-											'<option value="" disabled selected>Select Attribute</option>'+
-											@foreach($attributes as $attribute)
-												'<option value="{{ $attribute->id }}" data-values="@json($attribute->values)">'{{ $attribute->name }}'</option>'+
-											@endforeach
-										'</select>';
-								
-				cell2.innerHTML  = '<select multiple data-plugin-selectTwo class="form-select values-select" id="values" name="value_id[]" required>'+
-											'<option value="" disabled>Select Values</option>'+
-										'</select>';
-				cell3.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-				cell4.innerHTML  = '<input type="number" id="item_total'+index+'" class="form-control" placeholder="Total" disabled/>';
-				cell5.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button> '+
-								'<button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
-				index++;
-				tableTotal();
-			}
-		}
+    // Remove row from table
+    $(document).on("click", ".remove-btn", function () {
+      $(this).closest("tr").remove();
+    });
+  });
+</script>
 
-		function rowTotal(index){
-			var item_rate = parseFloat($('#item_rate'+index+'').val());
-			var item_qty = parseFloat($('#item_qty'+index+'').val());   
-			var item_total = item_rate * item_qty;
-
-			$('#item_total'+index+'').val(item_total.toFixed());
-			
-			tableTotal();
-		}
-
-		function tableTotal(){
-			var totalQuantity=0;
-			var totalAmount=0;
-			var tableRows = $("#PurPOTbleBody tr").length;
-			var table = document.getElementById('myTable').getElementsByTagName('tbody')[0];
-
-			for (var i = 0; i < tableRows; i++) {
-				var currentRow =  table.rows[i];
-				totalQuantity = totalQuantity + Number(currentRow.cells[2].querySelector('input').value);
-				totalAmount = totalAmount + Number(currentRow.cells[3].querySelector('input').value);
-			}
-
-			$('#total_qty').val(totalQuantity);
-			$('#total_amt').val(totalAmount.toFixed());
-		}
-
-	</script> -->
-
-
-	
 @endsection

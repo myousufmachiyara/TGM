@@ -9,8 +9,8 @@
       @if ($errors->has('error'))
         <strong class="text-danger">{{ $errors->first('error') }}</strong>
       @endif
-      <div class="row ">
-        <div class="col-12 col-md-6 mb-3">
+      <div class="row">
+        <div class="col-12 col-md-12 mb-3">
           <section class="card">
             <header class="card-header">
               <div style="display: flex;justify-content: space-between;">
@@ -18,12 +18,12 @@
               </div>
             </header>
             <div class="card-body">
-              <div class="row mb-4">
-                <div class="col-12 col-md-2 mb-3">
+              <div class="row">
+                <div class="col-12 col-md-1 mb-3">
                   <label>PO #</label>
                   <input type="number" class="form-control"  placeholder="PO #" disabled/>
                 </div>
-                <div class="col-12 col-md-4 mb-3">
+                <div class="col-12 col-md-2 mb-3">
                   <label>Vendor Name</label>
                   <select data-plugin-selecttwo class="form-control select2-js" name="vendor_name" id="vendor_name" required>  <!-- Added name attribute for form submission -->
                     <option value="" selected disabled>Select Vendor</option>
@@ -32,36 +32,32 @@
                     @endforeach
                   </select>
                 </div>
-                <div class="col-12 col-md-3 mb-3">
+                <div class="col-12 col-md-2 mb-3">
                   <label>Order Date</label>
                   <input type="date" name="order_date" class="form-control" id="order_date" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
                 </div>
 
                 <div class="col-12 col-md-3 mb-3">
-                  <label>Item Name</label>
+                  <label>Item Name <a href="#" ><i class="fa fa-plus"></i></a></label>
                   <select data-plugin-selecttwo class="form-control select2-js" id="item_name" required>  <!-- Added name attribute for form submission -->
                     <option value="" selected disabled>Select Item</option>
-                    @foreach ($products as $item)
+                    @foreach ($articles as $item)
                       <option value="{{ $item->id }}"> {{ $item->sku }} - {{ $item->name }}</option> 
                     @endforeach
                   </select>
                 </div>
 
-                <div class="col-12 col-md-3 mb-3">
+                <div class="col-12 col-md-2 mb-3">
                   <label>Width</label>
-                  <input type="number" class="form-control" name="other_exp" id="other_exp" onchange="netTotal()" value=0 placeholder="Other Expenses" />
+                  <input type="number" class="form-control" name="width" id="width" value=0 placeholder="Width"/>
                 </div>
-                <div class="col-12 col-md-3 mb-3" >
+                <div class="col-12 col-md-2 mb-3" >
                   <label>Consumption</label>
-                  <input type="number" class="form-control" name="bill_discount" id="bill_disc" onchange="netTotal()" value=0 placeholder="Bill Discount"  />
+                  <input type="number" class="form-control" name="consumption" id="consumption" value=0 placeholder="Consumption"/>
                 </div>
-
-                <div class="col-12 col-md-5">
-                  <label>Attachement </label>
-                  <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
-                </div>
-                
-                <div class="col-12 col-md-3 ">
+              </div>
+              <div class="row">
+                <div class="col-12 col-md-2 ">
                   <label>Variation</label>
                   <select data-plugin-selecttwo class="form-control select2-js" id="attributeSelect" required>  <!-- Added name attribute for form submission -->
                     <option value="" selected disabled>Variation</option>
@@ -78,11 +74,11 @@
                   </select>
                 </div>
 
-                <div class="col-12 col-md-1 d-flex align-items-end">
-                  <button type="button" class="btn btn-success" id="generate-variations-btn" onclick="generateVariations()">Generate</button>
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                  <button type="button" class="btn btn-success" id="generate-variations-btn" >Generate</button>
                 </div>
 
-                <div class="col-6 mt-3 ">
+                <div class="col-3 mt-3 ">
                   <table class="table table-bordered" id="variationsTable">
                     <thead>
                       <tr>
@@ -95,7 +91,6 @@
                     </tbody>
                   </table>
                 </div>
-                
               </div>
             </div>
           </section>
@@ -123,15 +118,15 @@
                     <td width="25%">
                       <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_id]" required>  <!-- Added name attribute for form submission -->
                         <option value="" selected disabled>Select Item</option>
-                        @foreach ($products as $item)
+                        @foreach ($fabrics as $item)
                           <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
                         @endforeach
                       </select>  
                     </td>
                     <td width="25%"><input type="text" name="details[0][for]" class="form-control" placeholder="Description" required/></td>
-                    <td><input type="number" name="details[0][item_rate]"  id="item_rate_1" onchange="rowTotal(1)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
-                    <td><input type="number" name="details[0][item_qty]"   id="item_qty_1" onchange="rowTotal(1)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
-                    <td><input type="number" id="item_total_1" class="form-control" placeholder="Total" disabled/></td>
+                    <td><input type="number" name="details[0][item_rate]"  id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
+                    <td><input type="number" name="details[0][item_qty]"   id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
+                    <td><input type="number" id="item_total_0" class="form-control" placeholder="Total" disabled/></td>
                     <td width="10%">
                       <button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button>
                       <button type="button" class="btn btn-primary btn-xs"  onclick="addNewRow()" ><i class="fa fa-plus"></i></button>
@@ -148,7 +143,7 @@
             <header class="card-header" style="display: flex;justify-content: space-between;">
               <h2 class="card-title">Voucher (Challan #)</h2>
               <div>
-                <a class="btn btn-danger text-end" aria-expanded="false" onclick="generateVoucher()">Generate Voucher</a>
+                <a class="btn btn-danger text-end" aria-expanded="false" onclick="generateVoucher()">Generate Challan</a>
               </div>
             </header>
             <div class="card-body">
@@ -161,26 +156,34 @@
           </section>
         </div>
 
-        <div class="col-12 col-md-6 mb-3">
+        <div class="col-12 col-md-12">
           <section class="card">
             <header class="card-header" style="display: flex;justify-content: space-between;">
               <h2 class="card-title">Summary</h2>
             </header>
             <div class="card-body">
               <div class="row pb-4">
-                
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2">
                   <label>Total Fabric</label>
                   <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2">
+                  <label>Total Units</label>
+                  <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
+                </div>
+               
+                <div class="col-12 col-md-2">
                   <label>Total Amount</label>
                   <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
                 </div>
                
+                <div class="col-12 col-md-3">
+                  <label>Attachement </label>
+                  <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
+                </div>
 
                 <div class="col-12 pb-sm-3 pb-md-0 text-end">
-                  <h3 class="font-weight-bold mt-3 mb-0 text-5 text-primary">Net Amount</h3>
+                  <h3 class="font-weight-bold mb-0 text-5 text-primary">Net Amount</h3>
                   <span>
                     <strong class="text-4 text-primary">PKR <span id="netTotal" class="text-4 text-danger">0.00 </span></strong>
                   </span>
@@ -199,7 +202,7 @@
   </div>
   <script>
 
-    var index=2;
+    var index=1;
 
     function removeRow(button) {
       var tableRows = $("#PurPOTbleBody tr").length;
@@ -228,7 +231,7 @@
 
         cell1.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="details['+index+'][item_id]">'+
                             '<option value="" disabled selected>Select Category</option>'+
-                            @foreach ($products as $item)
+                            @foreach ($fabrics as $item)
                               '<option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option>'+
                             @endforeach
                           '</select>';
@@ -302,11 +305,11 @@
       let rows = document.querySelectorAll("#PurPOTbleBody tr");
 
       rows.forEach((row, key) => {
-        let fabric = row.querySelector("select").options[row.querySelector("select").selectedIndex].text; // Get selected text
-        let description = row.querySelector("input[name='details[" + key + "][for]']").text;
-        let rate = row.querySelector("input[name='details[" + key + "][item_rate]']").value;
-        let quantity = row.querySelector("input[name='details[" + key + "][item_qty]']").value;
-        let total = row.querySelector("#item_total_" + (key + 1)).value;
+        let fabric = row.querySelector("select").options[row.querySelector("select").selectedIndex].text;
+        let description = row.querySelector("input[name='details["+key+"][for]']").value;
+        let rate = row.querySelector("input[name='details["+key+"][item_rate]']").value;
+        let quantity = row.querySelector("input[name='details["+key+"][item_qty]']").value;
+        let total = row.querySelector("#item_total_"+(key)).value;
 
         if (fabric && quantity && rate) { // Ensure required fields are filled
           items.push({ fabric, description, rate, quantity, total });
@@ -414,7 +417,7 @@
             let row = `
               <tr data-value="${valueId}">
                 <td>${valueText}</td>
-                <td><input type="number" class="form-control-xs" name="qty"></td>
+                <td><input type="number" class="form-control" name="qty"></td>
                 <td><button  class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
               </tr>`;
             tableBody.append(row);

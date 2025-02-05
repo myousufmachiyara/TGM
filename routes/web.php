@@ -34,3 +34,7 @@ Route::get('pur-fgpos-new-challan', [PurFGPOController::class, 'newChallan'])->n
 Route::get('pur-pos/print/{id}', [PurPoController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
 Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
 
+// PO Receiving
+
+
+// Vouchers
