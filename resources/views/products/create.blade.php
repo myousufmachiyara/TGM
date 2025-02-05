@@ -123,7 +123,7 @@
 
                 <div class="col-12 col-md-3 mb-2">
                   <label>Values</label>
-                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect" name="variations[0][value_id][]" required>
+                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect" required>
                     <option value="" disabled>Values</option>
                   </select>
                   @error('variations.0.value_id')<div class="text-danger">{{ $message }}</div>@enderror
@@ -197,29 +197,36 @@
 
     // Add selected variations to the table
     $("#generate-variations-btn").click(function () {
+
       let selectedAttributeText = $("#attributeSelect option:selected").text();
+      let selectedAttributeId = $("#attributeSelect option:selected").val();
       let selectedValues = $("#valueSelect").val(); // Get selected values
       let tableBody = $("#variationsTable tbody");
 
+      tableBody.empty();
+      
       if (!selectedAttributeText || selectedValues.length === 0) {
         alert("Please select an attribute and at least one value.");
         return;
       }
 
-      selectedValues.forEach(valueId => {
+      selectedValues.forEach((valueId, index) => { // Added index here
         let valueText = $("#valueSelect option[value='" + valueId + "']").text();
 
         // Prevent duplicate entries
         if ($("#variationsTable tbody tr[data-value='" + valueId + "']").length === 0) {
-          let row = `
-          <tr data-value="${valueId}">
-            <td>${selectedAttributeText}: ${valueText}</td>
-            <td><input type="number" class="form-control" name="variations[0][stock][]" required></td>
-            <td><input type="number" class="form-control" name="variations[0][price][]" required></td>
-            <td><input type="text" class="form-control" name="variations[0][sku][]" required></td>
-            <td><button class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
-          </tr>`;
-          tableBody.append(row);
+            let row = `
+            <tr data-value="${valueId}"> 
+              <td>${index + 1}. ${selectedAttributeText}: ${valueText}
+                <input type="hidden" class="form-control" name="variations[${index}][attribute_id]" value="1" required>
+                <input type="hidden" class="form-control" name="variations[${index}][variation_value_id]" value="${valueId}" required>
+              </td>
+              <td><input type="number" class="form-control" name="variations[${index}][stock]" required></td>
+              <td><input type="number" class="form-control" name="variations[${index}][price]" required></td>
+              <td><input type="text" class="form-control" name="variations[${index}][sku]" required></td>
+              <td><button class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
+            </tr>`;
+            tableBody.append(row);
         }
       });
     });

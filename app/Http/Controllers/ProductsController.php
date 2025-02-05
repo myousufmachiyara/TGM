@@ -49,8 +49,8 @@ class ProductsController extends Controller
                 'variations.*.sku' => 'required|string|max:255|unique:product_variations,sku',
                 'variations.*.price' => 'required|numeric|min:0',
                 'variations.*.stock' => 'required|numeric|min:0',
-                'variations.*.attribute_id' => 'required|exists:attributes,id',
-                'variations.*.value_id' => 'required|exists:attribute_values,id',
+                'variations.*.attribute_id' => 'required|exists:product_attributes,id',
+                'variations.*.variation_value_id' => 'required|exists:product_attributes_values,id',
             ]);
     
             // Create the product
@@ -65,7 +65,7 @@ class ProductsController extends Controller
                         'price' => $variation['price'],
                         'stock' => $variation['stock'],
                         'attribute_id' => $variation['attribute_id'],
-                        'value_id' => $variation['value_id'],
+                        'variation_value_id' => $variation['variation_value_id'],
                     ]);
                 }
             }

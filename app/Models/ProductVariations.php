@@ -16,6 +16,7 @@ class ProductVariations extends Model
         'sku',
         'price',
         'stock',
+        'attribute_id'
     ];
 
     public function product()

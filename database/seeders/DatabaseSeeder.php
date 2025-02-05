@@ -75,6 +75,17 @@ class DatabaseSeeder extends Seeder
             [ 'id' => 2, 'name' => 'Nidha', 'sku' => 'FAB-000002', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
               'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 800
             ],
+            [ 'id' => 3, 'name' => 'Alisha', 'sku' => 'ABBY-000001', 'description' => '', 'category_id' => 4, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
+              'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0
+            ]
+        ]);
+
+        DB::table('product_variations')->insert([
+            ['id' => 1, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 1, 'sku' => 'ABBY-SMALL-001-S','price' => '1200.00','stock' => 50,],
+            ['id' => 2, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 2, 'sku' => 'ABBY-SMALL-001-M','price' => '1200.00','stock' => 50,],
+            ['id' => 3, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 3, 'sku' => 'ABBY-SMALL-001-L','price' => '1200.00','stock' => 50,],
+            ['id' => 4, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 4, 'sku' => 'ABBY-SMALL-001-XL','price' => '1200.00','stock' => 50,],
+            ['id' => 5, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 5, 'sku' => 'ABBY-SMALL-001-XXL','price' => '1200.00','stock' => 50,],
         ]);
     }
 }

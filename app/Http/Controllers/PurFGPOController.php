@@ -23,10 +23,11 @@ class PurFGPOController extends Controller
     public function create()
     {
         $coa = ChartOfAccounts::all();  // Get all product categories
-        $products = Products::all();  // Get all product categories
+        $fabrics = Products::where('item_type' , 'raw')->get();  // Get all product categories
+        $articles = Products::where('item_type' , 'fg')->get();  // Get all product categories
         $attributes = ProductAttributes::with('values')->get();
         
-        return view('purchasing.fg-po.create', compact( 'coa', 'products', 'attributes'));
+        return view('purchasing.fg-po.create', compact( 'coa', 'fabrics', 'articles', 'attributes'));
     }
 
     public function store(Request $request)
