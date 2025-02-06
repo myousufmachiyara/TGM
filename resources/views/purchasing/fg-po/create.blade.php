@@ -47,56 +47,38 @@
                   </select>
                 </div>
 
-                <div class="col-12 col-md-2 mb-3">
+                <div class="col-12 col-md-1 mb-3">
                   <label>Width</label>
                   <input type="number" class="form-control" name="width" id="width" value=0 placeholder="Width"/>
                 </div>
-                <div class="col-12 col-md-2 mb-3" >
+                <div class="col-12 col-md-1 mb-3" >
                   <label>Consumption</label>
                   <input type="number" class="form-control" name="consumption" id="consumption" value=0 placeholder="Consumption"/>
                 </div>
+                <div class="col-12 col-md-2">
+                  <label>Item Variations</label>
+                  <button type="button" class="d-block btn btn-success" id="generate-variations-btn" >Generate</button>
+                </div>
               </div>
-              <div class="row">
-                <div class="col-12 col-md-2 ">
-                  <label>Variation</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" id="attributeSelect" required>  <!-- Added name attribute for form submission -->
-                    <option value="" selected disabled>Variation</option>
-                    @foreach ($attributes as $item)
-                      <option value="{{ $item->id }}">{{ $item->name }}</option> 
-                    @endforeach
-                  </select>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label>Values</label>
-                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect"   required>  <!-- Added name attribute for form submission -->
-                    <option value="" disabled>Values</option>
-                  </select>
-                </div>
-
-                <div class="col-12 col-md-2 d-flex align-items-end">
-                  <button type="button" class="btn btn-success" id="generate-variations-btn" >Generate</button>
-                </div>
-
-                <div class="col-3 mt-3 ">
-                  <table class="table table-bordered" id="variationsTable">
-                    <thead>
-                      <tr>
-                        <th>Variation</th>
-                        <th>Quantity</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                  </table>
-                </div>
+              <div class="col-12 col-md-5 mt-3 ">
+                <table class="table table-bordered" id="variationsTable">
+                  <thead>
+                    <tr>
+                      <th>S.No</th>
+                      <th>SKU</th>
+                      <th>Quantity</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="variationsTableBody">
+                  </tbody>
+                </table>
               </div>
             </div>
           </section>
         </div>
 
-        <div class="col-12 col-md-6 mb-3">
+        <div class="col-12 col-md-7 mb-3">
           <section class="card">
             <header class="card-header" style="display: flex;justify-content: space-between;">
               <h2 class="card-title">Fabric Details</h2>
@@ -109,6 +91,7 @@
                     <th width="25%">Description</th>
                     <th>Rate</th>
                     <th>Qty</th>
+                    <th>Unit</th>
                     <th>Total</th>
                     <th width="10%"></th>
                   </tr>
@@ -126,6 +109,7 @@
                     <td width="25%"><input type="text" name="details[0][for]" class="form-control" placeholder="Description" required/></td>
                     <td><input type="number" name="details[0][item_rate]"  id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                     <td><input type="number" name="details[0][item_qty]"   id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
+                    <td></td>
                     <td><input type="number" id="item_total_0" class="form-control" placeholder="Total" disabled/></td>
                     <td width="10%">
                       <button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button>
@@ -138,7 +122,7 @@
           </section>
         </div>
 
-        <div class="col-12 col-md-6 mb-3">
+        <div class="col-12 col-md-5 mb-3">
           <section class="card">
             <header class="card-header" style="display: flex;justify-content: space-between;">
               <h2 class="card-title">Voucher (Challan #)</h2>
@@ -164,19 +148,20 @@
             <div class="card-body">
               <div class="row pb-4">
                 <div class="col-12 col-md-2">
-                  <label>Total Fabric</label>
-                  <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
+                  <label>Total Fabric Quantity</label>
+                  <input type="number" class="form-control" id="total_fab" placeholder="Total Fabric" disabled/>
                 </div>
+
                 <div class="col-12 col-md-2">
-                  <label>Total Units</label>
-                  <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
+                  <label>Total Fabric Amount</label>
+                  <input type="number" class="form-control" id="total_fab_amt" placeholder="Total Fabric Amount" disabled />
                 </div>
-               
+
                 <div class="col-12 col-md-2">
-                  <label>Total Amount</label>
-                  <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
+                  <label>Total Units (Estimated)</label>
+                  <input type="number" class="form-control" id="total_units" placeholder="Total Units" disabled/>
                 </div>
-               
+                
                 <div class="col-12 col-md-3">
                   <label>Attachement </label>
                   <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
@@ -228,6 +213,7 @@
         var cell4 = newRow.insertCell(3);
         var cell5 = newRow.insertCell(4);
         var cell6 = newRow.insertCell(5);
+        var cell7 = newRow.insertCell(6);
 
         cell1.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="details['+index+'][item_id]">'+
                             '<option value="" disabled selected>Select Category</option>'+
@@ -238,8 +224,9 @@
         cell2.innerHTML  = '<input type="text" name="details['+index+'][for]" class="form-control" placeholder="Description" required/>';
         cell3.innerHTML  = '<input type="number" name="details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
         cell4.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell5.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
-        cell6.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
+        cell5.innerHTML  = '';
+        cell6.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
+        cell7.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
                           '<button type="button" class="btn btn-primary btn-xs" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
         index++;
         
@@ -262,24 +249,35 @@
     function tableTotal(){
       var totalQuantity=0;
       var totalAmount=0;
+      var totalUnits=0;
+
       var tableRows = $("#PurPOTbleBody tr").length;
       var table = document.getElementById('myTable').getElementsByTagName('tbody')[0];
 
+      var variationTableRows = $("#variationsTableBody tr").length;
+      var variationTable = document.getElementById('variationsTable').getElementsByTagName('tbody')[0];
+
       for (var i = 0; i < tableRows; i++) {
         var currentRow =  table.rows[i];
-        totalQuantity = totalQuantity + Number(currentRow.cells[2].querySelector('input').value);
-        totalAmount = totalAmount + Number(currentRow.cells[3].querySelector('input').value);
+        totalQuantity = totalQuantity + Number(currentRow.cells[3].querySelector('input').value);
+        totalAmount = totalAmount + Number(currentRow.cells[5].querySelector('input').value);
       }
 
-      $('#total_qty').val(totalQuantity);
-      $('#total_amt').val(totalAmount.toFixed());
+      for (var j = 0; j < variationTableRows; j++) {
+        var currtRow =  variationTable.rows[j];
+        totalUnits = totalUnits + Number(currtRow.cells[2].querySelector('input').value);
+      }
+
+      $('#total_fab').val(totalQuantity);
+      $('#total_fab_amt').val(totalAmount.toFixed());
+      $('#total_units').val(totalUnits.toFixed());
 
       netTotal();
     }
 
     function netTotal(){
       var netTotal = 0;
-      var total = Number($('#total_amt').val());
+      var total = Number($('#total_fab_amt').val());
 
       netTotal = total;
       netTotal = netTotal.toFixed(0);
@@ -369,66 +367,51 @@
       document.getElementById("voucher-container").innerHTML = voucherHTML;
     }
 
+    $("#generate-variations-btn").click(function () {
+      let tableBody = $("#variationsTable tbody");
+      tableBody.empty();
 
-  </script>
+      let productId = $("#item_name").val(); // Get selected product ID
 
-  <script>
-    $(document).ready(function () {
-      // Initialize Select2
-      $('.select2-js').select2();
+      if (!productId) {
+        alert("Please select an item first.");
+        return;
+      }
 
-      // Define attribute-value pairs from Laravel Blade
-      let attributeValues = @json($attributes);
+      $.ajax({
+        url: `/productDetails/${productId}`, // Laravel route
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+            let tableBody = $("#variationsTable tbody");
+            tableBody.empty(); // Clear previous rows
 
-      // Populate values dropdown when attribute changes
-      $("#attributeSelect").change(function () {
-        let selectedAttributeId = $(this).val();
-        let valuesDropdown = $("#valueSelect");
-
-        valuesDropdown.empty(); // Clear existing options
-
-        if (selectedAttributeId) {
-            let selectedAttribute = attributeValues.find(attr => attr.id == selectedAttributeId);
-            if (selectedAttribute && selectedAttribute.values.length > 0) {
-                selectedAttribute.values.forEach(function (value) {
-                    valuesDropdown.append('<option value="' + value.id + '">' + value.value + '</option>');
+            if (response.variations.length > 0) {
+                response.variations.forEach((variation, index) => {
+                    let row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${variation.sku}
+                          <input type="hidden" name="item_variation_value_id[]" class="form-control" placeholder="Quantity" />
+                          <input type="hidden" name="item_sku[]" class="form-control" placeholder="Quantity" />
+                        </td>
+                        <td><input type="number" onchange="tableTotal()" name="item_qty[]" class="form-control" placeholder="Quantity" /></td>
+                        <td><button class="btn btn-danger btn-sm delete-row">Delete</button></td>
+                    </tr>`;
+                    tableBody.append(row);
                 });
+            } else {
+                tableBody.append(`<tr><td colspan="5" class="text-center">No variations found.</td></tr>`);
             }
+        },
+        error: function (error) {
+            console.error("Error fetching product details:", error);
+            alert("Failed to fetch product details.");
         }
-        valuesDropdown.trigger("change"); // Refresh Select2 UI
       });
+    });
 
-      // Generate table rows based on selected values
-      $("#generate-variations-btn").click(function () {
-        let selectedAttributeText = $("#attributeSelect option:selected").text();
-        let selectedValues = $("#valueSelect").val(); // Get selected values
-        let tableBody = $("#variationsTable tbody");
-        
-        if (!selectedAttributeText || selectedValues.length === 0) {
-          alert("Please select an attribute and at least one value.");
-          return;
-        }
-
-        selectedValues.forEach(valueId => {
-          let valueText = $("#valueSelect option[value='" + valueId + "']").text();
-          
-          // Prevent duplicate entries
-          if ($("#variationsTable tbody tr[data-value='" + valueId + "']").length === 0) {
-            let row = `
-              <tr data-value="${valueId}">
-                <td>${valueText}</td>
-                <td><input type="number" class="form-control" name="qty"></td>
-                <td><button  class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
-              </tr>`;
-            tableBody.append(row);
-          }
-        });
-      });
-
-      // Remove row from table
-      $(document).on("click", ".remove-btn", function () {
-        $(this).closest("tr").remove();
-      });
+    $(document).on("click", ".delete-row", function () {
+      $(this).closest("tr").remove();
     });
   </script>
 @endsection

@@ -133,4 +133,15 @@ class ProductsController extends Controller
 
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
+
+    public function getProductDetails($id)
+    {
+        try {
+            // Fetch product with variations
+            $product = Products::with('variations')->findOrFail($id);
+            return response()->json($product, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

@@ -30,7 +30,7 @@ class Products extends Model
 
     public function variations()
     {
-        return $this->hasMany(ProductVariation::class);
+        return $this->hasMany(ProductVariations::class, 'product_id');
     }
 
     public function images()

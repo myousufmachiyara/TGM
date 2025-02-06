@@ -104,8 +104,8 @@
           <!-- Product variation card body here -->
           <div class="card-body">
             <div class="card-title mb-3" style="display:inline-block">
+              Product Has Variations
               <input type="checkbox" id="toggleTableSwitch" onchange="toggleVariationFields()">
-              Product Variations
             </div>
 
             <div id="prodVariationsDiv" style="display:none">
