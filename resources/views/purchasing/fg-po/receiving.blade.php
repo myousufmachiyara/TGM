@@ -90,7 +90,26 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-12 col-md-2">
-                  <label>Total Quantity</label>
+                  <label>Total Fabric Amount</label>
+                  <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
+                </div>
+
+                <div class="col-12 col-md-2 mb-3">
+                  <label>Billing Terms</label>
+                  <select data-plugin-selecttwo class="form-control select2-js" name="vendor_name" required>  <!-- Added name attribute for form submission -->
+                    <option value="" selected disabled>Select Billing Terms</option>
+                    <option value=""> Bill By Per Piece</option> 
+                    <option value=""> Bill By Stitching Rate</option> 
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                  <label>Rate</label>
+                  <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" />
+                </div>
+
+                <div class="col-12 col-md-2">
+                  <label>Bill Amount</label>
                   <input type="number" class="form-control" id="total_qty" placeholder="Total Quantity" disabled/>
                 </div>
               </div>

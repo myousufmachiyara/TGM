@@ -39,3 +39,6 @@ Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('p
 
 
 // Vouchers
+
+
+// Sales
