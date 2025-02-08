@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PurPo;
 use App\Models\PurPosDetail;
 use App\Models\ProductCategory;
 use App\Models\ChartOfAccounts;
 use App\Models\Products;
 use App\Models\PurPoAttachment;
+use App\Models\PurPo;
 use App\Services\myPDF;
 
 use Illuminate\Http\Request;
