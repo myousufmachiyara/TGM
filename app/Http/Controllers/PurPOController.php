@@ -7,7 +7,7 @@ use App\Models\ProductCategory;
 use App\Models\ChartOfAccounts;
 use App\Models\Products;
 use App\Models\PurPoAttachment;
-use App\Models\purpo;
+use App\Models\PurPo;
 use App\Services\myPDF;
 
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class PurPOController extends Controller
 
     public function index()
     {
-        $model = new \App\Models\purpo();
+        $model = new \App\Models\PurPo();
         dd($model);
         $purpos = PurPo::with('vendor')->get();
         return view('purchasing.po.index', compact('purpos'));
