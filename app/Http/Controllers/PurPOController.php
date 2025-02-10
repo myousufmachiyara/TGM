@@ -156,6 +156,8 @@ class PurPOController extends Controller
     {
         // Fetch the purchase order with related data
         $purpos = PurPo::with(['vendor', 'details.category', 'attachments','details.product'])->findOrFail($id);
+        $imagePath = storage_path('app/public/');
+        dd($imagePath);
         foreach ($purpos->attachments as $attachment) {
             $imagePath = storage_path('app/public/' . $attachment->att_path);
             dd($imagePath);
