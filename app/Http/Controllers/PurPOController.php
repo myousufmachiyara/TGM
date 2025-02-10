@@ -156,16 +156,6 @@ class PurPOController extends Controller
     {
         // Fetch the purchase order with related data
         $purpos = PurPo::with(['vendor', 'details.category', 'attachments','details.product'])->findOrFail($id);
-        $imagePath = storage_path('app/public/');
-        dd($imagePath);
-        foreach ($purpos->attachments as $attachment) {
-            $imagePath = storage_path('app/public/' . $attachment->att_path);
-            dd($imagePath);
-            if (file_exists($imagePath)) {
-                $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
-                $pdf->Ln(55); // Move cursor down after each image
-            }
-        }
 
         if (!$purpos) {
             abort(404, 'Purchase Order not found.');
