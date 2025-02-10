@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PurPO extends Model
 {
     use HasFactory;
+    protected $table = 'pur_pos';
 
     protected $fillable = [
         'delivery_date', 
