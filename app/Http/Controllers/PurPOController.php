@@ -204,6 +204,15 @@ class PurPOController extends Controller
         </table>';
         $pdf->writeHTML($html, true, false, true, false, '');
     
+        foreach ($purpos->attachments as $attachment) {
+            $imagePath = storage_path('app/public/' . $attachment->att_path);
+            
+            if (file_exists($imagePath)) {
+                $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
+                $pdf->Ln(55); // Move cursor down after each image
+            }
+        }
+        
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:10px">
             <tr>
