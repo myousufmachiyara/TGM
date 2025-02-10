@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 use App\Models\PurPosDetail;
 use App\Models\ProductCategory;
 use App\Models\ChartOfAccounts;
@@ -10,7 +12,6 @@ use App\Models\PurPoAttachment;
 use App\Models\PurPo;
 use App\Services\myPDF;
 
-use Illuminate\Http\Request;
 
 class PurPOController extends Controller
 {
