@@ -18,7 +18,7 @@ class PurPOController extends Controller
 
     public function index()
     {
-        $model = new \App\Models\PurPoAttachment();
+        $model = new \App\Models\PurPo();
         dd($model);
         $purpos = PurPo::with('vendor')->get();
         return view('purchasing.po.index', compact('purpos'));
