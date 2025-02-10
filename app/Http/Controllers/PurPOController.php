@@ -158,7 +158,7 @@ class PurPOController extends Controller
         $purpos = PurPo::with(['vendor', 'details.category', 'attachments','details.product'])->findOrFail($id);
         foreach ($purpos->attachments as $attachment) {
             $imagePath = storage_path('app/public/' . $attachment->att_path);
-            die($imagePath);
+            dd($imagePath);
             if (file_exists($imagePath)) {
                 $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
                 $pdf->Ln(55); // Move cursor down after each image
