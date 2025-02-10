@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,4 +37,5 @@ class PurPO extends Model
     {
         return $this->belongsTo(ChartOfAccounts::class, 'vendor_name', 'id'); 
     }
+
 }
