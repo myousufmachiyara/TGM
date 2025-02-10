@@ -206,7 +206,7 @@ class PurPOController extends Controller
     
         foreach ($purpos->attachments as $attachment) {
             $imagePath = storage_path('app/public/' . $attachment->att_path);
-            
+            die($imagePath);
             if (file_exists($imagePath)) {
                 $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
                 $pdf->Ln(55); // Move cursor down after each image
@@ -268,7 +268,7 @@ class PurPOController extends Controller
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
     
         foreach ($purpos->attachments as $attachment) {
-            $imagePath = storage_path('/public/' . $attachment->att_path);
+            $imagePath = storage_path('app/public/' . $attachment->att_path);
             
             if (file_exists($imagePath)) {
                 $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
