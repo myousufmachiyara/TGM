@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurPO extends Model
+class PurPO_old extends Model
 {
     use HasFactory;
     protected $table = 'pur_pos';
