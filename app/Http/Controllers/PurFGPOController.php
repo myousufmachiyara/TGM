@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\PurPo;
+use App\Models\PurFGPO;
 use App\Models\PurPosDetail;
 use App\Models\ChartOfAccounts;
 use App\Models\Products;
@@ -16,7 +16,7 @@ class PurFGPOController extends Controller
 {
     public function index()
     {
-        $purpos = PurPo::with('vendor')->get();
+        $purpos = PurFGPO::with('vendor')->get();
         return view('purchasing.fg-po.index', compact('purpos'));
     }
 
@@ -217,7 +217,7 @@ class PurFGPOController extends Controller
     }
 
     public function newChallan(){
-        $purpos = PurPo::get('id');
+        $purpos = PurFGPO::get('id');
         $coa = ChartOfAccounts::all();  // Get all product categories
         $products = Products::all();  // Get all product categories
         $attributes = ProductAttributes::with('values')->get();
