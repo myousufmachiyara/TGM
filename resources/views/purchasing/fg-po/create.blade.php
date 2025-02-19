@@ -37,26 +37,16 @@
                   <input type="date" name="order_date" class="form-control" id="order_date" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
                 </div>
 
-                <div class="col-12 col-md-2 mb-3">
+                <div class="col-12 col-md-4 mb-3">
                   <label>Item Name <a href="#" ><i class="fa fa-plus"></i></a></label>
-                  <select data-plugin-selecttwo class="form-control select2-js" id="item_name" required>  <!-- Added name attribute for form submission -->
+                  <select multiple data-plugin-selecttwo class="form-control select2-js" id="item_name" required>  <!-- Added name attribute for form submission -->
                     <option value="" selected disabled>Select Item</option>
                     @foreach ($articles as $item)
                       <option value="{{ $item->id }}"> {{ $item->sku }} - {{ $item->name }}</option> 
                     @endforeach
                   </select>
                 </div>
-
-                <div class="col-12 col-md-2 mb-3">
-                  <label>Hijab</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
-                    <option value="" selected disabled>Select Hijab</option>
-                    <option> Hijab Included </option> 
-                    <option> Hijab Not Included </option>
-                  </select>
-                </div>
-
-               
+       
                 <div class="col-12 col-md-1 mb-3">
                   <label>Width</label>
                   <input type="number" class="form-control" name="width" id="width" value=0 placeholder="Width"/>
