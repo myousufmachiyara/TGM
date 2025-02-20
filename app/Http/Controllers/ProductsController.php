@@ -134,12 +134,19 @@ class ProductsController extends Controller
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
 
-    public function getProductDetails($id)
+    public function getProductDetails(Request $request)
     {
         try {
-            // Fetch product with variations
-            $product = Products::with('variations')->findOrFail($id);
-            return response()->json($product, 200);
+            // Validate input
+            $request->validate([
+                'product_ids' => 'required|array',
+                'product_ids.*' => 'exists:products,id',
+            ]);
+    
+            // Fetch all selected products with their variations
+            $products = Products::with('variations')->whereIn('id', $request->product_ids)->get();
+    
+            return response()->json($products, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

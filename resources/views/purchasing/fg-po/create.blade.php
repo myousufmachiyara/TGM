@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="row">
-    <form action="{{ route('pur-fgpos.store') }}" method="POST" enctype="multipart/form-data">
+    <form enctype="multipart/form-data">
       @csrf
       @if ($errors->has('error'))
         <strong class="text-danger">{{ $errors->first('error') }}</strong>
@@ -40,9 +40,9 @@
                 <div class="col-12 col-md-4 mb-3">
                   <label>Item Name <a href="#" ><i class="fa fa-plus"></i></a></label>
                   <select multiple data-plugin-selecttwo class="form-control select2-js" id="item_name" required>  <!-- Added name attribute for form submission -->
-                    <option value="" selected disabled>Select Item</option>
+                    <option value=""  disabled>Select Item</option>
                     @foreach ($articles as $item)
-                      <option value="{{ $item->id }}"> {{ $item->sku }} - {{ $item->name }}</option> 
+                      <option value="{{ $item->id }}">{{ $item->sku }}-{{ $item->name }}</option> 
                     @endforeach
                   </select>
                 </div>
@@ -65,6 +65,7 @@
                   <thead>
                     <tr>
                       <th>S.No</th>
+                      <th>Item</th>
                       <th>SKU</th>
                       <th>Quantity</th>
                       <th>Action</th>
@@ -100,13 +101,13 @@
                   <tr>
                     <td width="25%">
                       <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_id]" required>  <!-- Added name attribute for form submission -->
-                        <option value="" selected disabled>Select Item</option>
+                        <option value="" selected disabled>Select Fabric</option>
                         @foreach ($fabrics as $item)
                           <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
                         @endforeach
                       </select>  
                     </td>
-                    <td width="25%"><input type="text" name="details[0][for]" class="form-control" placeholder="Description" required/></td>
+                    <td width="25%"><input type="text" name="details[0][for]" class="form-control" placeholder="Description"/></td>
                     <td><input type="number" name="details[0][item_rate]"  id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                     <td><input type="number" name="details[0][item_qty]"   id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
                     <td></td>
@@ -216,7 +217,7 @@
         var cell7 = newRow.insertCell(6);
 
         cell1.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="details['+index+'][item_id]">'+
-                            '<option value="" disabled selected>Select Category</option>'+
+                            '<option value="" disabled selected>Select Fabric</option>'+
                             @foreach ($fabrics as $item)
                               '<option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option>'+
                             @endforeach
@@ -265,7 +266,7 @@
 
       for (var j = 0; j < variationTableRows; j++) {
         var currtRow =  variationTable.rows[j];
-        totalUnits = totalUnits + Number(currtRow.cells[2].querySelector('input').value);
+        totalUnits = totalUnits + Number(currtRow.cells[3].querySelector('input').value);
       }
 
       $('#total_fab').val(totalQuantity);
@@ -285,6 +286,7 @@
       document.getElementById("netTotal").innerHTML = '<span class="text-4 text-danger">'+FormattednetTotal+'</span>';
       $('#net_amount').val(netTotal);
     }
+
     function formatNumberWithCommas(number) {
       // Convert number to string and add commas
       return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -371,41 +373,53 @@
       let tableBody = $("#variationsTable tbody");
       tableBody.empty();
 
-      let productId = $("#item_name").val(); // Get selected product ID
+      let productIds = $("#item_name").val(); // Get selected product IDs (array)
 
-      if (!productId) {
-        alert("Please select an item first.");
+      if (!productIds || productIds.length === 0) {
+        alert("Please select at least one item.");
         return;
       }
 
       $.ajax({
-        url: `/productDetails/${productId}`, // Laravel route
-        type: "GET",
+        url: `/productDetails`, // Laravel route (updated)
+        type: "POST", // Change to POST for multiple IDs
+        data: {
+          product_ids: productIds,
+          _token: $('meta[name="csrf-token"]').attr("content"), // CSRF Token
+        },
         dataType: "json",
         success: function (response) {
-            let tableBody = $("#variationsTable tbody");
-            tableBody.empty(); // Clear previous rows
+          let tableBody = $("#variationsTable tbody");
+          tableBody.empty();
 
-            if (response.variations.length > 0) {
-                response.variations.forEach((variation, index) => {
-                    let row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${variation.sku}
-                          <input type="hidden" name="item_variation_value_id[]" class="form-control" placeholder="Quantity" />
-                          <input type="hidden" name="item_sku[]" class="form-control" placeholder="Quantity" />
-                        </td>
-                        <td><input type="number" onchange="tableTotal()" name="item_qty[]" class="form-control" placeholder="Quantity" /></td>
-                        <td><button class="btn btn-danger btn-sm delete-row">Delete</button></td>
-                    </tr>`;
-                    tableBody.append(row);
+          if (response.length > 0) {
+            response.forEach((product) => {
+              if (product.variations.length > 0) {
+                product.variations.forEach((variation, index) => {
+                  let row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${product.name}</td>
+                    <td>
+                      <input type="hidden" name="item_variation_value_id[]" value="${variation.id}">
+                      <input type="hidden" name="item_sku[]" value="${variation.sku}">
+                      ${variation.sku}
+                    </td>
+                    <td><input type="number" onchange="tableTotal()" name="item_qty[]" class="form-control " placeholder="Quantity" required /></td>
+                    <td><button class="btn btn-danger btn-sm delete-row">Delete</button></td>
+                  </tr>`;
+                  tableBody.append(row);
                 });
-            } else {
-                tableBody.append(`<tr><td colspan="5" class="text-center">No variations found.</td></tr>`);
-            }
+              } else {
+                tableBody.append(`<tr><td colspan="5" class="text-center">No variations found for ${product.name}.</td></tr>`);
+              }
+            });
+          } else {
+            tableBody.append(`<tr><td colspan="5" class="text-center">No variations found.</td></tr>`);
+          }
         },
         error: function (error) {
-            console.error("Error fetching product details:", error);
-            alert("Failed to fetch product details.");
+          console.error("Error fetching product details:", error);
+          alert("Failed to fetch product details.");
         }
       });
     });

@@ -25,7 +25,7 @@ Route::resource('coa', COAController::class);
 Route::resource('product-attributes', ProductAttributesController::class);
 Route::resource('product-categories', ProductCategoriesController::class);
 Route::resource('products', ProductsController::class);
-Route::get('productDetails/{id}', [ProductsController::class, 'getProductDetails'])->name('product.details');
+Route::post('productDetails', [ProductsController::class, 'getProductDetails'])->name('product.details');
 
 // Purchase Orders
 Route::resource('pur-pos', PurPOController::class);

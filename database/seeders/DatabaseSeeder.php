@@ -51,6 +51,8 @@ class DatabaseSeeder extends Seeder
             ['id' => 5, 'name' => 'Ladies Finish Goods'],
             ['id' => 6, 'name' => 'Kids Finish Goods'],
             ['id' => 7, 'name' => 'Accessories'],
+            ['id' => 8, 'name' => 'Abaya Hijab'],
+            ['id' => 9, 'name' => 'Scarf'],
         ]);
 
         DB::table('product_attributes')->insert([
@@ -66,6 +68,7 @@ class DatabaseSeeder extends Seeder
             ['id' => 5, 'product_attributes_id' => 1 , 'value' => "60"],
             ['id' => 6, 'product_attributes_id' => 2 , 'value' => "Black"],
             ['id' => 7, 'product_attributes_id' => 2 , 'value' => "Blue"],
+            ['id' => 8, 'product_attributes_id' => 1 , 'value' => "Free Size"],
         ]);  
 
         DB::table('products')->insert([
@@ -77,15 +80,19 @@ class DatabaseSeeder extends Seeder
             ],
             [ 'id' => 3, 'name' => 'Alisha', 'sku' => 'ABBY-000001', 'description' => '', 'category_id' => 4, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
               'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0
+            ],
+            [ 'id' => 4, 'name' => 'Alisha Hijab', 'sku' => 'ABBY-H-000001', 'description' => '', 'category_id' => 8, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
+              'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0
             ]
         ]);
 
         DB::table('product_variations')->insert([
-            ['id' => 1, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 1, 'sku' => 'ABBY-000001-S','price' => '1200.00','stock' => 50,],
-            ['id' => 2, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 2, 'sku' => 'ABBY-000001-M','price' => '1200.00','stock' => 50,],
-            ['id' => 3, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 3, 'sku' => 'ABBY-000001-L','price' => '1200.00','stock' => 50,],
-            ['id' => 4, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 4, 'sku' => 'ABBY-000001-XL','price' => '1200.00','stock' => 50,],
-            ['id' => 5, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 5, 'sku' => 'ABBY-000001-XXL','price' => '1200.00','stock' => 50,],
+            ['id' => 1, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 1, 'sku' => 'ABBY-000001-52','price' => '1200.00','stock' => 50,],
+            ['id' => 2, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 2, 'sku' => 'ABBY-000001-54','price' => '1200.00','stock' => 50,],
+            ['id' => 3, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 3, 'sku' => 'ABBY-000001-56','price' => '1200.00','stock' => 50,],
+            ['id' => 4, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 4, 'sku' => 'ABBY-000001-58','price' => '1200.00','stock' => 50,],
+            ['id' => 5, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 5, 'sku' => 'ABBY-000001-60','price' => '1200.00','stock' => 50,],
+            ['id' => 6, 'product_id' => 4, 'attribute_id' => 1, 'variation_value_id' => 8, 'sku' => 'ABBY-H-000001-FS','price' => '300.00','stock' => 50,],
         ]);
     }
 }
