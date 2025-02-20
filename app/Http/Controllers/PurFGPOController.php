@@ -34,13 +34,20 @@ class PurFGPOController extends Controller
     {
         // Validate the request
         $request->validate([
-            'vendor_name' => 'required|exists:vendors,id',
-            'order_date' => 'required|date',
-            'details' => 'required|array',
-            'details.*.item_id' => 'required|exists:fabrics,id',
+            'vendor_name' => 'required|exists:vendors,id', // Ensure vendor exists
+            'order_date' => 'required|date', // Ensure valid date format
+            'customer_name' => 'required|string|max:255',
+            'po_number' => 'required|string|max:255|unique:purchase_orders,po_number',
+            'order_number' => 'required|string|max:255',
+            'reference_no' => 'nullable|string|max:255',
+            'delivery_date' => 'required|date',
+            'details' => 'required|array|min:1', // Ensure at least one fabric item is added
+            'details.*.item_id' => 'required|exists:fabrics,id', // Ensure fabric exists
+            'details.*.for' => 'nullable|string|max:255',
             'details.*.item_rate' => 'required|numeric|min:0',
-            'details.*.item_qty' => 'required|numeric|min:0',
-            'att.*' => 'nullable|mimes:jpg,jpeg,png,webp|max:2048',
+            'details.*.item_qty' => 'required|numeric|min:1', // Ensure quantity is at least 1
+            'att' => 'nullable|array',
+            'att.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:2048', // Validate attachments
         ]);
     
         try {
