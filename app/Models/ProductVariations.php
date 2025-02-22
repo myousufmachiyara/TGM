@@ -29,8 +29,13 @@ class ProductVariations extends Model
         return $this->belongsTo(ProductAttribute::class);
     }
 
+    public function attribute_values()
+    {
+        return $this->belongsTo(ProductAttributesValues::class,'variation_value_id');
+    }
+
     public function values()
     {
-        return $this->belongsToMany(ProductAttributeValue::class, 'product_variation_values', 'variation_id', 'value_id');
+        return $this->belongsToMany(ProductAttributesValues::class, 'product_variation_values', 'variation_id', 'value_id');
     }
 }

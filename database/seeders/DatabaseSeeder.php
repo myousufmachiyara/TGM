@@ -61,14 +61,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('product_attributes_values')->insert([
-            ['id' => 1, 'product_attributes_id' => 1 , 'value' => "52"],
-            ['id' => 2, 'product_attributes_id' => 1 , 'value' => "54"],
-            ['id' => 3, 'product_attributes_id' => 1 , 'value' => "56"],
-            ['id' => 4, 'product_attributes_id' => 1 , 'value' => "58"],
-            ['id' => 5, 'product_attributes_id' => 1 , 'value' => "60"],
-            ['id' => 6, 'product_attributes_id' => 2 , 'value' => "Black"],
-            ['id' => 7, 'product_attributes_id' => 2 , 'value' => "Blue"],
-            ['id' => 8, 'product_attributes_id' => 1 , 'value' => "Free Size"],
+            ['id' => 1, 'product_attribute_id' => 1 , 'value' => "52"],
+            ['id' => 2, 'product_attribute_id' => 1 , 'value' => "54"],
+            ['id' => 3, 'product_attribute_id' => 1 , 'value' => "56"],
+            ['id' => 4, 'product_attribute_id' => 1 , 'value' => "58"],
+            ['id' => 5, 'product_attribute_id' => 1 , 'value' => "60"],
+            ['id' => 6, 'product_attribute_id' => 2 , 'value' => "Black"],
+            ['id' => 7, 'product_attribute_id' => 2 , 'value' => "Blue"],
+            ['id' => 8, 'product_attribute_id' => 1 , 'value' => "Free Size"],
         ]);  
 
         DB::table('products')->insert([
@@ -87,12 +87,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('product_variations')->insert([
-            ['id' => 1, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 1, 'sku' => 'ABBY-000001-52','price' => '1200.00','stock' => 50,],
-            ['id' => 2, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 2, 'sku' => 'ABBY-000001-54','price' => '1200.00','stock' => 50,],
-            ['id' => 3, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 3, 'sku' => 'ABBY-000001-56','price' => '1200.00','stock' => 50,],
-            ['id' => 4, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 4, 'sku' => 'ABBY-000001-58','price' => '1200.00','stock' => 50,],
-            ['id' => 5, 'product_id' => 3, 'attribute_id' => 1, 'variation_value_id' => 5, 'sku' => 'ABBY-000001-60','price' => '1200.00','stock' => 50,],
-            ['id' => 6, 'product_id' => 4, 'attribute_id' => 1, 'variation_value_id' => 8, 'sku' => 'ABBY-H-000001-FS','price' => '300.00','stock' => 50,],
+            ['id' => 1, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 1, 'sku' => 'ABBY-000001-52','price' => '1200.00','stock' => 50,],
+            ['id' => 2, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 2, 'sku' => 'ABBY-000001-54','price' => '1200.00','stock' => 50,],
+            ['id' => 3, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 3, 'sku' => 'ABBY-000001-56','price' => '1200.00','stock' => 50,],
+            ['id' => 4, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 4, 'sku' => 'ABBY-000001-58','price' => '1200.00','stock' => 50,],
+            ['id' => 5, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 5, 'sku' => 'ABBY-000001-60','price' => '1200.00','stock' => 50,],
+            ['id' => 6, 'product_id' => 4, 'attribute_id' => 1, 'attribute_value_id' => 8, 'sku' => 'ABBY-H-000001-FS','price' => '300.00','stock' => 50,],
         ]);
     }
 }

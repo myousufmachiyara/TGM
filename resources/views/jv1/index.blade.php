@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Purchasing | All Journal Vouchers')
+@section('title', 'Finance | Journal Vouchers')
 
 @section('content')
   <div class="row">
@@ -31,9 +31,11 @@
               <thead>
                 <tr>
                   <th>S.No</th>
-                  <th>Vendor</th>
-                  <th>Order Date</th>
-                  <th>Delivery Date</th>
+                  <th>Ref Document</th>
+                  <th>Debit Account</th>
+                  <th>Credit Account</th>
+                  <th>Amount</th>
+                  <th>Narration</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -41,9 +43,11 @@
                 @foreach ($jv1 as $key => $row)
                   <tr>
                     <td>{{$key+1}}</td>
-                    <td>{{ $row->vendor->name ?? 'N/A' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
+                    <td>{{ $row->ref_doc_code ?? 'N/A' }} - {{ $row->ref_doc_id ?? 'N/A' }}</td>
+                    <td>{{ $row->debitAccount->name ?? 'N/A' }}</td>
+                    <td>{{ $row->creditAccount->name ?? 'N/A' }}</td>
+                    <td>{{ number_format($row->amount, 2) }}</td>
+                    <td>{{ $row->narration ?? 'N/A' }}</td>
                     <td>
                       <a href="{{ route('pur-fgpos.print', $row->id) }}" class="btn btn-primary btn-xs">
                         <i class="fa fa-print"></i>

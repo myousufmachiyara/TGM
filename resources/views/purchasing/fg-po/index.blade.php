@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Purchasing | All PO')
+@section('title', 'Purchasing | Finish Good PO')
 
 @section('content')
   <div class="row">
@@ -35,7 +35,8 @@
                   <th>S.No</th>
                   <th>Vendor</th>
                   <th>Order Date</th>
-                  <th>Delivery Date</th>
+                  <th>Items</th>
+                  <th>status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -45,7 +46,17 @@
                     <td>{{$key+1}}</td>
                     <td>{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
+                    <td>
+                      @foreach($row->details as $value)
+                        <span class="badge bg-primary">
+                          {{ $value->product->name ?? 'N/A'  }}
+                          @if($value->attribute_values)
+                            - {{ $value->attribute_values->value }}
+                          @endif
+                        </span>
+                      @endforeach
+                    </td>
+                    <td></td>
                     <td>
                       <a href="{{ route('pur-fgpos.print', $row->id) }}" class="btn btn-primary btn-xs">
                         <i class="fa fa-print"></i>

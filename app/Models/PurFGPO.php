@@ -25,16 +25,16 @@ class PurFGPO extends Model
 
     public function details()
     {
-        return $this->hasMany(PurFgpoDetail::class, 'fgpo_id');
+        return $this->hasMany(PurFGPODetails::class, 'fgpo_id');
     }
 
     public function voucherDetails()
     {
-        return $this->hasMany(PurFgpoVoucherDetail::class, 'fgpo_id');
+        return $this->hasMany(PurFGPOVoucherDetails::class, 'fgpo_id');
     }
 
     public function attachments()
     {
-        return $this->hasMany(PurFgpoAttachment::class, 'fgpo_id');
+        return $this->hasMany(PurFGPOAttachements::class, 'fgpo_id');
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('attribute_id');
-            $table->unsignedBigInteger('variation_value_id');
+            $table->unsignedBigInteger('attribute_value_id');
             $table->string('sku')->unique();
             $table->decimal('price', 8, 2)->nullable();
             $table->integer('stock')->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
             // Foreign keys
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('attribute_id')->references('id')->on('product_attributes')->onDelete('cascade');
-            $table->foreign('variation_value_id')->references('id')->on('product_attributes_values')->onDelete('cascade');
+            $table->foreign('attribute_value_id')->references('id')->on('product_attributes_values')->onDelete('cascade');
         });
     }
 
