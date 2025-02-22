@@ -11,11 +11,11 @@ class PurFGPO extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'pur_fgpos';
-    protected $fillable = ['doc_code', 'vendor_id', 'order_date', 'product_id', 'width', 'consumption', 'created_by', 'updated_by'];
+    protected $fillable = ['doc_code', 'vendor_id', 'order_date', 'width', 'consumption'];
 
     public function vendor()
     {
-        return $this->belongsTo(ChartOfAccount::class, 'vendor_id');
+        return $this->belongsTo(ChartOfAccounts::class, 'vendor_id');
     }
 
     public function product()

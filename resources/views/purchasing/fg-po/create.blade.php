@@ -4,11 +4,19 @@
 
 @section('content')
   <div class="row">
-    <form enctype="multipart/form-data">
+    <form action="{{route('pur-fgpos.store')}}" method="POST" enctype="multipart/form-data">
       @csrf
-      @if ($errors->has('error'))
-        <strong class="text-danger">{{ $errors->first('error') }}</strong>
+
+      @if ($errors->any())
+        <div class="alert alert-danger">
+          <ul>
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
       @endif
+     
       <div class="row">
         <div class="col-12 col-md-12 mb-3">
           <section class="card">
@@ -25,7 +33,7 @@
                 </div>
                 <div class="col-12 col-md-2 mb-3">
                   <label>Vendor Name</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" name="vendor_name" id="vendor_name" required>  <!-- Added name attribute for form submission -->
+                  <select data-plugin-selecttwo class="form-control select2-js" name="vendor_id" id="vendor_name" required>  <!-- Added name attribute for form submission -->
                     <option value="" selected disabled>Select Vendor</option>
                     @foreach ($coa as $item)
                       <option value="{{ $item->id }}">{{ $item->name }}</option> 
@@ -39,7 +47,7 @@
 
                 <div class="col-12 col-md-4 mb-3">
                   <label>Item Name <a href="#" ><i class="fa fa-plus"></i></a></label>
-                  <select multiple data-plugin-selecttwo class="form-control select2-js" id="item_name" required>  <!-- Added name attribute for form submission -->
+                  <select multiple data-plugin-selecttwo class="form-control select2-js" name="product_id" id="item_name" required>  <!-- Added name attribute for form submission -->
                     <option value=""  disabled>Select Item</option>
                     @foreach ($articles as $item)
                       <option value="{{ $item->id }}">{{ $item->sku }}-{{ $item->name }}</option> 
@@ -92,7 +100,7 @@
                     <th width="25%">Description</th>
                     <th>Rate</th>
                     <th>Qty</th>
-                    <th>Unit</th>
+                    <th>Measurement</th>
                     <th>Total</th>
                     <th width="10%"></th>
                   </tr>
@@ -100,17 +108,24 @@
                 <tbody id="PurPOTbleBody">
                   <tr>
                     <td width="25%">
-                      <select data-plugin-selecttwo class="form-control select2-js" name="details[0][item_id]" required>  <!-- Added name attribute for form submission -->
+                      <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][product_id]" required>  <!-- Added name attribute for form submission -->
                         <option value="" selected disabled>Select Fabric</option>
                         @foreach ($fabrics as $item)
                           <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
                         @endforeach
                       </select>  
                     </td>
-                    <td width="25%"><input type="text" name="details[0][for]" class="form-control" placeholder="Description"/></td>
-                    <td><input type="number" name="details[0][item_rate]"  id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
-                    <td><input type="number" name="details[0][item_qty]"   id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
-                    <td></td>
+                    <td width="25%"><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
+                    <td><input type="number" name="voucher_details[0][item_rate]"  id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
+                    <td><input type="number" name="voucher_details[0][qty]"   id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
+                    <td>
+                      <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][unit]">'+
+                        <option value="" disabled selected>Select Unit</option>
+                        <option value="yrd">yard</option>
+                        <option value="mtr">meter</option>
+                        <option value="round">round</option>
+                      </select>
+                    </td>
                     <td><input type="number" id="item_total_0" class="form-control" placeholder="Total" disabled/></td>
                     <td width="10%">
                       <button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button>
@@ -216,16 +231,21 @@
         var cell6 = newRow.insertCell(5);
         var cell7 = newRow.insertCell(6);
 
-        cell1.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="details['+index+'][item_id]">'+
+        cell1.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="voucher_details['+index+'][product_id]">'+
                             '<option value="" disabled selected>Select Fabric</option>'+
                             @foreach ($fabrics as $item)
                               '<option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option>'+
                             @endforeach
                           '</select>';
-        cell2.innerHTML  = '<input type="text" name="details['+index+'][for]" class="form-control" placeholder="Description" required/>';
-        cell3.innerHTML  = '<input type="number" name="details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
-        cell4.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell5.innerHTML  = '';
+        cell2.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" required/>';
+        cell3.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
+        cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
+        cell5.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="voucher_details['+index+'][unit]">'+
+                            '<option value="" disabled selected>Select Unit</option>'+
+                            '<option value="yrd">yard</option>'+
+                            '<option value="mtr">meter</option>'+
+                            '<option value="round">round</option>'+
+                          '</select>';
         cell6.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
         cell7.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
                           '<button type="button" class="btn btn-primary btn-xs" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
@@ -298,21 +318,23 @@
       // Sample Data (Replace with dynamic values if needed)
       let vendorName = document.querySelector("#vendor_name option:checked").textContent;
       let date = $('#order_date').val();
-      let purchaseOrderNo = "PO-";
-      let designName = document.querySelector("#item_name option:checked").textContent;
+      let purchaseOrderNo = "FGPO-";
 
       let items = [];
       let rows = document.querySelectorAll("#PurPOTbleBody tr");
 
       rows.forEach((row, key) => {
-        let fabric = row.querySelector("select").options[row.querySelector("select").selectedIndex].text;
-        let description = row.querySelector("input[name='details["+key+"][for]']").value;
-        let rate = row.querySelector("input[name='details["+key+"][item_rate]']").value;
-        let quantity = row.querySelector("input[name='details["+key+"][item_qty]']").value;
-        let total = row.querySelector("#item_total_"+(key)).value;
+        let selects = row.querySelectorAll("select"); // Get all selects in the row
+        let fabric = selects[0].options[selects[0].selectedIndex].text; // First dropdown (Fabric)
+        let unit = selects[1].options[selects[1].selectedIndex].text;   // Second dropdown (Unit)
 
-        if (fabric && quantity && rate) { // Ensure required fields are filled
-          items.push({ fabric, description, rate, quantity, total });
+        let description = row.querySelector("input[name='voucher_details["+key+"][description]']").value;
+        let rate = row.querySelector("input[name='voucher_details["+key+"][item_rate]']").value;
+        let quantity = row.querySelector("input[name='voucher_details["+key+"][qty]']").value;
+        let total = row.querySelector("#item_total_" + key).value;
+
+        if (fabric && quantity && rate && unit) {
+          items.push({ fabric, description, rate, quantity, unit, total });
         }
       });
       
@@ -328,7 +350,6 @@
           <div class="d-flex justify-content-between text-dark">
             <p class="text-dark"><strong>Vendor:</strong> ${vendorName}</p>
             <p class="text-dark"><strong>PO No:</strong> ${purchaseOrderNo}</p>
-            <p class="text-dark"><strong>Item:</strong> ${designName}</p>
             <p class="text-dark"><strong>Date:</strong> ${date}</p>
           </div>
 
@@ -347,7 +368,7 @@
                     <tr>
                         <td>${item.fabric}</td>
                         <td>${item.description}</td>
-                        <td>${item.quantity}</td>
+                        <td>${item.quantity} ${item.unit}</td>
                         <td>${item.rate}</td>
                         <td>${item.total}</td>
                     </tr>`).join('')}
@@ -355,7 +376,7 @@
           </table>
           
           <h4 class="text-end text-dark"><strong>Total Amount:</strong> ${totalAmount} PKR</h4>
-
+          <input type="hidden" name="voucher_amount" id="" value="${totalAmount}">
           <div class="d-flex justify-content-between mt-4">
             <div>
               <p class="text-dark"><strong>Authorized By:</strong></p>
@@ -400,11 +421,12 @@
                     <td>${index + 1}</td>
                     <td>${product.name}</td>
                     <td>
-                      <input type="hidden" name="item_variation_value_id[]" value="${variation.id}">
-                      <input type="hidden" name="item_sku[]" value="${variation.sku}">
+                      <input type="hidden" name="item_order[${index}][product_id]" value="${product.id}">
+                      <input type="hidden" name="item_order[${index}][variation_id]" value="${variation.id}">
+                      <input type="hidden" name="item_order[${index}][sku]" value="${variation.sku}">
                       ${variation.sku}
                     </td>
-                    <td><input type="number" onchange="tableTotal()" name="item_qty[]" class="form-control " placeholder="Quantity" required /></td>
+                    <td><input type="number" onchange="tableTotal()" name="item_order[${index}][qty]" class="form-control " placeholder="Quantity" required /></td>
                     <td><button class="btn btn-danger btn-sm delete-row">Delete</button></td>
                   </tr>`;
                   tableBody.append(row);

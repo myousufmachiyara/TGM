@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductAttributesController;
 use App\Http\Controllers\SubHeadOfAccController;
 use App\Http\Controllers\COAController;
 use App\Http\Controllers\PurFGPOController;
+use App\Http\Controllers\JournalVoucher1Controller;
 
 Route::get('/', function () {
     return view('home');
@@ -39,4 +40,5 @@ Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('p
 
 
 // Vouchers
+Route::resource('jv1', JournalVoucher1Controller::class);
 

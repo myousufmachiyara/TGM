@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\PurFGPO;
-use App\Models\PurPosDetail;
+use App\Models\PurFGPODetails;
 use App\Models\ChartOfAccounts;
+use App\Models\JournalVoucher1;
+use App\Models\PurFGPOVoucherDetails;
+use App\Models\PurFGPOAttachements;
 use App\Models\Products;
 use App\Models\ProductAttributes;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Services\myPDF;
 
 class PurFGPOController extends Controller
@@ -32,71 +37,104 @@ class PurFGPOController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request
+        \Log::info('Starting FGPO Store process', $request->all());
+    
         $request->validate([
-            'vendor_name' => 'required|exists:vendors,id', // Ensure vendor exists
-            'order_date' => 'required|date', // Ensure valid date format
-            'customer_name' => 'required|string|max:255',
-            'po_number' => 'required|string|max:255|unique:purchase_orders,po_number',
-            'order_number' => 'required|string|max:255',
-            'reference_no' => 'nullable|string|max:255',
-            'delivery_date' => 'required|date',
-            'details' => 'required|array|min:1', // Ensure at least one fabric item is added
-            'details.*.item_id' => 'required|exists:fabrics,id', // Ensure fabric exists
-            'details.*.for' => 'nullable|string|max:255',
-            'details.*.item_rate' => 'required|numeric|min:0',
-            'details.*.item_qty' => 'required|numeric|min:1', // Ensure quantity is at least 1
-            'att' => 'nullable|array',
-            'att.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:2048', // Validate attachments
+            'vendor_id' => 'required|exists:chart_of_accounts,id',
+            'order_date' => 'required|date',
+            'product_id' => 'required|exists:products,id',
+            'width' => 'required|numeric',
+            'consumption' => 'required|numeric',
+            'item_order' => 'required|array',
+            'item_order.*.product_id' => 'required|exists:products,id',
+            'item_order.*.variation_id' => 'required|exists:product_variations,id',
+            'item_order.*.sku' => 'required|string',
+            'item_order.*.qty' => 'required|integer|min:1',
+            'voucher_amount' => 'required|numeric',
+            'voucher_details' => 'required|array',
+            'voucher_details.*.product_id' => 'required|exists:products,id',
+            'voucher_details.*.description' => 'required|string',
+            'voucher_details.*.qty' => 'required|numeric',
+            'voucher_details.*.unit' => 'required|string',
+            'voucher_details.*.item_rate' => 'required|numeric',
         ]);
     
+        DB::beginTransaction();
+        
         try {
-            DB::beginTransaction();
+            \Log::info('Creating FGPO record');
+            $fgpo = PurFGPO::create([
+                'doc_code' => 'FGPO',
+                'vendor_id' => $request->vendor_id,
+                'order_date' => $request->order_date,
+                'width' => $request->width,
+                'consumption' => $request->consumption,
+            ]);
+            \Log::info('FGPO Created', ['fgpo_id' => $fgpo->id]);
     
-            // Create new Purchase Order
-            $po = new PurFGPO();
-            $po->vendor_id = $request->vendor_name;
-            $po->order_date = $request->order_date;
-            $po->total_amount = 0;
-            $po->save();
-    
-            $totalAmount = 0;
-    
-            // Store Purchase Order Details (Fabrics)
-            foreach ($request->details as $index => $detail) {
-                $fabric = new PurchaseOrderFabric();
-                $fabric->purchase_order_id = $po->id;
-                $fabric->fabric_id = $detail['item_id'];
-                $fabric->description = $detail['for'] ?? null;
-                $fabric->rate = $detail['item_rate'];
-                $fabric->quantity = $detail['item_qty'];
-                $fabric->total = $detail['item_rate'] * $detail['item_qty'];
-                $fabric->save();
-    
-                $totalAmount += $fabric->total;
+            \Log::info('Adding FGPO Product Variations');
+            foreach ($request->item_order as $detail) {
+                \Log::info('Processing Item Order:', $detail);
+                PurFGPODetails::create([
+                    'fgpo_id' => $fgpo->id,
+                    'product_id' => $detail['product_id'],
+                    'variation_id' => $detail['variation_id'],
+                    'sku' => $detail['sku'],
+                    'qty' => $detail['qty'],
+                ]);
             }
+            \Log::info('FGPO Product Variations Added');
     
-            // Update total amount
-            $po->total_amount = $totalAmount;
-            $po->save();
+            \Log::info('Creating Journal Voucher');
+            $voucher = JournalVoucher1::create([
+                'debit_acc_id' => $request->vendor_id,
+                'credit_acc_id' => "4",
+                'amount' => $request->voucher_amount,
+                'date' => $request->order_date,
+                'narration' => "Transaction Against FGPO",
+                'ref_doc_id' => $fgpo->id,
+                'ref_doc_code' => 'FGPO',
+            ]);
+            \Log::info('Journal Voucher Created', ['voucher_id' => $voucher->id]);
     
-            // Handle file uploads (attachments)
-            if ($request->hasFile('att')) {
-                foreach ($request->file('att') as $file) {
-                    $filePath = $file->store('purchase_orders', 'public');
-                    $po->attachments()->create(['file_path' => $filePath]);
+            \Log::info('Adding Voucher Details');
+            foreach ($request->voucher_details as $detail) {
+                \Log::info('Processing Voucher Detail:', $detail);
+                PurFGPOVoucherDetails::create([
+                    'fgpo_id' => $fgpo->id,
+                    'voucher_id' => $voucher->id,
+                    'product_id' => $detail['product_id'],
+                    'qty' => $detail['qty'],
+                    'unit' => $detail['unit'],
+                    'rate' => $detail['item_rate'],
+                    'description' => $detail['description'],
+                ]);
+            }
+            \Log::info('Voucher Details Added');
+    
+            if ($request->hasFile('attachments')) {
+                \Log::info('Processing Attachments');
+                foreach ($request->file('attachments') as $file) {
+                    $filePath = $file->store('attachments/fgpo_' . $fgpo->id, 'public');
+                    PurFGPOAttachements::create([
+                        'fgpo_id' => $fgpo->id,
+                        'att_path' => $filePath,
+                    ]);
+                    \Log::info('Attachment Stored', ['path' => $filePath]);
                 }
             }
     
             DB::commit();
-    
-            return redirect()->route('pur-fgpos.index')->with('success', 'Purchase Order created successfully.');
+            \Log::info('Transaction Committed Successfully');
+            return redirect()->route('pur-fgpos.index')->with('success', 'Purchase Order created successfully!');
+        
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Something went wrong! ' . $e->getMessage()]);
+            \Log::error('Error creating Purchase Order', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return redirect()->route('pur-fgpos.index')->with('error', 'Error creating Purchase Order: ' . $e->getMessage());
         }
     }
-
+    
     public function newChallan(){
         $purpos = PurFGPO::get('id');
         $coa = ChartOfAccounts::all();  // Get all product categories

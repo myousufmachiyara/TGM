@@ -18,8 +18,8 @@ return new class extends Migration
             $table->double('amount', 15, 2);
             $table->date('date');
             $table->string('narration', 800)->nullable(); 
-            $table->string('ref_doc', 800);
-            $table->string('ref_doc_details', 800);
+            $table->unsignedBigInteger('ref_doc_id');
+            $table->string('ref_doc_code', 800);
             $table->timestamps();
             $table->unsignedBigInteger('created_by')->default(0); 
             $table->unsignedBigInteger('updated_by')->default(0);
