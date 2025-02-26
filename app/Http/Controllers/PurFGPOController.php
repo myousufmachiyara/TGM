@@ -38,7 +38,7 @@ class PurFGPOController extends Controller
     public function store(Request $request)
     {
         \Log::info('Starting FGPO Store process', $request->all());
-    
+            
         $request->validate([
             'vendor_id' => 'required|exists:chart_of_accounts,id',
             'order_date' => 'required|date',
@@ -144,8 +144,8 @@ class PurFGPOController extends Controller
         return view('purchasing.fg-po.new-challan', compact( 'coa', 'products', 'attributes','purpos'));
     }
 
-    public function receiving(){
-        $purpos = PurFGPO::get();
+    public function receiving($id) {
+        $purpos = PurFGPO::get(); // Fetch a single record or throw 404 if not found
         return view('purchasing.fg-po.receiving', compact('purpos'));
     }
 

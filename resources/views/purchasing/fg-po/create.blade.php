@@ -410,26 +410,29 @@
         },
         dataType: "json",
         success: function (response) {
+          let rowIndex = 0; // Global counter for indexing
+
           let tableBody = $("#variationsTable tbody");
           tableBody.empty();
 
           if (response.length > 0) {
             response.forEach((product) => {
               if (product.variations.length > 0) {
-                product.variations.forEach((variation, index) => {
+                product.variations.forEach((variation, key) => {
                   let row = `<tr>
-                    <td>${index + 1}</td>
+                    <td>${rowIndex + 1}</td>
                     <td>${product.name}</td>
                     <td>
-                      <input type="hidden" name="item_order[${index}][product_id]" value="${product.id}">
-                      <input type="hidden" name="item_order[${index}][variation_id]" value="${variation.id}">
-                      <input type="hidden" name="item_order[${index}][sku]" value="${variation.sku}">
+                      <input type="hidden" name="item_order[${rowIndex}][product_id]" value="${product.id}">
+                      <input type="hidden" name="item_order[${rowIndex}][variation_id]" value="${variation.id}">
+                      <input type="hidden" name="item_order[${rowIndex}][sku]" value="${variation.sku}">
                       ${variation.sku}
                     </td>
-                    <td><input type="number" onchange="tableTotal()" name="item_order[${index}][qty]" class="form-control " placeholder="Quantity" required /></td>
+                    <td><input type="number" onchange="tableTotal()" name="item_order[${rowIndex}][qty]" class="form-control " placeholder="Quantity" required /></td>
                     <td><button class="btn btn-danger btn-sm delete-row">Delete</button></td>
                   </tr>`;
                   tableBody.append(row);
+                  rowIndex++; // Increment the global counter
                 });
               } else {
                 tableBody.append(`<tr><td colspan="5" class="text-center">No variations found for ${product.name}.</td></tr>`);
