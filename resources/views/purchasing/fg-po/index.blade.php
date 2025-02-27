@@ -11,7 +11,6 @@
           <div>
             <a class="btn btn-danger text-end" href="{{ route('pur-fgpos.new-challan') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> New Challan</a>
             <a class="btn btn-primary text-end" href="{{ route('pur-fgpos.create') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> New PO</a>
-            <a class="btn btn-success text-end" href="{{ route('pur-fgpos.rec') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> Receiving</a>
           </div>
         </header>
         <div class="card-body">

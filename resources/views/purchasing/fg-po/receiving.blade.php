@@ -40,7 +40,7 @@
                 
                 <div class="col-12 col-md-1">
                   <label>PO Item</label>
-                  <button type="button" class="d-block btn btn-success" id="generate-variations-btn" >Get Data</button>
+                  <button type="button" class="d-block btn btn-success" id="btn-get-po-data" >Get Data</button>
                 </div>
 
               </div>
@@ -89,6 +89,65 @@
       </div>
     </form>
   </div>
+  <script>
+    $("#btn-get-po-data").click(function () {
+      let tableBody = $("#variationsTable tbody");
+      tableBody.empty();
 
+      let fgpoid = $("#item_name").val(); // Get selected product IDs (array)
 
+      if (!fgpoid || fgpoid.length === 0) {
+        alert("Please select at least one item.");
+        return;
+      }
+
+      $.ajax({
+        url: `/productDetails`, // Laravel route (updated)
+        type: "POST", // Change to POST for multiple IDs
+        data: {
+          product_ids: productIds,
+          _token: $('meta[name="csrf-token"]').attr("content"), // CSRF Token
+        },
+        dataType: "json",
+        success: function (response) {
+          let rowIndex = 0; // Global counter for indexing
+
+          let tableBody = $("#variationsTable tbody");
+          tableBody.empty();
+
+          if (response.length > 0) {
+            response.forEach((product) => {
+              if (product.variations.length > 0) {
+                product.variations.forEach((variation, key) => {
+                  let row = `<tr>
+                    <td>${rowIndex + 1}</td>
+                    <td>${product.name}</td>
+                    <td>
+                      <input type="hidden" name="item_order[${rowIndex}][product_id]" value="${product.id}">
+                      <input type="hidden" name="item_order[${rowIndex}][variation_id]" value="${variation.id}">
+                      <input type="hidden" name="item_order[${rowIndex}][sku]" value="${variation.sku}">
+                      ${variation.sku}
+                    </td>
+                    <td><input type="number" onchange="tableTotal()" name="item_order[${rowIndex}][qty]" class="form-control " placeholder="Quantity" required /></td>
+                    <td><button class="btn btn-danger btn-sm delete-row">Delete</button></td>
+                  </tr>`;
+                  tableBody.append(row);
+                  rowIndex++; // Increment the global counter
+                });
+              } else {
+                tableBody.append(`<tr><td colspan="5" class="text-center">No variations found for ${product.name}.</td></tr>`);
+              }
+            });
+          } else {
+            tableBody.append(`<tr><td colspan="5" class="text-center">No variations found.</td></tr>`);
+          }
+        },
+        error: function (error) {
+          console.error("Error fetching product details:", error);
+          alert("Failed to fetch product details.");
+        }
+      });
+
+    });
+  </script>
 @endsection
