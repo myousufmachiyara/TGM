@@ -69,6 +69,10 @@ class DatabaseSeeder extends Seeder
             ['id' => 6, 'product_attribute_id' => 2 , 'value' => "Black"],
             ['id' => 7, 'product_attribute_id' => 2 , 'value' => "Blue"],
             ['id' => 8, 'product_attribute_id' => 1 , 'value' => "Free Size"],
+            ['id' => 9, 'product_attribute_id' => 1 , 'value' => "Small"],
+            ['id' => 10, 'product_attribute_id' => 1 , 'value' => "Medium"],
+            ['id' => 11, 'product_attribute_id' => 1 , 'value' => "Large"],
+            ['id' => 12, 'product_attribute_id' => 1 , 'value' => "X-Large"]
         ]);  
 
         DB::table('products')->insert([

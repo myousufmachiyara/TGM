@@ -32,12 +32,10 @@ Route::post('productDetails', [ProductsController::class, 'getProductDetails'])-
 Route::resource('pur-pos', PurPOController::class);
 Route::resource('pur-fgpos', PurFGPOController::class);
 Route::get('pur-fgpos-rec/{id}', [PurFGPOController::class, 'receiving'])->name('pur-fgpos.rec');
+Route::post('pur-fgpos-received', [PurFGPOController::class, 'storeReceiving'])->name('pur-fgpos.store-rec');
 Route::get('pur-fgpos-new-challan', [PurFGPOController::class, 'newChallan'])->name('pur-fgpos.new-challan');
 Route::get('pur-pos/print/{id}', [PurPoController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
 Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
-
-// PO Receiving
-
 
 // Vouchers
 Route::resource('jv1', JournalVoucher1Controller::class);

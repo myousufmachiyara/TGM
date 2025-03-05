@@ -11,6 +11,8 @@ use App\Models\JournalVoucher1;
 use App\Models\PurFGPOVoucherDetails;
 use App\Models\PurFGPOAttachements;
 use App\Models\Products;
+use App\Models\PurFGPORec;
+use App\Models\PurFGPORecDetails;
 
 use App\Models\ProductAttributes;
 use Illuminate\Support\Facades\DB;
@@ -145,8 +147,65 @@ class PurFGPOController extends Controller
     }
 
     public function receiving($id) {
-        $purpos = PurFGPO::get(); // Fetch a single record or throw 404 if not found
-        return view('purchasing.fg-po.receiving', compact('purpos'));
+        $purpo = PurFGPO::with('details.product', 'details.variation')->findOrFail($id);
+    
+        // Fetch total received quantity grouped by variation_id for this FGPO
+        $receivedQuantities = PurFGPORecDetails::whereHas('receiving', function ($query) use ($id) {
+            $query->where('fgpo_id', $id);
+        })->selectRaw('variation_id, SUM(qty) as total_received')
+          ->groupBy('variation_id')
+          ->pluck('total_received', 'variation_id');
+    
+        // Loop through order details and assign the received quantity
+        foreach ($purpo->details as $detail) {
+            // Get received quantity for this variation_id
+            $totalReceived = $receivedQuantities[$detail->variation_id] ?? 0;
+    
+            // Assign calculated values to be used in the Blade file
+            $detail->total_received = $totalReceived;
+        }
+    
+        return view('purchasing.fg-po.receiving', compact('purpo'));
+    }
+
+    // public function receiving($id) {
+    //     $purpo = PurFGPO::with(['details', 'details.product'])->findOrFail($id); 
+    //     return view('purchasing.fg-po.receiving', compact('purpo'));
+    // }
+
+    public function storeReceiving(Request $request) {
+        $request->validate([
+            'fgpo_id' => 'required|exists:pur_fgpos,id',
+            'rec_date' => 'required|date',
+            'received_qty' => 'required|array',
+            'received_qty.*' => 'nullable|integer|min:1',
+        ]);
+    
+        // Create a new receiving record
+        $receiving = PurFGPORec::create([
+            'fgpo_id' => $request->fgpo_id,
+            'rec_date' => $request->rec_date,
+        ]);
+    
+        // Loop through received items and store details
+        foreach ($request->received_qty as $fgpoDetailId => $receivedQty) {
+            if ($receivedQty > 0) {
+                // Fetch the ordered product details
+                $orderDetail = PurFGPODetails::find($fgpoDetailId);
+    
+                if ($orderDetail) {
+                    PurFGPORecDetails::create([
+                        'pur_fgpos_rec_id' => $receiving->id,
+                        'product_id' => $orderDetail->product_id,
+                        'variation_id' => $orderDetail->variation_id,
+                        'sku' => $orderDetail->sku ?? '',
+                        'qty' => $receivedQty,
+                    ]);
+                }
+            }
+        }
+    
+        return redirect()->route('pur-fgpos.index')->with('success', 'Receiving recorded successfully.');
     }
 
     public function print($id)
