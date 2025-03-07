@@ -25,7 +25,7 @@
                 </div>
                 <div class="col-12 col-md-2 mb-3">
                   <label>Vendor</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" name="vendor_id" id="vendor_name" required>  <!-- Added name attribute for form submission -->
+                  <select data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
                     <option value="" selected disabled>Select Vendor</option>
                     @foreach ($coa as $item)
                       <option value="{{ $item->id }}">{{ $item->name }}</option> 
@@ -54,15 +54,25 @@
             </header>
             
             <div class="card-body">
+              <div class="row">
                 <div class="col-12 col-md-2 mb-3">
                   <label>Search PO No.</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" name="vendor_id" id="vendor_name" required>  <!-- Added name attribute for form submission -->
+                  <select data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
                     <option value="" selected disabled>Select PO</option>
                     @foreach ($fgpo as $item)
                       <option value="{{ $item->id }}">{{ $item->doc_code }} - {{ $item->id }}  </option> 
                     @endforeach
                   </select>
                 </div>
+                <div class="col-12 col-md-1">
+                  <label>PO Details</label>
+                  <button type="button" class="d-block btn btn-success">Get Details</button>
+                </div>
+                <div class="col-12 col-md-1">
+                  <label>Refresh</label>
+                  <button type="button" class="d-block btn btn-danger"><i class="bx bx-refresh"></i></button>
+                </div>
+              </div>
               <table class="table table-bordered" id="myTable">
                 <thead>
                   <tr>
