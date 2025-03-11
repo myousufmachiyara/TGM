@@ -21,6 +21,7 @@ class Products extends Model
         'price',
         'sale_price',
         'purchase_note',
+        'item_type'
     ];
 
     public function category()

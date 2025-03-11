@@ -13,7 +13,7 @@ class JournalVoucher1Controller extends Controller
     public function index()
     {
         $jv1 = JournalVoucher1::with(['debitAccount', 'creditAccount', 'voucherDetails'])->paginate(10);
-        return view('jv1.index', compact('jv1'));
+        return view('finance.jv1.index', compact('jv1'));
     }
 
     /**

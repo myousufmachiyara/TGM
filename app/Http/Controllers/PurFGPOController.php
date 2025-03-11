@@ -211,7 +211,7 @@ class PurFGPOController extends Controller
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurFGPO::with(['vendor', 'details.product', 'attachments','details.product'])->findOrFail($id);
+        $purpos = PurFGPO::with(['vendor', 'details.product','details.variation.attribute_values' ,'attachments'])->findOrFail($id);
 
         if (!$purpos) {
             abort(404, 'Purchase Order not found.');
@@ -264,12 +264,10 @@ class PurFGPOController extends Controller
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:10px">
             <tr>
-                <th width="6%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
+                <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
+                <th width="40%" style="font-size:10px;font-weight:bold;color:#17365D">Product</th>
+                <th width="40%" style="font-size:10px;font-weight:bold;color:#17365D">Variation</th>
                 <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
-                <th width="30%" style="font-size:10px;font-weight:bold;color:#17365D">Product Name</th>
-                <th width="30%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
-                <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
-                <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
             </tr>
        ';
     
@@ -278,37 +276,24 @@ class PurFGPOController extends Controller
         $count = 1;
     
         foreach ($purpos->details as $item) {
-            $product_name = $item->category->name ?? 'N/A'; // Fetch product name safely
+            $product_name = $item->product->name ?? 'N/A';
+            $variation_name = 'N/A';
+            if ($item->variation && $item->variation->attribute_values) {
+                $variation_name = $item->variation->attribute_values->value ?? 'N/A';
+            }
             $product_m_unit = $item->product->measurement_unit ?? 'N/A'; // Assuming 'measurement_unit' is the column name
-            $description = $item->product->description ?? 'N/A'; // Assuming 'measurement_unit' is the column name
 
-            $total = $item->item_rate * $item->item_qty;
-            $total_amount += $total;
-    
             $html .= '<tr>
-                <td width="6%" style="font-size:10px;text-align:center;">'.$count.'</td>
-                <td width="10%" style="font-size:10px;text-align:center;">'.$item->item_qty." ".$product_m_unit.'</td>
-                <td width="30%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
-                <td width="30%" style="font-size:10px;">'.$description.'</td>
-                <td width="12%" style="font-size:10px;text-align:center;">'.$item->item_rate.'</td>
-                <td width="12%" style="font-size:10px;text-align:center;">'.$total.'</td>
+                <td width="10%" style="font-size:10px;text-align:center;">'.$count.'</td>
+                <td width="40%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
+                <td width="40%" style="font-size:10px;text-align:center;">'.$variation_name.'</td>
+                <td width="10%" style="font-size:10px;text-align:center;">'.$item->qty." ".$product_m_unit.'</td>
             </tr>';
             $count++;
         }
     
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
-    
-        // Summary Table
-        $net_amount = round($total_amount + $purpos->other_exp - $purpos->bill_discount);
-        
-        $summary = '<table border="1" cellpadding="5" width="50%">
-            <tr><td><b>Total Amount:</b></td><td>'.$total_amount.'</td></tr>
-            <tr><td><b>Other Expenses:</b></td><td>'.$purpos->other_exp.'</td></tr>
-            <tr><td><b>Discount:</b></td><td>'.$purpos->bill_discount.'</td></tr>
-            <tr><td><b>Net Amount:</b></td><td>'.$net_amount.'</td></tr>
-        </table>';
-        $pdf->writeHTML($summary, true, false, true, false, '');
     
         // Attachments (Images)
         $pdf->Ln(5);
@@ -324,24 +309,23 @@ class PurFGPOController extends Controller
             }
         }
     
-        // Signature Section
-        $pdf->Ln(30);
-        $pdf->SetFont('helvetica', '', 12);
-        
+        // Move to the bottom of the page
+        $pdf->SetY(-50); // Adjust value if needed to position correctly
+
         $lineWidth = 60; // Line width in mm
         $yPosition = $pdf->GetY(); // Get current Y position for alignment
-        
+
         // Draw lines for signatures
-        $pdf->Line(30, $yPosition, 30 + $lineWidth, $yPosition); // Approved By
-        $pdf->Line(130, $yPosition, 130 + $lineWidth, $yPosition); // Received By
-    
+        $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition); // Approved By
+        $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition); // Received By
+
         $pdf->Ln(5); // Move cursor below the line
-        
+
         // Text below the lines
-        $pdf->SetXY(30, $yPosition + 5);
+        $pdf->SetXY(23, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
-    
-        $pdf->SetXY(130, $yPosition + 5);
+
+        $pdf->SetXY(125, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
     
         // Output the PDF

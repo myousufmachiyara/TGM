@@ -18,86 +18,86 @@
           </header>
           <div class="card-body">
             <div class="row pb-3">
-				<div class="col-12 col-md-2 mb-2">
-					<label class="text-lg-end mb-0">Product Name <span style="color: red;"><strong>*</strong></span></label>
-					<input type="text" class="form-control" placeholder="Product Name" name="name" value="{{ old('name') }}" required>
-					@error('name')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-2 mb-2">
+                <label class="text-lg-end mb-0">Product Name <span style="color: red;"><strong>*</strong></span></label>
+                <input type="text" class="form-control" placeholder="Product Name" name="name" value="{{ old('name') }}" required>
+                @error('name')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-2 mb-2">
-					<label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
-					<input type="text" class="form-control" id="base-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" required />
-					@error('sku')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-2 mb-2">
+                <label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
+                <input type="text" class="form-control" id="base-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" required />
+                @error('sku')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-2 mb-2">
-					<label>Category <span style="color: red;"><strong>*</strong></span></label>
-					<select data-plugin-selecttwo class="form-control select2-js" name="category_id" required>
-						<option value="" selected disabled>Select Category</option>
-						@foreach ($prodCat as $item)
-							<option value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-						@endforeach
-					</select>
-					@error('category_id')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-2 mb-2">
+                <label>Category <span style="color: red;"><strong>*</strong></span></label>
+                <select data-plugin-selecttwo class="form-control select2-js" name="category_id" required>
+                  <option value="" selected disabled>Select Category</option>
+                  @foreach ($prodCat as $item)
+                    <option value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                  @endforeach
+                </select>
+                @error('category_id')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-2 mb-2">
-					<label>Unit</label>
-					<select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">
-						<option value="" selected disabled>Select Unit</option>
-						<option value="mtr" {{ old('measurement_unit') == 'mtr' ? 'selected' : '' }}>meter</option>
-						<option value="pcs" {{ old('measurement_unit') == 'pcs' ? 'selected' : '' }}>pieces</option> 
-						<option value="yrd" {{ old('measurement_unit') == 'yrd' ? 'selected' : '' }}>yards</option> 
-						<option value="rd" {{ old('measurement_unit') == 'rd' ? 'selected' : '' }}>round</option> 
-					</select>
-					@error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-2 mb-2">
+                <label>Unit</label>
+                <select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">
+                  <option value="" selected disabled>Select Unit</option>
+                  <option value="mtr" {{ old('measurement_unit') == 'mtr' ? 'selected' : '' }}>meter</option>
+                  <option value="pcs" {{ old('measurement_unit') == 'pcs' ? 'selected' : '' }}>pieces</option> 
+                  <option value="yrd" {{ old('measurement_unit') == 'yrd' ? 'selected' : '' }}>yards</option> 
+                  <option value="rd" {{ old('measurement_unit') == 'rd' ? 'selected' : '' }}>round</option> 
+                </select>
+                @error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-1 mb-2">
-					<label>Item Type</label>
-					<select data-plugin-selecttwo class="form-control select2-js" name="item_type">
-						<option value="" selected disabled>Item Type</option>
-						<option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
-						<option value="raw" {{ old('item_type') == 'raw' ? 'selected' : '' }}>Raw</option> 
-					</select>
-					@error('item_type')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-1 mb-2">
+                <label>Item Type</label>
+                <select data-plugin-selecttwo class="form-control select2-js" name="item_type">
+                  <option value="" selected disabled>Item Type</option>
+                  <option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
+                  <option value="raw" {{ old('item_type') == 'raw' ? 'selected' : '' }}>Raw</option> 
+                </select>
+                @error('item_type')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-1 mb-2">
-					<label>Purchase Price</label>
-					<input type="number" step=".00" class="form-control" value="{{ old('price', '0.00') }}" name="price" required />
-					@error('price')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-1 mb-2">
+                <label>Purchase Price</label>
+                <input type="number" step=".00" class="form-control" value="{{ old('price', '0.00') }}" name="price" required />
+                @error('price')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-1 mb-2">
-					<label>Sale Price</label>
-					<input type="number" step=".00" class="form-control" value="{{ old('sale_price', '0.00') }}" name="sale_price" required />
-					@error('sale_price')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-1 mb-2">
+                <label>Sale Price</label>
+                <input type="number" step=".00" class="form-control" value="{{ old('sale_price', '0.00') }}" name="sale_price" required />
+                @error('sale_price')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-1 mb-2">
-					<label>Opening Stock</label>
-					<input type="number" step=".00" class="form-control" value="{{ old('opening_stock', '0') }}" name="opening_stock" required />
-					@error('opening_stock')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-1 mb-2">
+                <label>Opening Stock</label>
+                <input type="number" step=".00" class="form-control" value="{{ old('opening_stock', '0') }}" name="opening_stock" required />
+                @error('opening_stock')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-6 mb-2">
-					<label>Description</label>
-					<textarea class="form-control" rows="3" placeholder="Description" name="description">{{ old('description') }}</textarea>
-					@error('description')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-6 mb-2">
+                <label>Description</label>
+                <textarea class="form-control" rows="3" placeholder="Description" name="description">{{ old('description') }}</textarea>
+                @error('description')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 
-				<div class="col-12 col-md-6 mb-2">
-					<label>Purchase Note</label>
-					<textarea class="form-control" rows="3" placeholder="Purchase Note" name="purchase_note">{{ old('purchase_note') }}</textarea>
-					@error('purchase_note')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-6 mb-2">
+                <label>Purchase Note</label>
+                <textarea class="form-control" rows="3" placeholder="Purchase Note" name="purchase_note">{{ old('purchase_note') }}</textarea>
+                @error('purchase_note')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
 				
-				<div class="col-12 col-md-3 mb-2">
-					<label>Images</label>
-					<input type="file" class="form-control" name="prod_att[]" multiple accept="image/png, image/jpeg, image/jpg">
-					@error('prod_att')<div class="text-danger">{{ $message }}</div>@enderror
-				</div>
+              <div class="col-12 col-md-3 mb-2">
+                <label>Images</label>
+                <input type="file" class="form-control" name="prod_att[]" multiple accept="image/png, image/jpeg, image/jpg">
+                @error('prod_att')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
             </div>
           </div>
 
@@ -105,14 +105,15 @@
           <div class="card-body">
             <div class="card-title mb-3" style="display:inline-block">
               Product Has Variations
-              <input type="checkbox" id="toggleTableSwitch" onchange="toggleVariationFields()">
+              <input type="hidden" id="hasVariationsHidden" name="has_variations" value="0">
+              <input type="checkbox" id="toggleTableSwitch" value="1" onchange="toggleVariationFields()">
             </div>
 
             <div id="prodVariationsDiv" style="display:none">
               <div class="row">
                 <div class="col-12 col-md-3">
                   <label>Variation</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" id="attributeSelect" name="variations[0][attribute_id]" required>
+                  <select data-plugin-selecttwo class="form-control select2-js" id="attributeSelect" name="variations[0][attribute_id]">
                     <option value="" selected disabled>Select Variation</option>
                     @foreach ($attributes as $item)
                       <option value="{{ $item->id }}" {{ old('variations.0.attribute_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
@@ -123,7 +124,7 @@
 
                 <div class="col-12 col-md-3 mb-2">
                   <label>Values</label>
-                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect" required>
+                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect">
                     <option value="" disabled>Values</option>
                   </select>
                   @error('variations.0.value_id')<div class="text-danger">{{ $message }}</div>@enderror
@@ -162,80 +163,107 @@
     </div>
   </div>
 
-<script>
-  // Toggle variation fields
-  function toggleVariationFields() {
-    const isChecked = document.getElementById('toggleTableSwitch').checked;
-    const variationsDiv = document.getElementById('prodVariationsDiv');
-    variationsDiv.style.display = isChecked ? 'block' : 'none';
-  }
+  <script>
+    // Toggle variation fields
+    function toggleVariationFields() {
+      const isChecked = document.getElementById('toggleTableSwitch').checked;
+      const variationsDiv = document.getElementById('prodVariationsDiv');
+      const hasVariationsHidden = document.getElementById('hasVariationsHidden'); // Hidden input field
 
-  $(document).ready(function () {
-    // Initialize Select2
-    $('.select2-js').select2();
+      variationsDiv.style.display = isChecked ? 'block' : 'none';
 
-    // Define attribute-values from Laravel Blade
-    let attributeValues = @json($attributes);
+      // Update the hidden input value
+      hasVariationsHidden.value = isChecked ? "1" : "0";
 
-    // Populate values dropdown when attribute changes
-    $("#attributeSelect").change(function () {
-      let selectedAttributeId = $(this).val();
-      let valuesDropdown = $("#valueSelect");
+      // Get variation fields
+      const attributeSelect = document.getElementById('attributeSelect');
+      const valueSelect = document.getElementById('valueSelect');
 
-      valuesDropdown.empty(); // Clear existing options
+      if (isChecked) {
+        attributeSelect.setAttribute("required", "required");
+        
+        // Custom required check for multiple select
+        valueSelect.onchange = function() {
+          if (valueSelect.selectedOptions.length === 0) {
+            valueSelect.setCustomValidity("Please select at least one variation value.");
+          } else {
+            valueSelect.setCustomValidity("");
+          }
+        };
+      } else {
+        attributeSelect.removeAttribute("required");
+        valueSelect.onchange = null;
+        valueSelect.setCustomValidity(""); // Reset custom validity
 
-      if (selectedAttributeId) {
-        let selectedAttribute = attributeValues.find(attr => attr.id == selectedAttributeId);
-        if (selectedAttribute && selectedAttribute.values.length > 0) {
-          selectedAttribute.values.forEach(function (value) {
-            valuesDropdown.append('<option value="' + value.id + '">' + value.value + '</option>');
-          });
-        }
+        $("#variationsTable tbody").empty(); // Clear variation table
       }
-      valuesDropdown.trigger("change"); // Refresh Select2 UI
-    });
+    }
 
-    // Add selected variations to the table
-    $("#generate-variations-btn").click(function () {
+    $(document).ready(function () {
+      // Initialize Select2
+      $('.select2-js').select2();
 
-      let selectedAttributeText = $("#attributeSelect option:selected").text();
-      let selectedAttributeId = $("#attributeSelect option:selected").val();
-      let selectedValues = $("#valueSelect").val(); // Get selected values
-      let tableBody = $("#variationsTable tbody");
+      // Define attribute-values from Laravel Blade
+      let attributeValues = @json($attributes);
 
-      tableBody.empty();
-      
-      if (!selectedAttributeText || selectedValues.length === 0) {
-        alert("Please select an attribute and at least one value.");
-        return;
-      }
+      // Populate values dropdown when attribute changes
+      $("#attributeSelect").change(function () {
+        let selectedAttributeId = $(this).val();
+        let valuesDropdown = $("#valueSelect");
 
-      selectedValues.forEach((valueId, index) => { // Added index here
-        let valueText = $("#valueSelect option[value='" + valueId + "']").text();
+        valuesDropdown.empty(); // Clear existing options
 
-        // Prevent duplicate entries
-        if ($("#variationsTable tbody tr[data-value='" + valueId + "']").length === 0) {
-            let row = `
-            <tr data-value="${valueId}"> 
-              <td>${index + 1}. ${selectedAttributeText}: ${valueText}
-                <input type="hidden" class="form-control" name="variations[${index}][attribute_id]" value="1" required>
-                <input type="hidden" class="form-control" name="variations[${index}][variation_value_id]" value="${valueId}" required>
-              </td>
-              <td><input type="number" class="form-control" name="variations[${index}][stock]" required></td>
-              <td><input type="number" class="form-control" name="variations[${index}][price]" required></td>
-              <td><input type="text" class="form-control" name="variations[${index}][sku]" required></td>
-              <td><button class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
-            </tr>`;
-            tableBody.append(row);
+        if (selectedAttributeId) {
+          let selectedAttribute = attributeValues.find(attr => attr.id == selectedAttributeId);
+          if (selectedAttribute && selectedAttribute.values.length > 0) {
+            selectedAttribute.values.forEach(function (value) {
+              valuesDropdown.append('<option value="' + value.id + '">' + value.value + '</option>');
+            });
+          }
         }
+        valuesDropdown.trigger("change"); // Refresh Select2 UI
+      });
+
+      // Add selected variations to the table
+      $("#generate-variations-btn").click(function () {
+
+        let selectedAttributeText = $("#attributeSelect option:selected").text();
+        let selectedAttributeId = $("#attributeSelect option:selected").val();
+        let selectedValues = $("#valueSelect").val(); // Get selected values
+        let tableBody = $("#variationsTable tbody");
+
+        tableBody.empty();
+        
+        if (!selectedAttributeText || selectedValues.length === 0) {
+          alert("Please select an attribute and at least one value.");
+          return;
+        }
+
+        selectedValues.forEach((valueId, index) => { // Added index here
+          let valueText = $("#valueSelect option[value='" + valueId + "']").text();
+
+          // Prevent duplicate entries
+          if ($("#variationsTable tbody tr[data-value='" + valueId + "']").length === 0) {
+              let row = `
+              <tr data-value="${valueId}"> 
+                <td>${index + 1}. ${selectedAttributeText}: ${valueText}
+                  <input type="hidden" class="form-control" name="variations[${index}][attribute_id]" value="1" required>
+                  <input type="hidden" class="form-control" name="variations[${index}][attribute_value_id]" value="${valueId}" required>
+                </td>
+                <td><input type="number" class="form-control" name="variations[${index}][stock]" required></td>
+                <td><input type="number" class="form-control" name="variations[${index}][price]" required></td>
+                <td><input type="text" class="form-control" name="variations[${index}][sku]" required></td>
+                <td><button class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
+              </tr>`;
+              tableBody.append(row);
+          }
+        });
+      });
+
+      // Remove row from table
+      $(document).on("click", ".remove-btn", function () {
+        $(this).closest("tr").remove();
       });
     });
-
-    // Remove row from table
-    $(document).on("click", ".remove-btn", function () {
-      $(this).closest("tr").remove();
-    });
-  });
-</script>
-
+  </script>
 @endsection

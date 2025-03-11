@@ -28,6 +28,58 @@ class ProductsController extends Controller
         return view('products.create', compact('prodCat','attributes'));
     }
 
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $validatedData = $request->validate([
+    //             'name' => 'required|string|max:255',
+    //             'sku' => 'required|string|max:255|unique:products,sku',
+    //             'category_id' => 'required|exists:product_categories,id',
+    //             'price' => 'required|numeric|min:0',
+    //             'sale_price' => 'required|numeric|min:0',
+    //             'opening_stock' => 'required|numeric|min:0',
+    //             'measurement_unit' => 'nullable|string|max:50',
+    //             'description' => 'nullable|string',
+    //             'purchase_note' => 'nullable|string',
+    //             'prod_att' => 'nullable|array',
+    //             'prod_att.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    //             'item_type' => 'nullable|string|max:50',
+    //          ]);
+    
+    //         // Create the product
+    //         $product = Products::create($validatedData);
+    
+    //         // Handle variations
+    //         if ($request->has('has_variations') && $request->has_variations == 1) {
+    //             $validatedVariations = $request->validate([
+    //                 'variations' => 'required|array|min:1',
+    //                 'variations.*.sku' => 'required|string|max:255|unique:product_variations,sku',
+    //                 'variations.*.price' => 'required|numeric|min:0',
+    //                 'variations.*.stock' => 'required|numeric|min:0',
+    //                 'variations.*.attribute_id' => 'required|exists:product_attributes,id',
+    //                 'variations.*.attribute_value_id' => 'required|exists:product_attributes_values,id',
+    //             ]);
+    
+    //             foreach ($validatedVariations['variations'] as $variation) {
+    //                 foreach ($variation['attribute_value_id'] as $valueId) { // Handle multiple values
+    //                     ProductVariation::create([
+    //                         'product_id' => $product->id,
+    //                         'sku' => $variation['sku'],
+    //                         'price' => $variation['price'],
+    //                         'stock' => $variation['stock'],
+    //                         'attribute_id' => $variation['attribute_id'],
+    //                         'attribute_value_id' => $valueId, // Save each value separately
+    //                     ]);
+    //                 }
+    //             }
+    //         }
+    
+    //         return redirect()->route('products.index')->with('success', 'Product created successfully.');
+    //     } catch (\Exception $e) {
+    //         return back()->withErrors(['error' => $e->getMessage()])->withInput();
+    //     }
+    // }
+    
     public function store(Request $request)
     {
         try {
@@ -50,7 +102,7 @@ class ProductsController extends Controller
                 'variations.*.price' => 'required|numeric|min:0',
                 'variations.*.stock' => 'required|numeric|min:0',
                 'variations.*.attribute_id' => 'required|exists:product_attributes,id',
-                'variations.*.variation_value_id' => 'required|exists:product_attributes_values,id',
+                'variations.*.attribute_value_id' => 'required|exists:product_attributes_values,id',
             ]);
     
             // Create the product
@@ -65,7 +117,7 @@ class ProductsController extends Controller
                         'price' => $variation['price'],
                         'stock' => $variation['stock'],
                         'attribute_id' => $variation['attribute_id'],
-                        'variation_value_id' => $variation['variation_value_id'],
+                        'attribute_value_id' => $variation['attribute_value_id'],
                     ]);
                 }
             }
@@ -86,9 +138,8 @@ class ProductsController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-    }
+    } 
     
-   
     public function show($id)
     {
         // Find the product by ID

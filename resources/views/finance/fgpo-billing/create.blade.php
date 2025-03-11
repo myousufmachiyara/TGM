@@ -52,13 +52,12 @@
             <header class="card-header">
               <h2 class="card-title">Bill Details</h2>
             </header>
-            
             <div class="card-body">
               <div class="row">
-                <div class="col-12 col-md-2 mb-3">
+                <div class="col-12 col-md-4 mb-3">
                   <label>Search PO No.</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
-                    <option value="" selected disabled>Select PO</option>
+                  <select multiple data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
+                    <option value="" disabled>Select PO</option>
                     @foreach ($fgpo as $item)
                       <option value="{{ $item->id }}">{{ $item->doc_code }} - {{ $item->id }}  </option> 
                     @endforeach
@@ -88,7 +87,7 @@
                     <th>Adjustment</th>
                   </tr>
                 </thead>
-                <tbody id="PurPOTbleBody">
+                <tbody id="POBillTbleBody">
                
                 </tbody>
               </table>
@@ -102,5 +101,26 @@
       </div>
     </form>
   </div>
-
+  <script>
+    function getPODetails(){    
+      var itemId;
+      if(option==1){
+        itemId = document.getElementById("item_code"+row_no).value;
+      }
+      else if(option==2){
+        itemId = document.getElementById("item_name"+row_no).value;
+      }
+      $.ajax({
+        type: "GET",
+        url: "/items/detail",
+        data: {id:itemId},
+        success: function(result){
+         
+        },
+        error: function(){
+          alert("error");
+        }
+      });
+    }
+  </script>
 @endsection
