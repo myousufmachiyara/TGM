@@ -61,10 +61,22 @@
               <span>Finance</span>
             </a>
             <ul class="nav nav-children">
-              <li><a class="nav-link" href="{{ route('fgpo-bills.index') }}"> PO Bills</a></li>	
+              <li><a class="nav-link" href="{{ route('fgpo-bills.index') }}"> PO Bills </a></li>	
               <li><a class="nav-link" href="{{ route('jv1.index') }}"> Journal Voucher</a></li>	
-              <li><a class="nav-link"> Expenses</a></li>	
-              <li><a class="nav-link"> Post Date Cheques</a></li>	
+              <li><a class="nav-link"> Expenses </a></li>	
+              <li><a class="nav-link"> Post Date Cheques </a></li>	
+            </ul>
+          </li>
+
+          <li class="nav-parent">
+            <a class="nav-link" href="#">
+              <i style="font-size:16px" class="fa fa-file" aria-hidden="true"></i>
+              <span>Reports</span>
+            </a>
+            <ul class="nav nav-children">
+              <li><a class="nav-link"> Fabric </a></li>	
+              <li><a class="nav-link"> Finish Goods </a></li>	
+              <li><a class="nav-link"> Units </a></li>	
             </ul>
           </li>
         </ul>	

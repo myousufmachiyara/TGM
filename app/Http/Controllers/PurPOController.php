@@ -268,24 +268,23 @@ class PurPOController extends Controller
             }
         }
     
-        // Signature Section
-        $pdf->Ln(30);
-        $pdf->SetFont('helvetica', '', 12);
-        
+        // Move to the bottom of the page
+        $pdf->SetY(-50); // Adjust value if needed to position correctly
+
         $lineWidth = 60; // Line width in mm
         $yPosition = $pdf->GetY(); // Get current Y position for alignment
-        
+
         // Draw lines for signatures
-        $pdf->Line(30, $yPosition, 30 + $lineWidth, $yPosition); // Approved By
-        $pdf->Line(130, $yPosition, 130 + $lineWidth, $yPosition); // Received By
-    
+        $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition); // Approved By
+        $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition); // Received By
+
         $pdf->Ln(5); // Move cursor below the line
-        
+
         // Text below the lines
-        $pdf->SetXY(30, $yPosition + 5);
+        $pdf->SetXY(23, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
-    
-        $pdf->SetXY(130, $yPosition + 5);
+
+        $pdf->SetXY(125, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
     
         // Output the PDF
