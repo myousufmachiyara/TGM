@@ -56,16 +56,16 @@
               <div class="row">
                 <div class="col-12 col-md-4 mb-3">
                   <label>Search PO No.</label>
-                  <select multiple data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
+                  <select multiple data-plugin-selecttwo class="form-control select2-js" id="poSelect" required>  <!-- Added name attribute for form submission -->
                     <option value="" disabled>Select PO</option>
                     @foreach ($fgpo as $item)
-                      <option value="{{ $item->id }}">{{ $item->doc_code }} - {{ $item->id }}  </option> 
+                      <option value="{{$item->id}}">{{$item->doc_code}}-{{$item->id}} </option> 
                     @endforeach
                   </select>
                 </div>
                 <div class="col-12 col-md-1">
                   <label>PO Details</label>
-                  <button type="button" class="d-block btn btn-success">Get Details</button>
+                  <button type="button" class="d-block btn btn-success" onclick="getPODetails()">Get Details</button>
                 </div>
                 <div class="col-12 col-md-1">
                   <label>Refresh</label>
@@ -102,23 +102,30 @@
     </form>
   </div>
   <script>
-    function getPODetails(){    
-      var itemId;
-      if(option==1){
-        itemId = document.getElementById("item_code"+row_no).value;
+    function getPODetails() {
+      var selectedPOs = $("#poSelect").val().map(Number); // Convert to integers
+
+      if (selectedPOs.length === 0) {
+        alert("Please select at least one PO.");
+        return;
       }
-      else if(option==2){
-        itemId = document.getElementById("item_name"+row_no).value;
-      }
+
       $.ajax({
         type: "GET",
-        url: "/items/detail",
-        data: {id:itemId},
-        success: function(result){
-         
+        url: "{{ route('pur-fgpos.get-details') }}", 
+        data: { po_ids: selectedPOs }, 
+        success: function(response) {
+          console.log(response);
+
+          // if (response.success) {
+          //   console.log(response.summary);
+          // } else {
+          //   alert(response.message);
+          // }
         },
-        error: function(){
-          alert("error");
+        error: function(xhr, status, error) {
+          console.error("AJAX Error:", xhr.responseText);
+          alert("Error retrieving PO details.");
         }
       });
     }

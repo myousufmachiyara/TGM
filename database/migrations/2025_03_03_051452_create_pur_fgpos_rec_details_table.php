@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('sku');
             $table->unsignedBigInteger('qty');
             $table->timestamps();
-            $table->softDeletes();
 
             $table->foreign('pur_fgpos_rec_id')->references('id')->on('pur_fgpos_rec')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');

@@ -208,6 +208,90 @@ class PurFGPOController extends Controller
         return redirect()->route('pur-fgpos.index')->with('success', 'Receiving recorded successfully.');
     }
 
+    public function getDetails(Request $request)
+    {
+        try {
+            $poIds = array_map('intval', (array) $request->input('po_ids'));
+
+            if (empty($poIds)) {
+                return response()->json(['success' => false, 'message' => 'No PO selected']);
+            }
+
+            // Fetch Ordered Product Data
+            $orderedProducts = PurFGPODetails::whereIn('fgpo_id', $poIds)
+                ->with('product')
+                ->select('fgpo_id', 'product_id', DB::raw('SUM(qty) as total_qty'))
+                ->groupBy('fgpo_id', 'product_id')
+                ->get();
+
+            if ($orderedProducts->isEmpty()) {
+                return response()->json(['success' => false, 'message' => 'No data found in PurFGPODetails']);
+            }
+
+            // Fetch Fabric Details
+            $fabricDetails = PurFGPOVoucherDetails::select(
+                'pur_fgpos_voucher_details.fgpo_id',
+                'pur_fgpos_voucher_details.product_id',
+                DB::raw('SUM(pur_fgpos_voucher_details.qty) as total_fabric_qty'),
+                DB::raw('AVG(pur_fgpos_voucher_details.rate) as fabric_rate'),
+                DB::raw('SUM(pur_fgpos_voucher_details.qty * pur_fgpos_voucher_details.rate) as total_fabric_amount'),
+                'products.name as fabric_name'
+            )
+            ->leftJoin('products', 'pur_fgpos_voucher_details.product_id', '=', 'products.id')
+            ->whereIn('pur_fgpos_voucher_details.fgpo_id', $poIds)
+            ->groupBy('pur_fgpos_voucher_details.fgpo_id', 'pur_fgpos_voucher_details.product_id', 'products.name')
+            ->get();
+                    
+            // Fetch Received Quantity
+            $receivedQty = DB::table('pur_fgpos_rec_details')
+                ->select('product_id', DB::raw('SUM(qty) as total_received_qty'))
+                ->whereIn('pur_fgpos_rec_id', function ($query) use ($poIds) {
+                    $query->select('id')
+                        ->from('pur_fgpos_rec')
+                        ->whereIn('fgpo_id', $poIds);
+                })
+                ->groupBy('product_id')
+                ->get();
+
+            // Group Summary Data by PO ID
+            $summary = $orderedProducts->groupBy('fgpo_id')->map(function ($products, $fgpo_id) use ($fabricDetails, $receivedQty) {
+                return [
+                    'fgpo_id' => $fgpo_id,
+                    'products' => $products->map(function ($product) use ($fabricDetails, $receivedQty, $fgpo_id) {
+                        $fabric = $fabricDetails->where('fgpo_id', $fgpo_id)->where('product_id', $product->product_id)->first();
+                        $received = $receivedQty->where('product_id', $product->product_id)->first();
+            
+                        return [
+                            'product_name' => optional($product->product)->name ?? 'N/A',
+                            'ordered_qty' => $product->total_qty,
+                            'fabric_name' => $fabric->fabric_name ?? 'N/A', // ✅ FIXED
+                            'fabric_qty' => $fabric->total_fabric_qty ?? 0,
+                            'fabric_rate' => $fabric->fabric_rate ?? 0,
+                            'fabric_amount' => $fabric->total_fabric_amount ?? 0,
+                            'received_qty' => $received->total_received_qty ?? 0,
+                        ];
+                    })->values()
+                ];
+            })->values();
+
+            return response()->json([
+                'success' => true,
+                'summary' => $summary
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error fetching PO details:', ['error' => $e->getMessage(), 'line' => $e->getLine()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving PO details.',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+        }
+    }
+
+    
     public function print($id)
     {
         // Fetch the purchase order with related data
