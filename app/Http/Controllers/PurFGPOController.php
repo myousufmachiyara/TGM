@@ -212,37 +212,38 @@ class PurFGPOController extends Controller
     {
         try {
             $poIds = array_map('intval', (array) $request->input('po_ids'));
-
+    
             if (empty($poIds)) {
                 return response()->json(['success' => false, 'message' => 'No PO selected']);
             }
-
-            // Fetch Ordered Product Data
+    
+            // 🚀 Fetch FG (Finished Goods) Product Details
             $orderedProducts = PurFGPODetails::whereIn('fgpo_id', $poIds)
-                ->with('product')
+                ->with('product:id,name')
                 ->select('fgpo_id', 'product_id', DB::raw('SUM(qty) as total_qty'))
                 ->groupBy('fgpo_id', 'product_id')
                 ->get();
-
+    
             if ($orderedProducts->isEmpty()) {
                 return response()->json(['success' => false, 'message' => 'No data found in PurFGPODetails']);
             }
-
-            // Fetch Fabric Details
+    
+            // 🚀 Fetch Fabric Details for each Purchase Order (PO)
             $fabricDetails = PurFGPOVoucherDetails::select(
-                'pur_fgpos_voucher_details.fgpo_id',
-                'pur_fgpos_voucher_details.product_id',
-                DB::raw('SUM(pur_fgpos_voucher_details.qty) as total_fabric_qty'),
-                DB::raw('AVG(pur_fgpos_voucher_details.rate) as fabric_rate'),
-                DB::raw('SUM(pur_fgpos_voucher_details.qty * pur_fgpos_voucher_details.rate) as total_fabric_amount'),
+                'fgpo_id',
+                'product_id',
+                DB::raw('SUM(qty) as total_fabric_qty'),
+                DB::raw('AVG(rate) as fabric_rate'),
+                DB::raw('SUM(qty * rate) as total_fabric_amount'),
                 'products.name as fabric_name'
             )
             ->leftJoin('products', 'pur_fgpos_voucher_details.product_id', '=', 'products.id')
-            ->whereIn('pur_fgpos_voucher_details.fgpo_id', $poIds)
-            ->groupBy('pur_fgpos_voucher_details.fgpo_id', 'pur_fgpos_voucher_details.product_id', 'products.name')
-            ->get();
-                    
-            // Fetch Received Quantity
+            ->whereIn('fgpo_id', $poIds)
+            ->groupBy('fgpo_id', 'product_id', 'products.name')
+            ->get()
+            ->groupBy('fgpo_id'); // ✅ Grouping by PO ID to return multiple fabrics per PO
+    
+            // 🚀 Fetch Received Quantity (if applicable)
             $receivedQty = DB::table('pur_fgpos_rec_details')
                 ->select('product_id', DB::raw('SUM(qty) as total_received_qty'))
                 ->whereIn('pur_fgpos_rec_id', function ($query) use ($poIds) {
@@ -251,36 +252,43 @@ class PurFGPOController extends Controller
                         ->whereIn('fgpo_id', $poIds);
                 })
                 ->groupBy('product_id')
-                ->get();
-
-            // Group Summary Data by PO ID
+                ->get()
+                ->keyBy('product_id'); // ✅ Quick lookup by product_id
+    
+            // 🚀 Group and Format Data by PO ID
             $summary = $orderedProducts->groupBy('fgpo_id')->map(function ($products, $fgpo_id) use ($fabricDetails, $receivedQty) {
                 return [
                     'fgpo_id' => $fgpo_id,
-                    'products' => $products->map(function ($product) use ($fabricDetails, $receivedQty, $fgpo_id) {
-                        $fabric = $fabricDetails->where('fgpo_id', $fgpo_id)->where('product_id', $product->product_id)->first();
-                        $received = $receivedQty->where('product_id', $product->product_id)->first();
-            
+                    'fabrics' => $fabricDetails->get($fgpo_id, collect())->map(function ($fabric) {
                         return [
-                            'product_name' => optional($product->product)->name ?? 'N/A',
-                            'ordered_qty' => $product->total_qty,
-                            'fabric_name' => $fabric->fabric_name ?? 'N/A', // ✅ FIXED
+                            'fabric_name' => $fabric->fabric_name ?? 'N/A',
                             'fabric_qty' => $fabric->total_fabric_qty ?? 0,
                             'fabric_rate' => $fabric->fabric_rate ?? 0,
                             'fabric_amount' => $fabric->total_fabric_amount ?? 0,
-                            'received_qty' => $received->total_received_qty ?? 0,
+                        ];
+                    })->values(),
+                    'products' => $products->map(function ($product) use ($receivedQty) {
+                        return [
+                            'product_name' => optional($product->product)->name ?? 'N/A',
+                            'ordered_qty' => $product->total_qty,
+                            'received_qty' => $receivedQty->get($product->product_id)->total_received_qty ?? 0,
                         ];
                     })->values()
                 ];
             })->values();
-
+    
             return response()->json([
                 'success' => true,
                 'summary' => $summary
             ]);
-
+    
         } catch (\Exception $e) {
-            \Log::error('Error fetching PO details:', ['error' => $e->getMessage(), 'line' => $e->getLine()]);
+            \Log::error('❌ Error fetching PO details:', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+    
             return response()->json([
                 'success' => false,
                 'message' => 'Error retrieving PO details.',
@@ -290,8 +298,10 @@ class PurFGPOController extends Controller
             ]);
         }
     }
-
     
+    
+    
+
     public function print($id)
     {
         // Fetch the purchase order with related data

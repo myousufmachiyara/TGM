@@ -77,10 +77,8 @@
                   <tr>
                     <th>PO#</th>
                     <th>Items</th>
-                    <th>Total Fabric</th>
                     <th>Qty Ordered</th>
                     <th>Qty Received</th>
-                    <th>Consumption</th>
                     <th>Fabric Amount</th>
                     <th>Rate</th>
                     <th>Total</th>
@@ -112,16 +110,15 @@
 
       $.ajax({
         type: "GET",
-        url: "{{ route('pur-fgpos.get-details') }}", 
-        data: { po_ids: selectedPOs }, 
+        url: "{{ route('pur-fgpos.get-details') }}",
+        data: { po_ids: selectedPOs },
         success: function(response) {
-          console.log(response);
-
-          // if (response.success) {
-          //   console.log(response.summary);
-          // } else {
-          //   alert(response.message);
-          // }
+          if (response.success) {
+            console.log(response.summary);
+            populateTable(response.summary);
+          } else {
+            alert(response.message);
+          }
         },
         error: function(xhr, status, error) {
           console.error("AJAX Error:", xhr.responseText);
@@ -129,5 +126,61 @@
         }
       });
     }
+
+    function populateTable(summary) {
+    let tbody = $("#POBillTbleBody");
+    tbody.empty(); // Clear previous data
+
+    summary.forEach(po => {
+        // Extract fabric details
+        let fabricDetails = po.fabrics.map(f => `${f.fabric_name} (${f.fabric_rate.toFixed(2)})`).join(", ");
+        let totalFabricQty = po.fabrics.reduce((sum, f) => sum + parseFloat(f.fabric_qty), 0);
+        let totalFabricAmount = po.fabrics.reduce((sum, f) => sum + (f.fabric_qty * f.fabric_rate), 0).toFixed(2);
+
+        // Calculate **total received quantity** across all products
+        let totalReceivedQty = po.products.reduce((sum, p) => sum + parseFloat(p.received_qty || 0), 0);
+        let overallConsumption = totalReceivedQty > 0 ? (totalFabricQty / totalReceivedQty).toFixed(2) : "0.00";
+
+        // Generate main row (Fabric Summary)
+        let mainRow = `
+            <tr class="table-secondary">
+                <td rowspan="${po.products.length + 1}">${po.fgpo_id}</td> 
+                <td colspan="2"><strong>Fabric Details:</strong> ${fabricDetails}</td>
+                <td colspan="2"><strong>Consumption:</strong> ${overallConsumption}</td>
+                <td colspan="5"><strong>Fabric Amount:</strong> ${totalFabricAmount}</td>
+            </tr>
+        `;
+        tbody.append(mainRow);
+
+        // Generate sub-rows (Product Details)
+        po.products.forEach(product => {
+            let receivedQty = parseFloat(product.received_qty) || 0;
+            let orderedQty = parseFloat(product.ordered_qty) || 0;
+            let productConsumption = receivedQty > 0 ? (totalFabricQty / receivedQty).toFixed(2) : "0.00";
+
+            let productRow = `
+                <tr>
+                    <td>${product.product_name}</td>
+                    <td>${orderedQty}</td>
+                    <td>${receivedQty}</td>
+                    <td>${productConsumption}</td>
+                    <td><input type="number" class="form-control rate-input" data-received-qty="${receivedQty}" value="0"></td>
+                    <td class="total-amount">0.00</td>
+                    <td><input type="number" class="form-control adjustment-input" value="0"></td>
+                </tr>
+            `;
+            tbody.append(productRow);
+        });
+    });
+
+    // Auto-calculate total when rate input changes
+    $(".rate-input").on("input", function () {
+        let rate = parseFloat($(this).val()) || 0;
+        let receivedQty = parseFloat($(this).data("received-qty")) || 0;
+        let total = (rate * receivedQty).toFixed(2);
+        $(this).closest("tr").find(".total-amount").text(total);
+    });
+}
+
   </script>
 @endsection
