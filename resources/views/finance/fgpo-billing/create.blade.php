@@ -79,10 +79,8 @@
                     <th>Items</th>
                     <th>Qty Ordered</th>
                     <th>Qty Received</th>
-                    <th>Fabric Amount</th>
                     <th>Rate</th>
                     <th>Total</th>
-                    <th>Adjustment</th>
                   </tr>
                 </thead>
                 <tbody id="POBillTbleBody">
@@ -145,9 +143,10 @@
         let mainRow = `
             <tr class="table-secondary">
                 <td rowspan="${po.products.length + 1}">${po.fgpo_id}</td> 
-                <td colspan="2"><strong>Fabric Details:</strong> ${fabricDetails}</td>
-                <td colspan="2"><strong>Consumption:</strong> ${overallConsumption}</td>
-                <td colspan="5"><strong>Fabric Amount:</strong> ${totalFabricAmount}</td>
+                <td colspan="2"><strong>Fabric:</strong> ${fabricDetails}</td>
+                <td ><strong>Consumption:</strong> ${overallConsumption}</td>
+                <td colspan="1"><strong>Fabric Amount:</strong> ${totalFabricAmount}</td>
+                <td colspan="1"><input type="number" class="form-control adjustment-input" Placeholder="Adjusted Amount"> </td>
             </tr>
         `;
         tbody.append(mainRow);
@@ -163,10 +162,8 @@
                     <td>${product.product_name}</td>
                     <td>${orderedQty}</td>
                     <td>${receivedQty}</td>
-                    <td>${productConsumption}</td>
                     <td><input type="number" class="form-control rate-input" data-received-qty="${receivedQty}" value="0"></td>
                     <td class="total-amount">0.00</td>
-                    <td><input type="number" class="form-control adjustment-input" value="0"></td>
                 </tr>
             `;
             tbody.append(productRow);
