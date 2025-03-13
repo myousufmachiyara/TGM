@@ -61,6 +61,8 @@ class PurFGPOController extends Controller
             'voucher_details.*.item_rate' => 'required|numeric',
         ]);
     
+        die(print_r($request->voucher_details));
+
         DB::beginTransaction();
         
         try {
