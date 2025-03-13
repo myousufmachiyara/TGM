@@ -116,8 +116,8 @@
                       </select>  
                     </td>
                     <td width="25%"><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
-                    <td><input type="number" name="voucher_details[0][item_rate]"  id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
-                    <td><input type="number" name="voucher_details[0][qty]"   id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
+                    <td><input type="number" name="voucher_details[0][item_rate]" id="item_rate_0" onchange="rowTotal(0)" step="any" class="form-control" placeholder="Rate" required/></td>
+                    <td><input type="number" name="voucher_details[0][qty]" id="item_qty_0" onchange="rowTotal(0)" step="any" class="form-control" placeholder="Quantity" required/></td>
                     <td>
                       <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][unit]">'+
                         <option value="" disabled selected>Select Unit</option>

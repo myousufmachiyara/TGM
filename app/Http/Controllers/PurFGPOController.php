@@ -232,14 +232,14 @@ class PurFGPOController extends Controller
             $fabricDetails = PurFGPOVoucherDetails::select(
                 'fgpo_id',
                 'product_id',
+                'rate as fabric_rate',
                 DB::raw('SUM(qty) as total_fabric_qty'),
-                DB::raw('AVG(rate) as fabric_rate'),
                 DB::raw('SUM(qty * rate) as total_fabric_amount'),
                 'products.name as fabric_name'
             )
             ->leftJoin('products', 'pur_fgpos_voucher_details.product_id', '=', 'products.id')
             ->whereIn('fgpo_id', $poIds)
-            ->groupBy('fgpo_id', 'product_id', 'products.name')
+            ->groupBy('fgpo_id', 'product_id', 'products.name','rate')
             ->get()
             ->groupBy('fgpo_id'); // ✅ Grouping by PO ID to return multiple fabrics per PO
     

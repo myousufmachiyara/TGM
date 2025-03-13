@@ -77,8 +77,8 @@
                   <tr>
                     <th>PO#</th>
                     <th>Items</th>
-                    <th>Qty Ordered</th>
-                    <th>Qty Received</th>
+                    <th>Quantity Ordered</th>
+                    <th>Quantity Received</th>
                     <th>Rate</th>
                     <th>Total</th>
                   </tr>
