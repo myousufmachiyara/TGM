@@ -17,7 +17,7 @@ class PurPOController extends Controller
 
     public function index()
     {
-        $purpos = PurPo::with('vendor')->get();
+        $purpos = PurPO::with('vendor')->get();
         return view('purchasing.po.index', compact('purpos'));
     }
 
