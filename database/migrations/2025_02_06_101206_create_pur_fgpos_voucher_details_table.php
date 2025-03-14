@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->string('product_sku')->nullable();
             $table->string('description');
-            $table->double('qty', 15, 2)->default(0);
-            $table->double('rate', 15, 2)->default(0);
+            $table->double('qty', 15, 2);
+            $table->double('rate', 15, 2);
             $table->string('unit');
             $table->timestamps();
             $table->softDeletes();

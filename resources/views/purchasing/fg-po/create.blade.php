@@ -116,10 +116,10 @@
                       </select>  
                     </td>
                     <td width="25%"><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
-                    <td><input type="number" name="voucher_details[0][item_rate]" id="item_rate_0" onchange="rowTotal(0)" step="any" class="form-control" placeholder="Rate" required/></td>
-                    <td><input type="number" name="voucher_details[0][qty]" id="item_qty_0" onchange="rowTotal(0)" step="any" class="form-control" placeholder="Quantity" required/></td>
+                    <td><input type="number" name="voucher_details[0][item_rate]" id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
+                    <td><input type="number" name="voucher_details[0][qty]" id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
                     <td>
-                      <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][unit]">'+
+                      <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][unit]" required >
                         <option value="" disabled selected>Select Unit</option>
                         <option value="yrd">yard</option>
                         <option value="mtr">meter</option>
@@ -240,7 +240,7 @@
         cell2.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" required/>';
         cell3.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
         cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell5.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="voucher_details['+index+'][unit]">'+
+        cell5.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="voucher_details['+index+'][unit]" required>'+
                             '<option value="" disabled selected>Select Unit</option>'+
                             '<option value="yrd">yard</option>'+
                             '<option value="mtr">meter</option>'+
