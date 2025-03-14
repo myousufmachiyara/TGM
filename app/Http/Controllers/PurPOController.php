@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\PurPo;
+use App\Models\PurPO;
 use App\Models\PurPosDetail;
 use App\Models\ProductCategory;
 use App\Models\ChartOfAccounts;
