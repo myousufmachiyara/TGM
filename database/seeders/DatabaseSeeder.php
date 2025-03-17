@@ -44,15 +44,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('product_categories')->insert([
-            ['id' => 1, 'name' => "Men's Fabric"],
-            ['id' => 2, 'name' => "Men's Finish Goods"],
-            ['id' => 3, 'name' => 'Abaya Fabric'],
-            ['id' => 4, 'name' => 'Abaya'],
-            ['id' => 5, 'name' => 'Ladies Finish Goods'],
-            ['id' => 6, 'name' => 'Kids Finish Goods'],
-            ['id' => 7, 'name' => 'Accessories'],
-            ['id' => 8, 'name' => 'Abaya Hijab'],
-            ['id' => 9, 'name' => 'Scarf'],
+            ['id' => 1, 'name' => "Men's Fabric" , 'cat_code' => "M-FAB"],
+            ['id' => 2, 'name' => "Men's Finish Goods" , 'cat_code' => "M-FG"],
+            ['id' => 3, 'name' => 'Abaya Fabric' , 'cat_code' => "ABY-FAB"],
+            ['id' => 4, 'name' => 'Abaya' , 'cat_code' => "ABY"],
+            ['id' => 5, 'name' => "Women's Finish Goods" , 'cat_code' => "W-FG"],
+            ['id' => 6, 'name' => 'Kids Finish Goods' , 'cat_code' => "K-FG"],
+            ['id' => 7, 'name' => 'Accessories' , 'cat_code' => "ACS"],
+            ['id' => 8, 'name' => 'Abaya Hijab' , 'cat_code' => "ABY-HIJ"] ,
+            ['id' => 9, 'name' => 'Scarf' , 'cat_code' => "SCARF"],
         ]);
 
         DB::table('product_attributes')->insert([

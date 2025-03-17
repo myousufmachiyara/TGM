@@ -25,20 +25,20 @@
               </div>
 
               <div class="col-12 col-md-2 mb-2">
-                <label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
-                <input type="text" class="form-control" id="base-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" required />
-                @error('sku')<div class="text-danger">{{ $message }}</div>@enderror
-              </div>
-
-              <div class="col-12 col-md-2 mb-2">
                 <label>Category <span style="color: red;"><strong>*</strong></span></label>
                 <select data-plugin-selecttwo class="form-control select2-js" name="category_id" required>
                   <option value="" selected disabled>Select Category</option>
                   @foreach ($prodCat as $item)
-                    <option value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                    <option data-display="{{ $item->cat_code }}" value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                   @endforeach
                 </select>
                 @error('category_id')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
+
+              <div class="col-12 col-md-2 mb-2">
+                <label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
+                <input type="text" class="form-control" id="base-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" disabled />
+                @error('sku')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
               <div class="col-12 col-md-2 mb-2">
@@ -95,7 +95,7 @@
 				
               <div class="col-12 col-md-3 mb-2">
                 <label>Images</label>
-                <input type="file" class="form-control" name="prod_att[]" multiple accept="image/png, image/jpeg, image/jpg">
+                <input type="file" class="form-control" name="prod_att[]" id="imageUpload" multiple accept="image/png, image/jpeg, image/jpg">
                 @error('prod_att')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
             </div>
@@ -103,56 +103,63 @@
 
           <!-- Product variation card body here -->
           <div class="card-body">
-            <div class="card-title mb-3" style="display:inline-block">
-              Product Has Variations
-              <input type="hidden" id="hasVariationsHidden" name="has_variations" value="0">
-              <input type="checkbox" id="toggleTableSwitch" value="1" onchange="toggleVariationFields()">
-            </div>
-
-            <div id="prodVariationsDiv" style="display:none">
-              <div class="row">
-                <div class="col-12 col-md-3">
-                  <label>Variation</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" id="attributeSelect" name="variations[0][attribute_id]">
-                    <option value="" selected disabled>Select Variation</option>
-                    @foreach ($attributes as $item)
-                      <option value="{{ $item->id }}" {{ old('variations.0.attribute_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-                    @endforeach
-                  </select>
-                  @error('variations.0.attribute_id')<div class="text-danger">{{ $message }}</div>@enderror
+            <div class="row">
+              <div class="col-6">
+                <div class="card-title mb-3" style="display:inline-block">
+                  Product Has Variations
+                  <input type="hidden" id="hasVariationsHidden" name="has_variations" value="0">
+                  <input type="checkbox" id="toggleTableSwitch" value="1" onchange="toggleVariationFields()">
                 </div>
 
-                <div class="col-12 col-md-3 mb-2">
-                  <label>Values</label>
-                  <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect">
-                    <option value="" disabled>Values</option>
-                  </select>
-                  @error('variations.0.value_id')<div class="text-danger">{{ $message }}</div>@enderror
-                </div>
+                <div id="prodVariationsDiv" style="display:none">
+                  <div class="row">
+                    <div class="col-12 col-md-4">
+                      <label>Variation</label>
+                      <select data-plugin-selecttwo class="form-control select2-js" id="attributeSelect" name="variations[0][attribute_id]">
+                        <option value="" selected disabled>Select Variation</option>
+                        @foreach ($attributes as $item)
+                          <option value="{{ $item->id }}" {{ old('variations.0.attribute_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                        @endforeach
+                      </select>
+                      @error('variations.0.attribute_id')<div class="text-danger">{{ $message }}</div>@enderror
+                    </div>
 
-                <div class="col-12 col-md-2 d-flex align-items-end">
-                  <button type="button" class="btn btn-success" id="generate-variations-btn">Generate</button>
+                    <div class="col-12 col-md-4 mb-2">
+                      <label>Values</label>
+                      <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect">
+                        <option value="" disabled>Values</option>
+                      </select>
+                      @error('variations.0.value_id')<div class="text-danger">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="col-12 col-md-2 d-flex align-items-center">
+                      <button type="button" class="btn btn-success" id="generate-variations-btn">Generate</button>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-12 col-md-9 mt-3">
+                      <table class="table table-bordered" id="variationsTable">
+                        <thead>
+                          <tr>
+                            <th>Variation</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>SKU</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-12 col-md-6 mt-3">
-                  <table class="table table-bordered" id="variationsTable">
-                    <thead>
-                      <tr>
-                        <th>Variation</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>SKU</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
+              <div class="col-6">
+                <div id="previewContainer" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;margin-bottom:20px;"></div>
               </div>
             </div>
-
             <footer class="card-footer text-end">
               <a class="btn btn-danger" href="{{ route('products.index') }}">Discard</a>
               <button type="submit" class="btn btn-primary">Create</button>
@@ -264,6 +271,29 @@
       $(document).on("click", ".remove-btn", function () {
         $(this).closest("tr").remove();
       });
+    });
+
+    document.getElementById("imageUpload").addEventListener("change", function(event) {
+        const files = event.target.files;
+        const previewContainer = document.getElementById("previewContainer");
+        previewContainer.innerHTML = ""; // Clear previous previews
+
+        for (let file of files) {
+            if (file && file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.style.maxWidth = "200px"; // Adjust preview size
+                    img.style.maxHeight = "200px";
+                    img.style.border = "1px solid #ddd";
+                    img.style.borderRadius = "5px";
+                    img.style.padding = "5px";
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     });
   </script>
 @endsection
