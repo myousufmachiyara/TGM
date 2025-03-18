@@ -248,7 +248,7 @@
 
         selectedValues.forEach((valueId, index) => { // Added index here
           let valueText = $("#valueSelect option[value='" + valueId + "']").text();
-
+          let sku = $('#base-sku').val();
           // Prevent duplicate entries
           if ($("#variationsTable tbody tr[data-value='" + valueId + "']").length === 0) {
               let row = `
@@ -257,9 +257,9 @@
                   <input type="hidden" class="form-control" name="variations[${index}][attribute_id]" value="1" required>
                   <input type="hidden" class="form-control" name="variations[${index}][attribute_value_id]" value="${valueId}" required>
                 </td>
-                <td><input type="number" class="form-control" name="variations[${index}][stock]" required></td>
-                <td><input type="number" class="form-control" name="variations[${index}][price]" required></td>
-                <td><input type="text" class="form-control" name="variations[${index}][sku]" required></td>
+                <td><input type="number" class="form-control" name="variations[${index}][stock]" value="0" required></td>
+                <td><input type="number" class="form-control" name="variations[${index}][price]" value="0" required></td>
+                <td><input type="text" class="form-control" name="variations[${index}][sku]" value="${sku}${valueText}" required></td>
                 <td><button class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
               </tr>`;
               tableBody.append(row);
@@ -271,7 +271,21 @@
       $(document).on("click", ".remove-btn", function () {
         $(this).closest("tr").remove();
       });
+
+      $('select[name="category_id"]').on('change', function() {
+        var selectedOption = $(this).find('option:selected'); 
+        var dataDisplay = selectedOption.data('display'); 
+
+        console.log("Selected Category Code:", dataDisplay); 
+
+        // Call your function and pass the data-display value
+        setSKU(dataDisplay);
+      });
     });
+
+    function setSKU(categoryCode) {
+      $('#base-sku').val(categoryCode+"-");
+    }
 
     document.getElementById("imageUpload").addEventListener("change", function(event) {
         const files = event.target.files;
