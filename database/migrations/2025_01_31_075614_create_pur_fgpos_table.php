@@ -16,11 +16,8 @@ return new class extends Migration
             $table->string('doc_code')->default('FGPO');
             $table->unsignedBigInteger('vendor_id');
             $table->date('order_date');
-            $table->double('width', 15, 2)->default(0);
-            $table->double('consumption', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
-
             $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('updated_by')->default(0);
             

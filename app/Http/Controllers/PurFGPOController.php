@@ -45,8 +45,6 @@ class PurFGPOController extends Controller
             'vendor_id' => 'required|exists:chart_of_accounts,id',
             'order_date' => 'required|date',
             'product_id' => 'required|exists:products,id',
-            'width' => 'required|numeric',
-            'consumption' => 'required|numeric',
             'item_order' => 'required|array',
             'item_order.*.product_id' => 'required|exists:products,id',
             'item_order.*.variation_id' => 'required|exists:product_variations,id',
@@ -69,8 +67,6 @@ class PurFGPOController extends Controller
                 'doc_code' => 'FGPO',
                 'vendor_id' => $request->vendor_id,
                 'order_date' => $request->order_date,
-                'width' => $request->width,
-                'consumption' => $request->consumption,
             ]);
             \Log::info('FGPO Created', ['fgpo_id' => $fgpo->id]);
     

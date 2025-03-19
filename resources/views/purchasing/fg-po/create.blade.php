@@ -54,15 +54,6 @@
                     @endforeach
                   </select>
                 </div>
-       
-                <div class="col-12 col-md-1 mb-3">
-                  <label>Width</label>
-                  <input type="number" class="form-control" name="width" id="width" value=0 placeholder="Width"/>
-                </div>
-                <div class="col-12 col-md-1 mb-3" >
-                  <label>Consumption</label>
-                  <input type="number" class="form-control" name="consumption" id="consumption" value=0 placeholder="Consumption"/>
-                </div>
                 <div class="col-12 col-md-1">
                   <label>Item Variations</label>
                   <button type="button" class="d-block btn btn-success" id="generate-variations-btn" >Generate</button>
@@ -100,9 +91,10 @@
                     <th width="25%">Description</th>
                     <th>Rate</th>
                     <th>Qty</th>
-                    <th>Measurement</th>
+                    <th>Width</th>
+                    <th>M.Unit</th>
                     <th>Total</th>
-                    <th width="10%"></th>
+                    <th width="8%"></th>
                   </tr>
                 </thead>
                 <tbody id="PurPOTbleBody">
@@ -118,16 +110,10 @@
                     <td width="25%"><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
                     <td><input type="number" name="voucher_details[0][item_rate]" id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                     <td><input type="number" name="voucher_details[0][qty]" id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
-                    <td>
-                      <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][unit]" required >
-                        <option value="" disabled selected>Select Unit</option>
-                        <option value="yrd">yard</option>
-                        <option value="mtr">meter</option>
-                        <option value="round">round</option>
-                      </select>
-                    </td>
+                    <td><input type="number" id="item_width_0" class="form-control" name="voucher_details[0][width]" placeholder="Width" disabled required/></td>
+                    <td><input type="text" id="item_unit_0" class="form-control" name="voucher_details[0][unit]" placeholder="M.Unit" disabled required/></td>
                     <td><input type="number" id="item_total_0" class="form-control" placeholder="Total" disabled/></td>
-                    <td width="10%">
+                    <td width="8%">
                       <button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button>
                       <button type="button" class="btn btn-primary btn-xs"  onclick="addNewRow()" ><i class="fa fa-plus"></i></button>
                     </td>
@@ -240,12 +226,7 @@
         cell2.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" required/>';
         cell3.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
         cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell5.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="voucher_details['+index+'][unit]" required>'+
-                            '<option value="" disabled selected>Select Unit</option>'+
-                            '<option value="yrd">yard</option>'+
-                            '<option value="mtr">meter</option>'+
-                            '<option value="round">round</option>'+
-                          '</select>';
+        cell5.innerHTML  = '<input type="text" id="item_unit_0" class="form-control" name="voucher_details['+index+'][unit]" placeholder="M.Unit" disabled required/>';
         cell6.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
         cell7.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
                           '<button type="button" class="btn btn-primary btn-xs" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
