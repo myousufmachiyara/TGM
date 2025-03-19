@@ -283,9 +283,7 @@
       });
     });
 
-    function setSKU(categoryCode) {
-      $('#base-sku').val(categoryCode+"-");
-    }
+                                                                                                                                                                                                                                                                                                                       
 
     document.getElementById("imageUpload").addEventListener("change", function(event) {
         const files = event.target.files;
