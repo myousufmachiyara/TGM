@@ -12,38 +12,42 @@ use App\Http\Controllers\PurFGPOController;
 use App\Http\Controllers\JournalVoucher1Controller;
 use App\Http\Controllers\POBillsController;
 
-Route::get('/', function () {
-    return view('home');
+Auth::routes([
+    'register' => false // Disable registration
+]);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    Route::get('/shopify/products', [ShopifyController::class, 'index']);
+    Route::get('/shopify/products/{productId}', [ShopifyController::class, 'show']);
+
+    // Accounts
+    Route::resource('shoa', SubHeadOfAccController::class);
+    Route::resource('coa', COAController::class);
+
+    // Products
+    Route::resource('product-attributes', ProductAttributesController::class);
+    Route::resource('product-categories', ProductCategoriesController::class);
+    Route::resource('products', ProductsController::class);
+    Route::post('productDetails', [ProductsController::class, 'getProductDetails'])->name('product.details');
+
+    // Purchase Orders
+    Route::resource('pur-pos', PurPOController::class);
+    Route::resource('pur-fgpos', PurFGPOController::class);
+    Route::get('pur-fgpos-rec/{id}', [PurFGPOController::class, 'receiving'])->name('pur-fgpos.rec');
+    Route::post('pur-fgpos-received', [PurFGPOController::class, 'storeReceiving'])->name('pur-fgpos.store-rec');
+    Route::get('pur-fgpos-new-challan', [PurFGPOController::class, 'newChallan'])->name('pur-fgpos.new-challan');
+    Route::get('pur-fgpos-get-details', [PurFGPOController::class, 'getDetails'])->name('pur-fgpos.get-details');
+
+    Route::get('pur-pos/print/{id}', [PurPoController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
+    Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
+
+    // Billing
+    Route::resource('fgpo-bills', POBillsController::class);
+
+    // Vouchers
+    Route::resource('jv1', JournalVoucher1Controller::class);
 });
 
-Route::get('/shopify/products', [ShopifyController::class, 'index']);
-Route::get('/shopify/products/{productId}', [ShopifyController::class, 'show']);
-
-// Accounts
-Route::resource('shoa', SubHeadOfAccController::class);
-Route::resource('coa', COAController::class);
-
-// Products
-Route::resource('product-attributes', ProductAttributesController::class);
-Route::resource('product-categories', ProductCategoriesController::class);
-Route::resource('products', ProductsController::class);
-Route::post('productDetails', [ProductsController::class, 'getProductDetails'])->name('product.details');
-
-// Purchase Orders
-Route::resource('pur-pos', PurPOController::class);
-Route::resource('pur-fgpos', PurFGPOController::class);
-Route::get('pur-fgpos-rec/{id}', [PurFGPOController::class, 'receiving'])->name('pur-fgpos.rec');
-Route::post('pur-fgpos-received', [PurFGPOController::class, 'storeReceiving'])->name('pur-fgpos.store-rec');
-Route::get('pur-fgpos-new-challan', [PurFGPOController::class, 'newChallan'])->name('pur-fgpos.new-challan');
-Route::get('pur-fgpos-get-details', [PurFGPOController::class, 'getDetails'])->name('pur-fgpos.get-details');
-
-Route::get('pur-pos/print/{id}', [PurPoController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
-Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
-
-
-// Billing
-Route::resource('fgpo-bills', POBillsController::class);
-
-// Vouchers
-Route::resource('jv1', JournalVoucher1Controller::class);
-
+Auth::routes();

@@ -19,11 +19,12 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->string('measurement_unit')->nullable();
             $table->string('item_type')->nullable();
-            $table->decimal('price', 10, 2)->nullable()->default(0);
-            $table->decimal('sale_price', 10, 2)->nullable()->default(0);
+            $table->decimal('width')->default(0);
+            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('sale_price', 10, 2)->default(0);
             $table->text('purchase_note')->nullable();
             $table->decimal('opening_stock')->nullable();
-            $table->decimal('has_variations')->nullable()->default(0);
+            $table->decimal('has_variations')->default(0);
             $table->softDeletes();
             $table->timestamps();
             

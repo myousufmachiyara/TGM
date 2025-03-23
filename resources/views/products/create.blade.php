@@ -41,7 +41,7 @@
                 @error('sku')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
-              <div class="col-12 col-md-2 mb-2">
+              <div class="col-12 col-md-1 mb-2">
                 <label>Unit</label>
                 <select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">
                   <option value="" selected disabled>Select Unit</option>
@@ -51,6 +51,12 @@
                   <option value="rd" {{ old('measurement_unit') == 'rd' ? 'selected' : '' }}>round</option> 
                 </select>
                 @error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
+
+              <div class="col-12 col-md-1 mb-2">
+                <label>Width</label>
+                <input type="number" step=".00" class="form-control" value="{{ old('width', '0.00') }}" name="width" />
+                @error('width')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
               <div class="col-12 col-md-1 mb-2">
@@ -165,6 +171,8 @@
               <button type="submit" class="btn btn-primary">Create</button>
             </footer>
           </div>
+
+          
         </section>
       </form>
     </div>
@@ -282,9 +290,7 @@
         setSKU(dataDisplay);
       });
     });
-
-                                                                                                                                                                                                                                                                                                                       
-
+                                                                                                                                                                                                                                                                                                                
     document.getElementById("imageUpload").addEventListener("change", function(event) {
         const files = event.target.files;
         const previewContainer = document.getElementById("previewContainer");

@@ -87,11 +87,43 @@
                
                 </tbody>
               </table>
-              <footer class="card-footer text-end mt-1">
-                <a class="btn btn-danger" href="{{ route('pur-fgpos.index') }}" >Discard</a>
-                <button type="submit" class="btn btn-primary">Add Bill</button>
-              </footer>
             </div>
+          </section>
+        </div>
+
+        <div class="col-12 col-md-12">
+          <section class="card">
+            <header class="card-header" style="display: flex;justify-content: space-between;">
+              <h2 class="card-title">Summary</h2>
+            </header>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-12 col-md-2">
+                  <label>Total Quantity Ordered</label>
+                  <input type="number" class="form-control" id="total_fab" placeholder="Total Quantity Ordered" disabled/>
+                </div>
+
+                <div class="col-12 col-md-2">
+                  <label>Total Quantity Received</label>
+                  <input type="number" class="form-control" id="total_fab_amt" placeholder="Total Quantity Received" disabled />
+                </div>
+
+                <div class="col-12 col-md-2">
+                  <label>Total Adjusted Amount</label>
+                  <input type="number" class="form-control" id="total_adj_amount" placeholder="Total Adjusted Amount" disabled/>
+                </div>
+                
+                <div class="col-12 col-md-3">
+                  <label>Total Bill</label>
+                  <input type="number" class="form-control" id="total_bill" placeholder="Total Bill" disabled/>
+                </div>
+              </div>
+            </div>
+
+            <footer class="card-footer text-end">
+              <a class="btn btn-danger" href="{{ route('pur-fgpos.index') }}" >Discard</a>
+              <button type="submit" class="btn btn-primary">Add Bill</button>
+            </footer>
           </section>
         </div>
       </div>

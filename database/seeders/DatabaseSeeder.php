@@ -3,8 +3,19 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+
+use App\Models\User;
+use App\Models\HeadOfAccounts;
+use App\Models\SubHeadOfAccounts;
+use App\Models\ChartOfAccounts;
+use App\Models\ProductCategory;
+use App\Models\ProductAttributes;
+use App\Models\ProductAttributesValues;
+use App\Models\Products;
+use App\Models\ProductVariations;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,7 +24,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('head_of_accounts')->insert([
+        $now = now(); // Get the current timestamp
+
+        User::insert([
+            'name' => 'admin',
+            'email' => 'yousufmachiyara.tgm@gmail.com',
+            'password' => Hash::make('Arefifth@12'),
+        ]);
+
+        HeadOfAccounts::insert([
             ['id' => 1, 'name' => 'Assets'],
             ['id' => 2, 'name' => 'Liabilities'],
             ['id' => 3, 'name' => 'Expenses'],
@@ -21,7 +40,7 @@ class DatabaseSeeder extends Seeder
             ['id' => 5, 'name' => 'Equity'],
         ]);
         
-        DB::table('sub_head_of_accounts')->insert([
+        SubHeadOfAccounts::insert([
             ['id' => 1, 'hoa_id' => 1 , 'name' => "Current Assets"],
             ['id' => 2, 'hoa_id' => 1 , 'name' => "Inventory"],
             ['id' => 3, 'hoa_id' => 2 , 'name' => "Current Liabilities"],
@@ -31,19 +50,19 @@ class DatabaseSeeder extends Seeder
             ['id' => 7, 'hoa_id' => 5 , 'name' => "Equity"],
         ]);
         
-        DB::table('chart_of_accounts')->insert([
-            ['id' => 1, 'shoa_id' => 1 , 'name' => "Cash", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Asset", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"],
-            ['id' => 2, 'shoa_id' => 1 , 'name' => "Bank", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Asset", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"],
-            ['id' => 3, 'shoa_id' => 1 , 'name' => "Accounts Receivable", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Customer Accounts", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"], 
-            ['id' => 4, 'shoa_id' => 2 , 'name' => "Raw Material Inventory", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Inventory", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"],
-            ['id' => 5, 'shoa_id' => 2 , 'name' => "Finished Goods Inventory", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Inventory", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"],
-            ['id' => 6, 'shoa_id' => 3 , 'name' => "Accounts Payable", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Supplier Accounts", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"], 
-            ['id' => 7, 'shoa_id' => 5 , 'name' => "Sale Account", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Revenue", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"],
-            ['id' => 8, 'shoa_id' => 6 , 'name' => "Expense Account", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Expense", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"],
-            ['id' => 9, 'shoa_id' => 7 , 'name' => "Owner's Equity", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Equity", 'address' => "", 'phone_no' => "", 'credit_limit' => "0"], 
+        ChartOfAccounts::insert([
+            ['id' => 1, 'shoa_id' => 1 , 'name' => "Cash", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Asset", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 2, 'shoa_id' => 1 , 'name' => "Bank", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Asset", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 3, 'shoa_id' => 1 , 'name' => "Accounts Receivable", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Customer Accounts", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now], 
+            ['id' => 4, 'shoa_id' => 2 , 'name' => "Raw Material Inventory", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Inventory", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 5, 'shoa_id' => 2 , 'name' => "Finished Goods Inventory", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Inventory", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 6, 'shoa_id' => 3 , 'name' => "Accounts Payable", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Supplier Accounts", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now], 
+            ['id' => 7, 'shoa_id' => 5 , 'name' => "Sale Account", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Revenue", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 8, 'shoa_id' => 6 , 'name' => "Expense Account", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Expense", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 9, 'shoa_id' => 7 , 'name' => "Owner's Equity", 'receivables' => "0", 'payables' => "0", 'opening_date' => "2025-01-01", 'remarks' => "Equity", 'address' => "", 'phone_no' => "", 'credit_limit' => "0", 'created_at' => $now, 'updated_at' => $now], 
         ]);
 
-        DB::table('product_categories')->insert([
+        ProductCategory::insert([
             ['id' => 1, 'name' => "Men's Fabric" , 'cat_code' => "M-FAB"],
             ['id' => 2, 'name' => "Men's Finish Goods" , 'cat_code' => "M-FG"],
             ['id' => 3, 'name' => 'Abaya Fabric' , 'cat_code' => "ABY-FAB"],
@@ -55,12 +74,12 @@ class DatabaseSeeder extends Seeder
             ['id' => 9, 'name' => 'Scarf' , 'cat_code' => "SCARF"],
         ]);
 
-        DB::table('product_attributes')->insert([
+        ProductAttributes::insert([
             ['id' => 1, 'name' => "Size"],
             ['id' => 2, 'name' => "Colors"],
         ]);
 
-        DB::table('product_attributes_values')->insert([
+        ProductAttributesValues::insert([
             ['id' => 1, 'product_attribute_id' => 1 , 'value' => "52"],
             ['id' => 2, 'product_attribute_id' => 1 , 'value' => "54"],
             ['id' => 3, 'product_attribute_id' => 1 , 'value' => "56"],
@@ -75,7 +94,7 @@ class DatabaseSeeder extends Seeder
             ['id' => 12, 'product_attribute_id' => 1 , 'value' => "X-Large"]
         ]);  
 
-        DB::table('products')->insert([
+        Products::insert([
             [ 'id' => 1, 'name' => 'Black Nidha', 'sku' => 'FAB-000001', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
               'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 1200
             ],
@@ -90,7 +109,7 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-        DB::table('product_variations')->insert([
+        ProductVariations::insert([
             ['id' => 1, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 1, 'sku' => 'ABBY-000001-52','price' => '1200.00','stock' => 50,],
             ['id' => 2, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 2, 'sku' => 'ABBY-000001-54','price' => '1200.00','stock' => 50,],
             ['id' => 3, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 3, 'sku' => 'ABBY-000001-56','price' => '1200.00','stock' => 50,],
