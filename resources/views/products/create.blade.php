@@ -37,13 +37,14 @@
 
               <div class="col-12 col-md-2 mb-2">
                 <label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
-                <input type="text" class="form-control" id="base-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" disabled />
+                <input type="text" class="form-control" id="base-sku" placeholder="Product SKU" value="{{ old('sku') }}" disabled />
+                <input type="hidden" class="form-control" id="show-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" required />
                 @error('sku')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
               <div class="col-12 col-md-1 mb-2">
                 <label>Unit</label>
-                <select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit">
+                <select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit" required>
                   <option value="" selected disabled>Select Unit</option>
                   <option value="mtr" {{ old('measurement_unit') == 'mtr' ? 'selected' : '' }}>meter</option>
                   <option value="pcs" {{ old('measurement_unit') == 'pcs' ? 'selected' : '' }}>pieces</option> 
@@ -61,7 +62,7 @@
 
               <div class="col-12 col-md-1 mb-2">
                 <label>Item Type</label>
-                <select data-plugin-selecttwo class="form-control select2-js" name="item_type">
+                <select data-plugin-selecttwo class="form-control select2-js" name="item_type" required>
                   <option value="" selected disabled>Item Type</option>
                   <option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
                   <option value="raw" {{ old('item_type') == 'raw' ? 'selected' : '' }}>Raw</option> 
@@ -283,14 +284,12 @@
       $('select[name="category_id"]').on('change', function() {
         var selectedOption = $(this).find('option:selected'); 
         var dataDisplay = selectedOption.data('display'); 
-
-        console.log("Selected Category Code:", dataDisplay); 
-
-        // Call your function and pass the data-display value
-        setSKU(dataDisplay);
+        let sku = dataDisplay + "-";
+        document.getElementById("base-sku").value = sku;
+        document.getElementById("show-sku").value = sku;
       });
     });
-                                                                                                                                                                                                                                                                                                                
+
     document.getElementById("imageUpload").addEventListener("change", function(event) {
         const files = event.target.files;
         const previewContainer = document.getElementById("previewContainer");

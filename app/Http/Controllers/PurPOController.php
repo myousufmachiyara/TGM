@@ -36,7 +36,7 @@ class PurPOController extends Controller
             $validatedData = $request->validate([
                 'vendor_name' => 'required|exists:chart_of_accounts,id', // Ensure vendor exists
                 'order_date' => 'required|date',
-                'delivery_date' => 'date',
+                'delivery_date' => 'nullable|date',
                 'details' => 'required|array',
                 'details.*.item_id' => 'required|string|max:255',
                 'details.*.item_rate' => 'required|numeric|min:0',
