@@ -63,15 +63,18 @@ class DatabaseSeeder extends Seeder
         ]);
 
         ProductCategory::insert([
-            ['id' => 1, 'name' => "Men's Fabric" , 'cat_code' => "M-FAB"],
-            ['id' => 2, 'name' => "Men's Finish Goods" , 'cat_code' => "M-FG"],
-            ['id' => 3, 'name' => 'Abaya Fabric' , 'cat_code' => "ABY-FAB"],
-            ['id' => 4, 'name' => 'Abaya' , 'cat_code' => "ABY"],
-            ['id' => 5, 'name' => "Women's Finish Goods" , 'cat_code' => "W-FG"],
-            ['id' => 6, 'name' => 'Kids Finish Goods' , 'cat_code' => "K-FG"],
-            ['id' => 7, 'name' => 'Accessories' , 'cat_code' => "ACS"],
-            ['id' => 8, 'name' => 'Abaya Hijab' , 'cat_code' => "ABY-HIJ"] ,
-            ['id' => 9, 'name' => 'Scarf' , 'cat_code' => "SCARF"],
+            ['id' => 1, 'name' => 'Abaya Fabric' , 'cat_code' => "ABBY-FAB"],
+            ['id' => 2, 'name' => 'Abaya' , 'cat_code' => "ABBY"],
+            ['id' => 3, 'name' => 'Abaya Hijab' , 'cat_code' => "ABBY-HIJ"] ,
+            ['id' => 4, 'name' => "Kid's Abaya" , 'cat_code' => "K-ABBY"],
+            ['id' => 5, 'name' => 'Scarf' , 'cat_code' => "SCF"],
+            ['id' => 6, 'name' => "Ladies FG" , 'cat_code' => "L-FG"],
+            ['id' => 7, 'name' => "Men's Fancy Fabric" , 'cat_code' => "M-F-FAB"],
+            ['id' => 8, 'name' => "Men's Fancy FG" , 'cat_code' => "M-F-FG"],
+            ['id' => 9, 'name' => "Men's Plain Fabric" , 'cat_code' => "M-P-FAB"],
+            ['id' => 10, 'name' => "Men's Plain FG" , 'cat_code' => "M-P-FG"],
+            ['id' => 11, 'name' => 'Kids FG' , 'cat_code' => "K-FG"],
+            ['id' => 12, 'name' => 'Accessories' , 'cat_code' => "ACS"],
         ]);
 
         ProductAttributes::insert([
@@ -161,16 +164,16 @@ class DatabaseSeeder extends Seeder
         ]);  
 
         Products::insert([
-            [ 'id' => 1, 'name' => 'Black Nidha', 'sku' => 'FAB-000001', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
+            [ 'id' => 1, 'name' => 'Black Nidha', 'sku' => 'FAB-000001', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
               'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 1200
             ],
-            [ 'id' => 2, 'name' => 'Nidha', 'sku' => 'FAB-000002', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
+            [ 'id' => 2, 'name' => 'Nidha', 'sku' => 'FAB-000002', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
               'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 800
             ],
-            [ 'id' => 3, 'name' => 'Alisha', 'sku' => 'ABBY-000001', 'description' => '', 'category_id' => 4, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
+            [ 'id' => 3, 'name' => 'Alisha', 'sku' => 'ABBY-000001', 'description' => '', 'category_id' => 2, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
               'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0
             ],
-            [ 'id' => 4, 'name' => 'Alisha Hijab', 'sku' => 'ABBY-H-000001', 'description' => '', 'category_id' => 8, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
+            [ 'id' => 4, 'name' => 'Alisha Hijab', 'sku' => 'ABBY-H-000001', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
               'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0
             ]
         ]);
