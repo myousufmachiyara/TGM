@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\JournalVoucher1;
+use Illuminate\Http\Request;
 
 class JournalVoucher1Controller extends Controller
 {
@@ -13,6 +13,7 @@ class JournalVoucher1Controller extends Controller
     public function index()
     {
         $jv1 = JournalVoucher1::with(['debitAccount', 'creditAccount', 'voucherDetails'])->paginate(10);
+
         return view('finance.jv1.index', compact('jv1'));
     }
 

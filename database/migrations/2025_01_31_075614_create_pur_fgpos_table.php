@@ -20,7 +20,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('updated_by')->default(0);
-            
+
             $table->foreign('vendor_id')->references('id')->on('chart_of_accounts')->onDelete('cascade');
         });
     }

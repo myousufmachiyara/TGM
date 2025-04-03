@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ChartOfAccounts;
 use App\Models\PurFGPO;
+use Illuminate\Http\Request;
 
 class POBillsController extends Controller
 {
@@ -24,7 +24,7 @@ class POBillsController extends Controller
         $coa = ChartOfAccounts::all();  // Get all product categories
         $fgpo = PurFGPO::all();  // Get all product categories
 
-        return view('finance.fgpo-billing.create' , compact('coa','fgpo'));
+        return view('finance.fgpo-billing.create', compact('coa', 'fgpo'));
     }
 
     /**

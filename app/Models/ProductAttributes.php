@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductAttributes extends Model
 {
@@ -16,6 +16,6 @@ class ProductAttributes extends Model
      */
     public function values()
     {
-        return $this->hasMany(ProductAttributesValues::class,'product_attribute_id');
+        return $this->hasMany(ProductAttributesValues::class, 'product_attribute_id');
     }
 }

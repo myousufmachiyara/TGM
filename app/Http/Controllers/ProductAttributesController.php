@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ProductAttributes;
-use App\Models\ProductAttributesValues;
+use Illuminate\Http\Request;
 
 class ProductAttributesController extends Controller
 {
     public function index()
     {
         $attributes = ProductAttributes::with('values')->get();
+
         return view('products.attributes', compact('attributes'));
     }
 
@@ -18,7 +18,7 @@ class ProductAttributesController extends Controller
     {
         $attribute = ProductAttributes::with('values')->find($id);
 
-        if (!$attribute) {
+        if (! $attribute) {
             return response()->json(['message' => 'Product Attribute not found'], 404);
         }
 
@@ -30,22 +30,22 @@ class ProductAttributesController extends Controller
         // Validate the request
         $request->validate([
             'name' => 'required|string|max:255',
-            'values' => 'required|string' // Ensure it's a valid string
+            'values' => 'required|string', // Ensure it's a valid string
         ]);
-    
+
         // Create the product attribute
         $attribute = ProductAttributes::create([
             'name' => $request->name,
         ]);
-    
+
         // Split the comma-separated values, trim whitespace, and remove empty values
         $values = array_filter(array_map('trim', explode(',', $request->values)));
-    
+
         // Create individual attribute values
         foreach ($values as $value) {
             $attribute->values()->create(['value' => $value]);
         }
-    
+
         // Redirect or respond with success
         return redirect()->back()->with('success', 'Product attribute and values created successfully!');
     }
@@ -54,14 +54,14 @@ class ProductAttributesController extends Controller
     {
         $attribute = ProductAttributes::find($id);
 
-        if (!$attribute) {
+        if (! $attribute) {
             return response()->json(['message' => 'Product Attribute not found'], 404);
         }
 
         $request->validate([
             'name' => 'sometimes|string|max:255',
             'values' => 'array', // Optional: Values for this attribute
-            'values.*' => 'string|max:255' // Optional: Ensure all values are strings
+            'values.*' => 'string|max:255', // Optional: Ensure all values are strings
         ]);
 
         if ($request->has('name')) {
@@ -84,7 +84,7 @@ class ProductAttributesController extends Controller
     {
         $attribute = ProductAttributes::find($id);
 
-        if (!$attribute) {
+        if (! $attribute) {
             return response()->json(['message' => 'Product Attribute not found'], 404);
         }
 

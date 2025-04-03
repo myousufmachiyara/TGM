@@ -11,6 +11,7 @@ class PurFGPO extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'pur_fgpos';
+
     protected $fillable = ['doc_code', 'vendor_id', 'order_date'];
 
     public function vendor()

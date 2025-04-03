@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('pur_pos_id');
             $table->unsignedBigInteger('item_id');
             $table->decimal('item_rate', 10, 2);
-            $table->decimal('item_qty', 10, 2); 
-            $table->timestamps(); 
-        
+            $table->decimal('item_qty', 10, 2);
+            $table->timestamps();
+
             // Foreign key constraints
             $table->foreign('item_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('pur_pos_id')->references('id')->on('pur_pos')->onDelete('cascade');

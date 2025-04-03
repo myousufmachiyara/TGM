@@ -27,7 +27,7 @@ return new class extends Migration
             $table->decimal('has_variations')->default(0);
             $table->softDeletes();
             $table->timestamps();
-            
+
             $table->foreign('category_id')->references('id')->on('product_categories')->onDelete('cascade');
         });
     }

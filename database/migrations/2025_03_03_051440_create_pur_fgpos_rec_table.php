@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('updated_by')->default(0);
-            
+
             $table->foreign('fgpo_id')->references('id')->on('pur_fgpos')->onDelete('cascade');
         });
     }

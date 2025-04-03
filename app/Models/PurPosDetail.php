@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PurPosDetail extends Model
 {
@@ -25,6 +25,7 @@ class PurPosDetail extends Model
     {
         return $this->belongsTo(Products::class, 'item_id');
     }
+
     public function product() // Corrected method name
     {
         return $this->belongsTo(Products::class, 'item_id'); // Ensure 'Product' is the correct model name

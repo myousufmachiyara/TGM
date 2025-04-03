@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ProductCategory;
+use Illuminate\Http\Request;
 
 class ProductCategoriesController extends Controller
 {
     public function index()
     {
         $items = ProductCategory::all();
+
         return view('products.categories', compact('items'));
     }
 
@@ -24,10 +25,7 @@ class ProductCategoriesController extends Controller
         return redirect()->route('product-categories.index')->with('success', 'Category created successfully.');
     }
 
-    public function update(Request $request, string $id)
-    {
-
-    }
+    public function update(Request $request, string $id) {}
 
     public function destroy(string $id)
     {

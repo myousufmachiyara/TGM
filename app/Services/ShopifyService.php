@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Config;
 class ShopifyService
 {
     protected $client;
+
     protected $storeUrl;
+
     protected $accessToken;
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client;
         $this->storeUrl = Config::get('shopify.store_url');
         $this->accessToken = Config::get('shopify.access_token');
     }
@@ -21,7 +23,7 @@ class ShopifyService
     /**
      * Get the Shopify API URL.
      *
-     * @param string $endpoint
+     * @param  string  $endpoint
      * @return string
      */
     private function getApiUrl($endpoint)
@@ -48,7 +50,7 @@ class ShopifyService
     /**
      * Get a single product by ID.
      *
-     * @param int $productId
+     * @param  int  $productId
      * @return array
      */
     public function getProductById($productId)

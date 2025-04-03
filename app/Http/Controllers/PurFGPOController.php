@@ -2,45 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Models\PurFGPO;
-use App\Models\PurFGPODetails;
 use App\Models\ChartOfAccounts;
 use App\Models\JournalVoucher1;
-use App\Models\PurFGPOVoucherDetails;
-use App\Models\PurFGPOAttachements;
+use App\Models\ProductAttributes;
 use App\Models\Products;
+use App\Models\PurFGPO;
+use App\Models\PurFGPOAttachements;
+use App\Models\PurFGPODetails;
 use App\Models\PurFGPORec;
 use App\Models\PurFGPORecDetails;
-
-use App\Models\ProductAttributes;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Models\PurFGPOVoucherDetails;
 use App\Services\myPDF;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurFGPOController extends Controller
 {
     public function index()
     {
-        $purpos = PurFGPO::with(['vendor','details.product','details.variation.attribute_values'])->get();
+        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.variation.attribute_values'])->get();
+
         return view('purchasing.fg-po.index', compact('purpos'));
     }
 
     public function create()
     {
         $coa = ChartOfAccounts::all();  // Get all product categories
-        $fabrics = Products::where('item_type' , 'raw')->get();  // Get all product categories
-        $articles = Products::where('item_type' , 'fg')->get();  // Get all product categories
+        $fabrics = Products::where('item_type', 'raw')->get();  // Get all product categories
+        $articles = Products::where('item_type', 'fg')->get();  // Get all product categories
         $attributes = ProductAttributes::with('values')->get();
-        
-        return view('purchasing.fg-po.create', compact( 'coa', 'fabrics', 'articles', 'attributes'));
+
+        return view('purchasing.fg-po.create', compact('coa', 'fabrics', 'articles', 'attributes'));
     }
 
     public function store(Request $request)
     {
         \Log::info('Starting FGPO Store process', $request->all());
-            
+
         $request->validate([
             'vendor_id' => 'required|exists:chart_of_accounts,id',
             'order_date' => 'required|date',
@@ -58,9 +56,9 @@ class PurFGPOController extends Controller
             'voucher_details.*.unit' => 'required|string',
             'voucher_details.*.item_rate' => 'required|numeric',
         ]);
-    
+
         DB::beginTransaction();
-        
+
         try {
             \Log::info('Creating FGPO record');
             $fgpo = PurFGPO::create([
@@ -69,7 +67,7 @@ class PurFGPOController extends Controller
                 'order_date' => $request->order_date,
             ]);
             \Log::info('FGPO Created', ['fgpo_id' => $fgpo->id]);
-    
+
             \Log::info('Adding FGPO Product Variations');
             foreach ($request->item_order as $detail) {
                 \Log::info('Processing Item Order:', $detail);
@@ -82,19 +80,19 @@ class PurFGPOController extends Controller
                 ]);
             }
             \Log::info('FGPO Product Variations Added');
-    
+
             \Log::info('Creating Journal Voucher');
             $voucher = JournalVoucher1::create([
                 'debit_acc_id' => $request->vendor_id,
-                'credit_acc_id' => "4",
+                'credit_acc_id' => '4',
                 'amount' => $request->voucher_amount,
                 'date' => $request->order_date,
-                'narration' => "Transaction Against FGPO",
+                'narration' => 'Transaction Against FGPO',
                 'ref_doc_id' => $fgpo->id,
                 'ref_doc_code' => 'FGPO',
             ]);
             \Log::info('Journal Voucher Created', ['voucher_id' => $voucher->id]);
-    
+
             \Log::info('Adding Voucher Details');
             foreach ($request->voucher_details as $detail) {
                 \Log::info('Processing Voucher Detail:', $detail);
@@ -109,11 +107,11 @@ class PurFGPOController extends Controller
                 ]);
             }
             \Log::info('Voucher Details Added');
-    
+
             if ($request->hasFile('attachments')) {
                 \Log::info('Processing Attachments');
                 foreach ($request->file('attachments') as $file) {
-                    $filePath = $file->store('attachments/fgpo_' . $fgpo->id, 'public');
+                    $filePath = $file->store('attachments/fgpo_'.$fgpo->id, 'public');
                     PurFGPOAttachements::create([
                         'fgpo_id' => $fgpo->id,
                         'att_path' => $filePath,
@@ -121,74 +119,79 @@ class PurFGPOController extends Controller
                     \Log::info('Attachment Stored', ['path' => $filePath]);
                 }
             }
-    
+
             DB::commit();
             \Log::info('Transaction Committed Successfully');
+
             return redirect()->route('pur-fgpos.index')->with('success', 'Purchase Order created successfully!');
-        
+
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Error creating Purchase Order', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return redirect()->route('pur-fgpos.index')->with('error', 'Error creating Purchase Order: ' . $e->getMessage());
+
+            return redirect()->route('pur-fgpos.index')->with('error', 'Error creating Purchase Order: '.$e->getMessage());
         }
     }
-    
-    public function newChallan(){
+
+    public function newChallan()
+    {
         $purpos = PurFGPO::get('id');
         $coa = ChartOfAccounts::all();  // Get all product categories
         $products = Products::all();  // Get all product categories
         $attributes = ProductAttributes::with('values')->get();
-        
-        return view('purchasing.fg-po.new-challan', compact( 'coa', 'products', 'attributes','purpos'));
+
+        return view('purchasing.fg-po.new-challan', compact('coa', 'products', 'attributes', 'purpos'));
     }
 
-    public function receiving($id) {
+    public function receiving($id)
+    {
         $purpo = PurFGPO::with('details.product', 'details.variation')->findOrFail($id);
-    
+
         // Fetch total received quantity grouped by variation_id for this FGPO
         $receivedQuantities = PurFGPORecDetails::whereHas('receiving', function ($query) use ($id) {
             $query->where('fgpo_id', $id);
         })->selectRaw('variation_id, SUM(qty) as total_received')
-          ->groupBy('variation_id')
-          ->pluck('total_received', 'variation_id');
-    
+            ->groupBy('variation_id')
+            ->pluck('total_received', 'variation_id');
+
         // Loop through order details and assign the received quantity
         foreach ($purpo->details as $detail) {
             // Get received quantity for this variation_id
             $totalReceived = $receivedQuantities[$detail->variation_id] ?? 0;
-    
+
             // Assign calculated values to be used in the Blade file
             $detail->total_received = $totalReceived;
         }
-    
+
         return view('purchasing.fg-po.receiving', compact('purpo'));
     }
 
     // public function receiving($id) {
-    //     $purpo = PurFGPO::with(['details', 'details.product'])->findOrFail($id); 
+    //     $purpo = PurFGPO::with(['details', 'details.product'])->findOrFail($id);
     //     return view('purchasing.fg-po.receiving', compact('purpo'));
     // }
 
-    public function storeReceiving(Request $request) {
+    public function storeReceiving(Request $request)
+    {
         $request->validate([
             'fgpo_id' => 'required|exists:pur_fgpos,id',
             'rec_date' => 'required|date',
             'received_qty' => 'required|array',
             'received_qty.*' => 'nullable|integer|min:1',
         ]);
-    
+
         // Create a new receiving record
         $receiving = PurFGPORec::create([
             'fgpo_id' => $request->fgpo_id,
             'rec_date' => $request->rec_date,
         ]);
-    
+
         // Loop through received items and store details
         foreach ($request->received_qty as $fgpoDetailId => $receivedQty) {
             if ($receivedQty > 0) {
                 // Fetch the ordered product details
                 $orderDetail = PurFGPODetails::find($fgpoDetailId);
-    
+
                 if ($orderDetail) {
                     PurFGPORecDetails::create([
                         'pur_fgpos_rec_id' => $receiving->id,
@@ -200,7 +203,7 @@ class PurFGPOController extends Controller
                 }
             }
         }
-    
+
         return redirect()->route('pur-fgpos.index')->with('success', 'Receiving recorded successfully.');
     }
 
@@ -208,22 +211,22 @@ class PurFGPOController extends Controller
     {
         try {
             $poIds = array_map('intval', (array) $request->input('po_ids'));
-    
+
             if (empty($poIds)) {
                 return response()->json(['success' => false, 'message' => 'No PO selected']);
             }
-    
+
             // 🚀 Fetch FG (Finished Goods) Product Details
             $orderedProducts = PurFGPODetails::whereIn('fgpo_id', $poIds)
                 ->with('product:id,name')
                 ->select('fgpo_id', 'product_id', DB::raw('SUM(qty) as total_qty'))
                 ->groupBy('fgpo_id', 'product_id')
                 ->get();
-    
+
             if ($orderedProducts->isEmpty()) {
                 return response()->json(['success' => false, 'message' => 'No data found in PurFGPODetails']);
             }
-    
+
             // 🚀 Fetch Fabric Details for each Purchase Order (PO)
             $fabricDetails = PurFGPOVoucherDetails::select(
                 'fgpo_id',
@@ -233,12 +236,12 @@ class PurFGPOController extends Controller
                 DB::raw('SUM(qty * rate) as total_fabric_amount'),
                 'products.name as fabric_name'
             )
-            ->leftJoin('products', 'pur_fgpos_voucher_details.product_id', '=', 'products.id')
-            ->whereIn('fgpo_id', $poIds)
-            ->groupBy('fgpo_id', 'product_id', 'products.name','rate')
-            ->get()
-            ->groupBy('fgpo_id'); // ✅ Grouping by PO ID to return multiple fabrics per PO
-    
+                ->leftJoin('products', 'pur_fgpos_voucher_details.product_id', '=', 'products.id')
+                ->whereIn('fgpo_id', $poIds)
+                ->groupBy('fgpo_id', 'product_id', 'products.name', 'rate')
+                ->get()
+                ->groupBy('fgpo_id'); // ✅ Grouping by PO ID to return multiple fabrics per PO
+
             // 🚀 Fetch Received Quantity (if applicable)
             $receivedQty = DB::table('pur_fgpos_rec_details')
                 ->select('product_id', DB::raw('SUM(qty) as total_received_qty'))
@@ -250,7 +253,7 @@ class PurFGPOController extends Controller
                 ->groupBy('product_id')
                 ->get()
                 ->keyBy('product_id'); // ✅ Quick lookup by product_id
-    
+
             // 🚀 Group and Format Data by PO ID
             $summary = $orderedProducts->groupBy('fgpo_id')->map(function ($products, $fgpo_id) use ($fabricDetails, $receivedQty) {
                 return [
@@ -269,61 +272,58 @@ class PurFGPOController extends Controller
                             'ordered_qty' => $product->total_qty,
                             'received_qty' => $receivedQty->get($product->product_id)->total_received_qty ?? 0,
                         ];
-                    })->values()
+                    })->values(),
                 ];
             })->values();
-    
+
             return response()->json([
                 'success' => true,
-                'summary' => $summary
+                'summary' => $summary,
             ]);
-    
+
         } catch (\Exception $e) {
             \Log::error('❌ Error fetching PO details:', [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
-                'file' => $e->getFile()
+                'file' => $e->getFile(),
             ]);
-    
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error retrieving PO details.',
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
-                'file' => $e->getFile()
+                'file' => $e->getFile(),
             ]);
         }
     }
-    
-    
-    
 
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurFGPO::with(['vendor', 'details.product','details.variation.attribute_values' ,'attachments'])->findOrFail($id);
+        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.variation.attribute_values', 'attachments'])->findOrFail($id);
 
-        if (!$purpos) {
+        if (! $purpos) {
             abort(404, 'Purchase Order not found.');
         }
-    
-        $pdf = new MyPDF();
-    
+
+        $pdf = new MyPDF;
+
         // Set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('Purchase Order - ' . $purpos->id);
-        $pdf->SetSubject('Purchase Order - ' . $purpos->id);
+        $pdf->SetTitle('Purchase Order - '.$purpos->id);
+        $pdf->SetSubject('Purchase Order - '.$purpos->id);
         $pdf->SetKeywords('Purchase Order, TCPDF, PDF');
-    
+
         // Add a page
         $pdf->AddPage();
-        $pdf->setCellPadding(1.2); 
-    
+        $pdf->setCellPadding(1.2);
+
         // Purchase Order Heading
         $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
         $pdf->writeHTML($heading, true, false, true, false, '');
-    
+
         // Purchase Order Details Table
         $html = '<table style="margin-bottom:10px">
             <tr>
@@ -332,7 +332,7 @@ class PurFGPOController extends Controller
                 <td style="font-size:10px;font-weight:bold;color:#17365D">Quotation No: <span style="text-decoration: underline;color:#000">N/A</span></td>
             </tr>
         </table>';
-    
+
         // Vendor and Account Details
         $html .= '<table border="0.1" style="border-collapse: collapse;">
             <tr>
@@ -349,8 +349,7 @@ class PurFGPOController extends Controller
             </tr>
         </table>';
         $pdf->writeHTML($html, true, false, true, false, '');
-    
-       
+
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:10px">
             <tr>
@@ -360,11 +359,11 @@ class PurFGPOController extends Controller
                 <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
             </tr>
        ';
-    
+
         // Items Table Data
         $total_amount = 0;
         $count = 1;
-    
+
         foreach ($purpos->details as $item) {
             $product_name = $item->product->name ?? 'N/A';
             $variation_name = 'N/A';
@@ -377,28 +376,28 @@ class PurFGPOController extends Controller
                 <td width="10%" style="font-size:10px;text-align:center;">'.$count.'</td>
                 <td width="40%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
                 <td width="40%" style="font-size:10px;text-align:center;">'.$variation_name.'</td>
-                <td width="10%" style="font-size:10px;text-align:center;">'.$item->qty." ".$product_m_unit.'</td>
+                <td width="10%" style="font-size:10px;text-align:center;">'.$item->qty.' '.$product_m_unit.'</td>
             </tr>';
             $count++;
         }
-    
+
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
-    
+
         // Attachments (Images)
         $pdf->Ln(5);
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
-    
+
         foreach ($purpos->attachments as $attachment) {
-            $imagePath = storage_path('app/public/' . $attachment->att_path);
-            
+            $imagePath = storage_path('app/public/'.$attachment->att_path);
+
             if (file_exists($imagePath)) {
                 $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
                 $pdf->Ln(55); // Move cursor down after each image
             }
         }
-    
+
         // Move to the bottom of the page
         $pdf->SetY(-50); // Adjust value if needed to position correctly
 
@@ -417,7 +416,7 @@ class PurFGPOController extends Controller
 
         $pdf->SetXY(125, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
-    
+
         // Output the PDF
         $pdf->Output('Purchase_Order_'.$purpos->id.'.pdf', 'I');
     }

@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ChartOfAccounts;
 use App\Models\SubHeadOfAccounts;
+use Illuminate\Http\Request;
 
 class COAController extends Controller
 {
-
     public function index()
     {
         $chartOfAccounts = ChartOfAccounts::with('subHeadOfAccount')->get();
         $subHeadOfAccounts = SubHeadOfAccounts::with('headOfAccount')->get();
 
-        return view('accounts.coa', compact('chartOfAccounts','subHeadOfAccounts'));
+        return view('accounts.coa', compact('chartOfAccounts', 'subHeadOfAccounts'));
     }
 
     public function store(Request $request)
@@ -32,9 +31,9 @@ class COAController extends Controller
                 'credit_limit' => 'required|numeric',
                 'days_limit' => 'required|integer',
             ]);
-        
+
             ChartOfAccounts::create($request->all());
-        
+
             return redirect()->route('coa.index')->with('success', 'Chart of Account created successfully.');
 
         } catch (\Exception $e) {
@@ -45,6 +44,7 @@ class COAController extends Controller
     public function show($id)
     {
         $chartOfAccount = ChartOfAccounts::with('subHeadOfAccount')->findOrFail($id);
+
         return view('coa.show', compact('chartOfAccount'));
     }
 

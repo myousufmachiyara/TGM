@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 return [
     'api_key' => env('SHOPIFY_API_KEY'),

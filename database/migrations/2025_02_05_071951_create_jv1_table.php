@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('jv1', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->unsignedBigInteger('debit_acc_id'); 
+            $table->unsignedBigInteger('debit_acc_id');
             $table->unsignedBigInteger('credit_acc_id');
             $table->double('amount', 15, 2);
             $table->date('date');
-            $table->string('narration', 800)->nullable(); 
+            $table->string('narration', 800)->nullable();
             $table->unsignedBigInteger('ref_doc_id');
             $table->string('ref_doc_code', 800);
             $table->timestamps();
-            $table->unsignedBigInteger('created_by')->default(0); 
+            $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('updated_by')->default(0);
             $table->softDeletes();
 

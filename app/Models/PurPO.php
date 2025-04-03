@@ -1,25 +1,26 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PurPO extends Model
 {
     use HasFactory;
+
     protected $table = 'pur_pos';
 
     protected $fillable = [
-        'delivery_date', 
+        'delivery_date',
         'order_date',
         'vendor_name',
         'other_exp',
-        'bill_discount'
+        'bill_discount',
     ];
 
     protected $casts = [
-        'order_date' => 'date', 
+        'order_date' => 'date',
         'delivery_date' => 'date',
     ];
 
@@ -35,6 +36,6 @@ class PurPO extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(ChartOfAccounts::class, 'vendor_name', 'id'); 
+        return $this->belongsTo(ChartOfAccounts::class, 'vendor_name', 'id');
     }
 }

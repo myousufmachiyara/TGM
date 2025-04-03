@@ -1,19 +1,19 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ShopifyController;
-use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\PurPOController;
-use App\Http\Controllers\ProductCategoriesController;
-use App\Http\Controllers\ProductAttributesController;
-use App\Http\Controllers\SubHeadOfAccController;
 use App\Http\Controllers\COAController;
-use App\Http\Controllers\PurFGPOController;
 use App\Http\Controllers\JournalVoucher1Controller;
 use App\Http\Controllers\POBillsController;
+use App\Http\Controllers\ProductAttributesController;
+use App\Http\Controllers\ProductCategoriesController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\PurFGPOController;
+use App\Http\Controllers\PurPOController;
+use App\Http\Controllers\ShopifyController;
+use App\Http\Controllers\SubHeadOfAccController;
+use Illuminate\Support\Facades\Route;
 
 Auth::routes([
-    'register' => false // Disable registration
+    'register' => false, // Disable registration
 ]);
 
 Route::middleware(['auth'])->group(function () {

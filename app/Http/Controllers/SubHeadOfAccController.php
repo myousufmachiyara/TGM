@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\SubHeadOfAccounts;
 use App\Models\HeadOfAccounts;
+use App\Models\SubHeadOfAccounts;
+use Illuminate\Http\Request;
 
 class SubHeadOfAccController extends Controller
 {
@@ -31,12 +31,14 @@ class SubHeadOfAccController extends Controller
     public function show(string $id)
     {
         $subHeadOfAccount = SubHeadOfAccounts::findOrFail($id);
+
         return view('shoa.show', compact('subHeadOfAccount')); // Return a detailed view
     }
 
     public function edit(string $id)
     {
         $subHeadOfAccount = SubHeadOfAccounts::findOrFail($id);
+
         return view('shoa.edit', compact('subHeadOfAccount')); // Return a form view for editing
     }
 
@@ -60,5 +62,4 @@ class SubHeadOfAccController extends Controller
 
         return redirect()->route('shoa.index')->with('success', 'Sub Head of Account deleted successfully.');
     }
-
 }

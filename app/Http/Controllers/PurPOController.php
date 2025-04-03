@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\PurPO;
-use App\Models\PurPosDetail;
-use App\Models\ProductCategory;
 use App\Models\ChartOfAccounts;
+use App\Models\ProductCategory;
 use App\Models\Products;
+use App\Models\PurPO;
 use App\Models\PurPoAttachment;
+use App\Models\PurPosDetail;
 use App\Services\myPDF;
-
+use Illuminate\Http\Request;
 
 class PurPOController extends Controller
 {
-
     public function index()
     {
         $purpos = PurPO::with('vendor')->get();
+
         return view('purchasing.po.index', compact('purpos'));
     }
 
@@ -26,6 +25,7 @@ class PurPOController extends Controller
         $prodCat = ProductCategory::all();  // Get all product categories
         $coa = ChartOfAccounts::all();  // Get all product categories
         $products = Products::all();  // Get all product categories
+
         return view('purchasing.po.create', compact('prodCat', 'coa', 'products'));
     }
 
@@ -45,7 +45,7 @@ class PurPOController extends Controller
                 'bill_discount' => 'nullable|numeric|min:0',
                 'att.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Image validation
             ]);
-    
+
             // Create the Purchase Order
             $purpo = PurPo::create([
                 'vendor_name' => $validatedData['vendor_name'],
@@ -54,7 +54,7 @@ class PurPOController extends Controller
                 'other_exp' => $validatedData['other_exp'] ?? 0,
                 'bill_discount' => $validatedData['bill_discount'] ?? 0,
             ]);
-    
+
             // Store Purchase Order Details
             foreach ($validatedData['details'] as $detail) {
                 PurPosDetail::create([
@@ -64,21 +64,21 @@ class PurPOController extends Controller
                     'item_qty' => $detail['item_qty'],
                 ]);
             }
-    
+
             // Handle Images (if provided)
             if ($request->hasFile('att')) {
                 foreach ($request->file('att') as $file) {
                     $filePath = $file->store('purchase_orders', 'public'); // Store in storage/app/public/purchase_orders
-    
+
                     PurPoAttachment::create([
                         'pur_po_id' => $purpo->id,
                         'att_path' => $filePath,
                     ]);
                 }
             }
-    
+
             return redirect()->route('pur-pos.index')->with('success', 'Purchase Order created successfully!');
-    
+
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()]);
         }
@@ -87,6 +87,7 @@ class PurPOController extends Controller
     public function show(PurPos $purpo)
     {
         $purpo->load('details'); // Eager load details
+
         return view('purpos.show', compact('purpo'));
     }
 
@@ -143,6 +144,7 @@ class PurPOController extends Controller
     public function indexAPI()
     {
         $purpos = PurPO::paginate(10); // Add pagination for large datasets
+
         return PurPOResource::collection($purpos);
     }
 
@@ -150,33 +152,33 @@ class PurPOController extends Controller
     {
         return new PurPOResource($purpo);
     }
-    
+
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurPo::with(['vendor', 'details.category', 'attachments','details.product'])->findOrFail($id);
+        $purpos = PurPo::with(['vendor', 'details.category', 'attachments', 'details.product'])->findOrFail($id);
 
-        if (!$purpos) {
+        if (! $purpos) {
             abort(404, 'Purchase Order not found.');
         }
-    
-        $pdf = new MyPDF();
-    
+
+        $pdf = new MyPDF;
+
         // Set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('Purchase Order - ' . $purpos->id);
-        $pdf->SetSubject('Purchase Order - ' . $purpos->id);
+        $pdf->SetTitle('Purchase Order - '.$purpos->id);
+        $pdf->SetSubject('Purchase Order - '.$purpos->id);
         $pdf->SetKeywords('Purchase Order, TCPDF, PDF');
-    
+
         // Add a page
         $pdf->AddPage();
-        $pdf->setCellPadding(1.2); 
-    
+        $pdf->setCellPadding(1.2);
+
         // Purchase Order Heading
         $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
         $pdf->writeHTML($heading, true, false, true, false, '');
-    
+
         // Purchase Order Details Table
         $html = '<table style="margin-bottom:10px">
             <tr>
@@ -185,7 +187,7 @@ class PurPOController extends Controller
                 <td style="font-size:10px;font-weight:bold;color:#17365D">Quotation No: <span style="text-decoration: underline;color:#000">N/A</span></td>
             </tr>
         </table>';
-    
+
         // Vendor and Account Details
         $html .= '<table border="0.1" style="border-collapse: collapse;">
             <tr>
@@ -202,8 +204,7 @@ class PurPOController extends Controller
             </tr>
         </table>';
         $pdf->writeHTML($html, true, false, true, false, '');
-    
-       
+
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:10px">
             <tr>
@@ -215,11 +216,11 @@ class PurPOController extends Controller
                 <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
             </tr>
        ';
-    
+
         // Items Table Data
         $total_amount = 0;
         $count = 1;
-    
+
         foreach ($purpos->details as $item) {
             $product_name = $item->category->name ?? 'N/A'; // Fetch product name safely
             $product_m_unit = $item->product->measurement_unit ?? 'N/A'; // Assuming 'measurement_unit' is the column name
@@ -227,10 +228,10 @@ class PurPOController extends Controller
 
             $total = $item->item_rate * $item->item_qty;
             $total_amount += $total;
-    
+
             $html .= '<tr>
                 <td width="6%" style="font-size:10px;text-align:center;">'.$count.'</td>
-                <td width="10%" style="font-size:10px;text-align:center;">'.$item->item_qty." ".$product_m_unit.'</td>
+                <td width="10%" style="font-size:10px;text-align:center;">'.$item->item_qty.' '.$product_m_unit.'</td>
                 <td width="30%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
                 <td width="30%" style="font-size:10px;">'.$description.'</td>
                 <td width="12%" style="font-size:10px;text-align:center;">'.$item->item_rate.'</td>
@@ -238,13 +239,13 @@ class PurPOController extends Controller
             </tr>';
             $count++;
         }
-    
+
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
-    
+
         // Summary Table
         $net_amount = round($total_amount + $purpos->other_exp - $purpos->bill_discount);
-        
+
         $summary = '<table border="1" cellpadding="5" width="50%">
             <tr><td><b>Total Amount:</b></td><td>'.$total_amount.'</td></tr>
             <tr><td><b>Other Expenses:</b></td><td>'.$purpos->other_exp.'</td></tr>
@@ -252,21 +253,21 @@ class PurPOController extends Controller
             <tr><td><b>Net Amount:</b></td><td>'.$net_amount.'</td></tr>
         </table>';
         $pdf->writeHTML($summary, true, false, true, false, '');
-    
+
         // Attachments (Images)
         $pdf->Ln(5);
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
-    
+
         foreach ($purpos->attachments as $attachment) {
-            $imagePath = storage_path('app/public/' . $attachment->att_path);
-            
+            $imagePath = storage_path('app/public/'.$attachment->att_path);
+
             if (file_exists($imagePath)) {
                 $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
                 $pdf->Ln(55); // Move cursor down after each image
             }
         }
-    
+
         // Move to the bottom of the page
         $pdf->SetY(-50); // Adjust value if needed to position correctly
 
@@ -285,9 +286,8 @@ class PurPOController extends Controller
 
         $pdf->SetXY(125, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
-    
+
         // Output the PDF
         $pdf->Output('Purchase_Order_'.$purpos->id.'.pdf', 'I');
     }
-    
 }

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariations extends Model
@@ -16,7 +16,7 @@ class ProductVariations extends Model
         'sku',
         'price',
         'stock',
-        'attribute_id'
+        'attribute_id',
     ];
 
     public function product()
@@ -31,7 +31,7 @@ class ProductVariations extends Model
 
     public function attribute_values()
     {
-        return $this->belongsTo(ProductAttributesValues::class, 'attribute_value_id'); 
+        return $this->belongsTo(ProductAttributesValues::class, 'attribute_value_id');
     }
 
     public function values()
