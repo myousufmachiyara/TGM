@@ -12,9 +12,11 @@ class PurPO extends Model
     protected $table = 'pur_pos';
 
     protected $fillable = [
-        'delivery_date',
+        'vendor_id',
+        'category_id',
+        'po_code',
         'order_date',
-        'vendor_name',
+        'delivery_date',
         'other_exp',
         'bill_discount',
     ];
@@ -36,6 +38,12 @@ class PurPO extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(ChartOfAccounts::class, 'vendor_name', 'id');
+        return $this->belongsTo(ChartOfAccounts::class, 'vendor_id', 'id');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
+    }
+
 }

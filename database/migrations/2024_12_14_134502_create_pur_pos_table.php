@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('pur_pos', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->string('vendor_name'); // A string for vendor name
+            $table->unsignedBigInteger('vendor_id');
+            $table->unsignedBigInteger('category_id');  // Ensure this is unsignedBigInteger
+            $table->string('po_code');
             $table->date('order_date'); // A date column for the order date
             $table->date('delivery_date')->nullable(); // A date column for the delivery date
             $table->decimal('other_exp', 10, 2)->nullable()->default(0);
@@ -21,6 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('created_by')->default(1); // Use unsignedBigInteger for foreign keys or IDs
             $table->softDeletes();
             $table->timestamps(); // Adds created_at and updated_at columns
+        
+            
         });
     }
 

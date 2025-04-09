@@ -47,6 +47,9 @@
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
                     <td>
+                      <a href="{{ route('pur-pos.rec', $row->id) }}" class="btn btn-success btn-xs">
+                        <i class="fa fa-download"></i>
+                      </a>
                       <a href="{{ route('pur-pos.print', $row->id) }}" class="btn btn-primary btn-xs">
                         <i class="fa fa-print"></i>
                       </a>
