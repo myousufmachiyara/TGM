@@ -34,9 +34,9 @@ class Products extends Model
         return $this->hasMany(ProductVariations::class, 'product_id');
     }
 
-    public function images()
+    public function attachments()
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductAttachements::class, 'product_id', 'id');
     }
 
     public function purFgpoVoucherDetails()
