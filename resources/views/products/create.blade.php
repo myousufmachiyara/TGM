@@ -36,9 +36,9 @@
               </div>
 
               <div class="col-12 col-md-2 mb-2">
-                <label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>*</strong></span></label>
+                <label class="text-lg-end mb-0">SKU <span style="color: red;"><strong>(system generated)</strong></span></label>
                 <input type="text" class="form-control" id="base-sku" placeholder="Product SKU" value="{{ old('sku') }}" disabled />
-                <input type="hidden" class="form-control" id="show-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" required />
+                <!-- <input type="hidden" class="form-control" id="show-sku" placeholder="Product SKU" name="sku" value="{{ old('sku') }}" required /> -->
                 @error('sku')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
@@ -131,7 +131,7 @@
                       @error('variations.0.attribute_id')<div class="text-danger">{{ $message }}</div>@enderror
                     </div>
 
-                    <div class="col-12 col-md-4 mb-2">
+                    <div class="col-12 col-md-6 mb-2">
                       <label>Values</label>
                       <select data-plugin-selecttwo multiple class="form-control select2-js" id="valueSelect">
                         <option value="" disabled>Values</option>
@@ -145,14 +145,14 @@
                   </div>
 
                   <div class="row">
-                    <div class="col-12 col-md-9 mt-3">
+                    <div class="col-12 col-md-12 mt-3">
                       <table class="table table-bordered" id="variationsTable">
                         <thead>
                           <tr>
                             <th>Variation</th>
                             <th>Quantity</th>
                             <th>Price</th>
-                            <th>SKU</th>
+                            <th>SKU <span style="color: red;"><strong>(system generated)</strong></span></th>
                             <th>Action</th>
                           </tr>
                         </thead>
@@ -172,8 +172,6 @@
               <button type="submit" class="btn btn-primary">Create</button>
             </footer>
           </div>
-
-          
         </section>
       </form>
     </div>
@@ -257,18 +255,20 @@
 
         selectedValues.forEach((valueId, index) => { // Added index here
           let valueText = $("#valueSelect option[value='" + valueId + "']").text();
-          let sku = $('#base-sku').val();
+          // let sku = $('#base-sku').val();
+          // let value= ${sku}${valueText}; 
+
           // Prevent duplicate entries
           if ($("#variationsTable tbody tr[data-value='" + valueId + "']").length === 0) {
               let row = `
               <tr data-value="${valueId}"> 
-                <td>${index + 1}. ${selectedAttributeText}: ${valueText}
+                <td><strong>${selectedAttributeText}:</strong> ${valueText}
                   <input type="hidden" class="form-control" name="variations[${index}][attribute_id]" value="1" required>
                   <input type="hidden" class="form-control" name="variations[${index}][attribute_value_id]" value="${valueId}" required>
                 </td>
                 <td><input type="number" class="form-control" name="variations[${index}][stock]" value="0" required></td>
                 <td><input type="number" class="form-control" name="variations[${index}][price]" value="0" required></td>
-                <td><input type="text" class="form-control" name="variations[${index}][sku]" value="${sku}${valueText}" required></td>
+                <td><input type="text" class="form-control" name="variations[${index}][sku]" disabled></td>
                 <td><button class="btn btn-danger remove-btn btn-xs"><i class="fa fa-times"></i></button></td>
               </tr>`;
               tableBody.append(row);
@@ -281,13 +281,13 @@
         $(this).closest("tr").remove();
       });
 
-      $('select[name="category_id"]').on('change', function() {
-        var selectedOption = $(this).find('option:selected'); 
-        var dataDisplay = selectedOption.data('display'); 
-        let sku = dataDisplay + "-";
-        document.getElementById("base-sku").value = sku;
-        document.getElementById("show-sku").value = sku;
-      });
+      // $('select[name="category_id"]').on('change', function() {
+      //   var selectedOption = $(this).find('option:selected'); 
+      //   var dataDisplay = selectedOption.data('display'); 
+      //   let sku = dataDisplay + "-";
+      //   document.getElementById("base-sku").value = sku;
+      //   document.getElementById("show-sku").value = sku;
+      // });
     });
 
     document.getElementById("imageUpload").addEventListener("change", function(event) {
