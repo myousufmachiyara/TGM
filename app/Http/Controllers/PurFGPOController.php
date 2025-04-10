@@ -435,7 +435,7 @@ class PurFGPOController extends Controller
         $pdf->SetFont('helvetica', '', 10);
 
         // Header
-        $pdf->writeHTML('<h3 style="text-align:center; color:#000;">Payment Voucher</h3><hr>', true, false, true, false, '');
+        $pdf->writeHTML('<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Fabric Challan</h1><hr>',true, false, true, false, '');
 
         // Top Info Row (Vendor, PO No, Date)
         $challanInfo = '
