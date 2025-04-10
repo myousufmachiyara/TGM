@@ -55,7 +55,6 @@ class PurFGPOController extends Controller
             'voucher_amount' => 'required|numeric',
             'voucher_details' => 'required|array',
             'voucher_details.*.product_id' => 'required|exists:products,id',
-            'voucher_details.*.description' => 'required|string',
             'voucher_details.*.qty' => 'required|numeric',
             'voucher_details.*.item_rate' => 'required|numeric',
         ]);
