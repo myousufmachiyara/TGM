@@ -430,6 +430,78 @@ class PurFGPOController extends Controller
             }
         }
 
+        $pdf->AddPage(); // Start a new page for Challan
+
+        $pdf->SetFont('helvetica', '', 10);
+
+        // Header
+        $pdf->writeHTML('<h3 style="text-align:center; color:#000;">Payment Voucher</h3><hr>', true, false, true, false, '');
+
+        // Top Info Row (Vendor, PO No, Date)
+        $challanInfo = '
+        <table cellspacing="0" cellpadding="5" style="font-size:10px;">
+            <tr>
+                <td width="33%"><strong>Vendor:</strong> '.$purpos->vendor->name.'</td>
+                <td width="33%"><strong>PO No:</strong> FGPO-'.$purpos->id.'</td>
+                <td width="33%"><strong>Date:</strong> '.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</td>
+            </tr>
+        </table>';
+        $pdf->writeHTML($challanInfo, true, false, true, false, '');
+
+        // Items Table
+        $challanTable = '
+        <table border="1" cellpadding="5" cellspacing="0" style="font-size:10px;">
+            <thead>
+                <tr style="background-color:#f2f2f2;">
+                    <th><strong>Fabric Name</strong></th>
+                    <th><strong>Description</strong></th>
+                    <th><strong>Quantity</strong></th>
+                    <th><strong>Rate</strong></th>
+                    <th><strong>Total</strong></th>
+                </tr>
+            </thead>
+            <tbody>';
+
+        $totalAmount = 0;
+
+        foreach ($purpos->details as $item) {
+            $fabricName = $item->product->name ?? 'N/A';
+            $description = $item->description ?? '';
+            $qty = $item->qty ?? 0;
+            $unit = $item->product->measurement_unit ?? '';
+            $rate = number_format($item->rate ?? 0, 2);
+            $total = number_format(($item->qty ?? 0) * ($item->rate ?? 0), 2);
+
+            $totalAmount += ($item->qty ?? 0) * ($item->rate ?? 0);
+
+            $challanTable .= "
+                <tr>
+                    <td>{$fabricName}</td>
+                    <td>{$description}</td>
+                    <td>{$qty} {$unit}</td>
+                    <td>{$rate}</td>
+                    <td>{$total}</td>
+                </tr>";
+        }
+
+        $challanTable .= '</tbody></table>';
+        $pdf->writeHTML($challanTable, true, false, true, false, '');
+
+        // Total Amount
+        $pdf->writeHTML('<h4 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h4>', true, false, true, false, '');
+
+        // Signature Section
+        $signatures = '
+        <table cellspacing="0" cellpadding="10" style="margin-top:30px;">
+            <tr>
+                <td width="50%">
+                    <strong>Authorized By:</strong><br><br>
+                    ________________________
+                </td>
+            </tr>
+        </table>';
+        $pdf->writeHTML($signatures, true, false, true, false, '');
+
         // Move to the bottom of the page
         $pdf->SetY(-50); // Adjust value if needed to position correctly
 
