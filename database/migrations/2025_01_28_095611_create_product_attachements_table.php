@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('product_attachements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete(); // Foreign key to products
-            $table->string('att_path'); // Path to the attachements
+            $table->string('image_path'); // Path to the attachements
             $table->timestamps();
         });
     }

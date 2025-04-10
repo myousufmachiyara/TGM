@@ -26,9 +26,9 @@
                       <th>Name</th>
                       <th>SKU</th>
                       <th>Category</th>
-                      <th>Measurement Unit</th>
                       <th>Price</th>
                       <th>sale Price</th>
+                      <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,9 +38,21 @@
                       <td><strong>{{ $item->name }}</strong></td>
                       <td>{{ $item->sku }}</td>
                       <td>{{ $item->category ? $item->category->name : 'No Category' }}</td>
-                      <td>{{ $item->measurement_unit }}</td>
                       <td>{{ $item->price }}</td>
                       <td>{{ $item->sale_price }}</td>
+                      <td>
+                      <a class="text-primary" href="{{ route('products.edit', $item->id) }}">
+                        <i class="fa fa-edit"></i>
+                      </a>
+                      <!-- Delete Link (with Confirmation) -->
+                      <form action="{{ route('products.destroy', $item->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this purchase order?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-danger bg-transparent" style="border:none">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </form>
+                    </td>
                     </tr>
                   @endforeach
                 </tbody>

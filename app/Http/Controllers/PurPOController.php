@@ -10,6 +10,7 @@ use App\Models\PurPoAttachment;
 use App\Models\PurPosDetail;
 use App\Services\myPDF;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurPOController extends Controller
 {
@@ -31,10 +32,13 @@ class PurPOController extends Controller
 
     public function store(Request $request)
     {
+        DB::beginTransaction();  // Begin the transaction
+    
         try {
             // Validate the incoming request data
             $validatedData = $request->validate([
-                'vendor_name' => 'required|exists:chart_of_accounts,id', // Ensure vendor exists
+                'vendor_id' => 'required|exists:chart_of_accounts,id', // Ensure vendor exists
+                'category_id' => 'required|exists:product_categories,id',
                 'order_date' => 'required|date',
                 'delivery_date' => 'nullable|date',
                 'details' => 'required|array',
@@ -45,16 +49,27 @@ class PurPOController extends Controller
                 'bill_discount' => 'nullable|numeric|min:0',
                 'att.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Image validation
             ]);
-
+    
+            // Fetch the category code based on category_id
+            $category = ProductCategory::findOrFail($validatedData['category_id']);
+            $categoryCode = $category->cat_code; // Assuming 'code' is the column for category code
+    
+            // Generate PO code in the format: PO-SequenceNo-CategoryCode
+            $latestPo = PurPo::latest()->first();
+            $sequenceNo = $latestPo ? $latestPo->id + 1 : 1;  // Increment sequence number
+            $poCode = "PO-{$sequenceNo}-{$categoryCode}";
+    
             // Create the Purchase Order
             $purpo = PurPo::create([
-                'vendor_name' => $validatedData['vendor_name'],
+                'vendor_id' => $validatedData['vendor_id'],
+                'category_id' => $validatedData['category_id'],
+                'po_code' => $poCode,  // Use the generated PO code
                 'order_date' => $validatedData['order_date'],
                 'delivery_date' => $validatedData['delivery_date'],
                 'other_exp' => $validatedData['other_exp'] ?? 0,
                 'bill_discount' => $validatedData['bill_discount'] ?? 0,
             ]);
-
+    
             // Store Purchase Order Details
             foreach ($validatedData['details'] as $detail) {
                 PurPosDetail::create([
@@ -64,26 +79,32 @@ class PurPOController extends Controller
                     'item_qty' => $detail['item_qty'],
                 ]);
             }
-
+    
             // Handle Images (if provided)
             if ($request->hasFile('att')) {
                 foreach ($request->file('att') as $file) {
                     $filePath = $file->store('purchase_orders', 'public'); // Store in storage/app/public/purchase_orders
-
+    
                     PurPoAttachment::create([
                         'pur_po_id' => $purpo->id,
                         'att_path' => $filePath,
                     ]);
                 }
             }
-
+    
+            // Commit the transaction if all operations are successful
+            DB::commit();
+    
             return redirect()->route('pur-pos.index')->with('success', 'Purchase Order created successfully!');
-
+    
         } catch (\Exception $e) {
+            // Rollback the transaction if any error occurs
+            DB::rollBack();
+    
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
-
+    
     public function show(PurPos $purpo)
     {
         $purpo->load('details'); // Eager load details
@@ -91,47 +112,87 @@ class PurPOController extends Controller
         return view('purpos.show', compact('purpo'));
     }
 
-    public function edit(PurPo $purpo)
+    public function edit($id)
     {
-        $purpo->load('details'); // Eager load details
-        $prodCat = ProductCategory::all();
-        $produnits = ProductMeasurementUnit::all();
-
-        return view('purchasing.po.edit', compact('purpo', 'prodCat', 'produnits'));
+        $purPo = PurPo::with(['details', 'attachments'])->findOrFail($id);
+        $prodCat = ProductCategory::all(); // Fetch all product categories
+        $coa = ChartOfAccounts::all(); // Fetch all vendors (Chart of Accounts)
+        $products = Products::all(); // Assuming this model fetches products
+    
+        return view('purchasing.po.edit', compact('purPo', 'prodCat', 'coa', 'products'));
     }
 
-    public function update(Request $request, PurPos $purpo)
+    public function receiving($id)
     {
-        $validated = $request->validate([
-            'vendor_name' => 'required|string|max:255',
-            'order_date' => 'required|date',
-            'delivery_date' => 'required|date',
-            'payment_term' => 'required|string|max:255',
-            'details.*.id' => 'nullable|exists:pur_pos_details,id',
-            'details.*.fabric' => 'required|string|max:255',
-            'details.*.category_id' => 'required|exists:categories,id',
-            'details.*.rate' => 'required|numeric|min:0',
-            'details.*.quantity' => 'required|numeric|min:0',
-        ]);
+        $purpo = PurPo::with(['details', 'attachments'])->findOrFail($id);
 
-        // Update Purchase Order
-        $purpo->update($validated);
+        return view('purchasing.po.receiving', compact('purpo'));
+    }
 
-        // Update or create associated details
-        foreach ($validated['details'] as $detail) {
-            if (isset($detail['id'])) {
-                // Update existing detail
-                $detailModel = PurPosDetail::findOrFail($detail['id']);
-                $detailModel->update($detail);
-            } else {
-                // Create a new detail
-                $detail['pur_pos_id'] = $purpo->id;
-                PurPosDetail::create($detail);
+    public function update(Request $request, $id)
+    {
+        DB::beginTransaction();
+    
+        try {
+            // Validate the incoming data
+            $validatedData = $request->validate([
+                'vendor_id' => 'required|exists:chart_of_accounts,id',
+                'category_id' => 'required|exists:product_categories,id',
+                'order_date' => 'required|date',
+                'delivery_date' => 'nullable|date',
+                'details' => 'required|array',
+                'details.*.item_id' => 'required|string|max:255',
+                'details.*.item_rate' => 'required|numeric|min:0',
+                'details.*.item_qty' => 'required|numeric|min:0',
+                'other_exp' => 'nullable|numeric|min:0',
+                'bill_discount' => 'nullable|numeric|min:0',
+                'att.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            ]);
+    
+            // Fetch the existing Purchase Order
+            $purPo = PurPo::findOrFail($id);
+    
+            // Update PO data
+            $purPo->update([
+                'vendor_id'     => $request->input('vendor_id'),
+                'category_id'   => $request->input('category_id'),
+                'order_date'    => $request->input('order_date'),
+                'delivery_date' => $request->input('delivery_date'),
+                'other_exp'     => $request->input('other_exp', 0),
+                'bill_discount' => $request->input('bill_discount', 0),
+                'net_amount'    => $this->calculateNetAmount($request),
+            ]);
+    
+            // Delete existing details
+            $purPo->itemdetails()->delete();
+    
+            // Recreate details
+            foreach ($request->input('details') as $detail) {
+                $purPo->itemdetails()->create([
+                    'item_id'   => $detail['item_id'],
+                    'item_rate' => $detail['item_rate'],
+                    'item_qty'  => $detail['item_qty'],
+                    'item_total'=> $detail['item_rate'] * $detail['item_qty'],
+                ]);
             }
+    
+            // Handle Attachments (if needed)
+            if ($request->hasFile('att')) {
+                foreach ($request->file('att') as $file) {
+                    // Save files and store their paths if required
+                }
+            }
+    
+            DB::commit();
+    
+            return redirect()->route('pur-pos.show', $purPo->id)->with('success', 'PO updated successfully!');
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        return redirect()->route('purpos.index')->with('success', 'Purchase Order updated successfully!');
     }
+    
 
     public function destroy(PurPo $purpo)
     {

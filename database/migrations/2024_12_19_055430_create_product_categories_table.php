@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_categories', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // Default id is BIGINT UNSIGNED
             $table->string('name');
             $table->string('cat_code');
             $table->timestamps();
             $table->softDeletes();
+            
         });
     }
 

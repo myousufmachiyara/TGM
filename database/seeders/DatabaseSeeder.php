@@ -160,16 +160,16 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Products::insert([
-            ['id' => 1, 'name' => 'Black Nidha', 'sku' => 'FAB-000001', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
+            ['id' => 1, 'name' => 'Black Nidha', 'sku' => 'ABBY-FAB-00001', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
                 'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 1200,
             ],
-            ['id' => 2, 'name' => 'Nidha', 'sku' => 'FAB-000002', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
+            ['id' => 2, 'name' => 'Nidha', 'sku' => 'ABBY-FAB-00002', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
                 'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 800,
             ],
-            ['id' => 3, 'name' => 'Alisha', 'sku' => 'ABBY-000001', 'description' => '', 'category_id' => 2, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
+            ['id' => 3, 'name' => 'Alisha', 'sku' => 'ABBY-00001', 'description' => '', 'category_id' => 2, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
                 'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0,
             ],
-            ['id' => 4, 'name' => 'Alisha Hijab', 'sku' => 'ABBY-H-000001', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
+            ['id' => 4, 'name' => 'Alisha Hijab', 'sku' => 'ABBY-HIJ-000001', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
                 'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0,
             ],
         ]);
