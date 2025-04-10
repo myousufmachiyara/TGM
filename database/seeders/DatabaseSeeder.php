@@ -158,29 +158,5 @@ class DatabaseSeeder extends Seeder
             ['id' => 77, 'product_attribute_id' => 2, 'value' => 'Light Purple'],
             ['id' => 78, 'product_attribute_id' => 2, 'value' => 'Light Pink'],
         ]);
-
-        Products::insert([
-            ['id' => 1, 'name' => 'Black Nidha', 'sku' => 'ABBY-FAB-00001', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
-                'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 1200,
-            ],
-            ['id' => 2, 'name' => 'Nidha', 'sku' => 'ABBY-FAB-00002', 'description' => '', 'category_id' => 1, 'measurement_unit' => 'yrd', 'item_type' => 'raw',
-                'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 0, 'opening_stock' => 800,
-            ],
-            ['id' => 3, 'name' => 'Alisha', 'sku' => 'ABBY-00001', 'description' => '', 'category_id' => 2, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
-                'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0,
-            ],
-            ['id' => 4, 'name' => 'Alisha Hijab', 'sku' => 'ABBY-HIJ-000001', 'description' => '', 'category_id' => 3, 'measurement_unit' => 'pcs', 'item_type' => 'fg',
-                'price' => '0.00', 'sale_price' => '0.00', 'purchase_note' => '', 'has_variations' => 1, 'opening_stock' => 0,
-            ],
-        ]);
-
-        ProductVariations::insert([
-            ['id' => 1, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 1, 'sku' => 'ABBY-000001-52', 'price' => '1200.00', 'stock' => 50],
-            ['id' => 2, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 2, 'sku' => 'ABBY-000001-54', 'price' => '1200.00', 'stock' => 50],
-            ['id' => 3, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 3, 'sku' => 'ABBY-000001-56', 'price' => '1200.00', 'stock' => 50],
-            ['id' => 4, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 4, 'sku' => 'ABBY-000001-58', 'price' => '1200.00', 'stock' => 50],
-            ['id' => 5, 'product_id' => 3, 'attribute_id' => 1, 'attribute_value_id' => 5, 'sku' => 'ABBY-000001-60', 'price' => '1200.00', 'stock' => 50],
-            ['id' => 6, 'product_id' => 4, 'attribute_id' => 1, 'attribute_value_id' => 8, 'sku' => 'ABBY-H-000001-FS', 'price' => '300.00', 'stock' => 50],
-        ]);
     }
 }
