@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurFGPOVoucherDetails extends Model
+class PurFgpoVoucherDetails extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $table = 'pur_fgpos_voucher_details';
 
-    protected $fillable = ['fgpo_id', 'voucher_id', 'product_id', 'qty', 'unit', 'rate', 'description'];
+    protected $fillable = ['fgpo_id', 'voucher_id', 'product_id', 'qty', 'rate', 'description', 'po_id'];
 
     public function fgpo()
     {
@@ -26,6 +26,11 @@ class PurFGPOVoucherDetails extends Model
 
     public function product()
     {
-        return $this->belongsTo(Products::class, 'product_id', 'id');
+        return $this->belongsTo(Products::class); // Laravel can infer the foreign key
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurPo::class, 'po_id');
     }
 }

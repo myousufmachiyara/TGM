@@ -40,7 +40,8 @@ class PurFGPOController extends Controller
     public function store(Request $request)
     {
         \Log::info('Starting FGPO Store process', $request->all());
-
+    
+        // Validate the incoming data
         $request->validate([
             'vendor_id' => 'required|exists:chart_of_accounts,id',
             'category_id' => 'required|exists:product_categories,id',
@@ -56,21 +57,24 @@ class PurFGPOController extends Controller
             'voucher_details.*.product_id' => 'required|exists:products,id',
             'voucher_details.*.description' => 'required|string',
             'voucher_details.*.qty' => 'required|numeric',
-            'voucher_details.*.unit' => 'required|string',
             'voucher_details.*.item_rate' => 'required|numeric',
         ]);
-
-        DB::beginTransaction();
-
+    
+        DB::beginTransaction();  // Start the transaction
+    
         try {
+            // Step 1: Create FGPO record
             \Log::info('Creating FGPO record');
             $fgpo = PurFGPO::create([
                 'doc_code' => 'FGPO',
                 'vendor_id' => $request->vendor_id,
                 'order_date' => $request->order_date,
+                'category_id' => $request->category_id,
             ]);
-            \Log::info('FGPO Created', ['fgpo_id' => $fgpo->id]);
 
+            \Log::info('FGPO Created', ['fgpo_id' => $fgpo->id]);
+    
+            // Step 2: Add Product Variations
             \Log::info('Adding FGPO Product Variations');
             foreach ($request->item_order as $detail) {
                 \Log::info('Processing Item Order:', $detail);
@@ -83,7 +87,8 @@ class PurFGPOController extends Controller
                 ]);
             }
             \Log::info('FGPO Product Variations Added');
-
+    
+            // Step 3: Create Journal Voucher
             \Log::info('Creating Journal Voucher');
             $voucher = JournalVoucher1::create([
                 'debit_acc_id' => $request->vendor_id,
@@ -95,22 +100,24 @@ class PurFGPOController extends Controller
                 'ref_doc_code' => 'FGPO',
             ]);
             \Log::info('Journal Voucher Created', ['voucher_id' => $voucher->id]);
-
+    
+            // Step 4: Add Voucher Details
             \Log::info('Adding Voucher Details');
             foreach ($request->voucher_details as $detail) {
                 \Log::info('Processing Voucher Detail:', $detail);
                 PurFGPOVoucherDetails::create([
                     'fgpo_id' => $fgpo->id,
                     'voucher_id' => $voucher->id,
+                    'po_id' => $detail['po_id'],
                     'product_id' => $detail['product_id'],
                     'qty' => $detail['qty'],
-                    'unit' => $detail['unit'],
                     'rate' => $detail['item_rate'],
                     'description' => $detail['description'],
                 ]);
             }
             \Log::info('Voucher Details Added');
-
+    
+            // Step 5: Attach files if any
             if ($request->hasFile('attachments')) {
                 \Log::info('Processing Attachments');
                 foreach ($request->file('attachments') as $file) {
@@ -122,19 +129,25 @@ class PurFGPOController extends Controller
                     \Log::info('Attachment Stored', ['path' => $filePath]);
                 }
             }
-
+    
+            // Commit the transaction if everything is successful
             DB::commit();
             \Log::info('Transaction Committed Successfully');
-
+    
+            // Redirect with success message
             return redirect()->route('pur-fgpos.index')->with('success', 'Purchase Order created successfully!');
-
+    
         } catch (\Exception $e) {
+            // Rollback in case of any failure
             DB::rollBack();
             \Log::error('Error creating Purchase Order', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-
+    
+            // Return with error message
             return redirect()->route('pur-fgpos.index')->with('error', 'Error creating Purchase Order: '.$e->getMessage());
         }
     }
+    
+    
 
     public function newChallan()
     {

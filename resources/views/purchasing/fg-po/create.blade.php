@@ -127,7 +127,7 @@
                     <td><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
                     <td><input type="number" name="voucher_details[0][item_rate]" id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                     <td><input type="number" name="voucher_details[0][qty]" id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
-                    <td><input type="number"  id="item_width_0" class="form-control" name="voucher_details[0][width]" placeholder="Width" disabled required/></td>
+                    <td><input type="number" id="item_width_0" class="form-control" name="voucher_details[0][width]" placeholder="Width" disabled required/></td>
                     <td><input type="text" id="item_unit_0" class="form-control" name="voucher_details[0][unit]" placeholder="M.Unit" disabled required/></td>
                     <td><input type="number" id="item_total_0" class="form-control" placeholder="Total" disabled/></td>
                     <td width="5%">

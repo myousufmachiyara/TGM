@@ -46,4 +46,8 @@ class PurPO extends Model
         return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
     }
 
+    public function voucherDetails()
+    {
+        return $this->hasMany(PurFgposVoucherDetail::class, 'po_id');
+    }
 }

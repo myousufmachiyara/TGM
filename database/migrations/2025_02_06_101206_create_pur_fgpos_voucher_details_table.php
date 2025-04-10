@@ -16,17 +16,18 @@ return new class extends Migration
             $table->unsignedBigInteger('fgpo_id');
             $table->unsignedBigInteger('voucher_id');
             $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('po_id');
             $table->string('product_sku')->nullable();
             $table->string('description');
             $table->double('qty', 15, 2);
             $table->double('rate', 15, 2);
-            $table->string('unit');
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('fgpo_id')->references('id')->on('pur_fgpos')->onDelete('cascade');
             $table->foreign('voucher_id')->references('id')->on('jv1')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('po_id')->references('id')->on('pur_pos')->onDelete('cascade');
         });
     }
 
