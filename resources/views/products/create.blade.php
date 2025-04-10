@@ -102,7 +102,7 @@
 				
               <div class="col-12 col-md-3 mb-2">
                 <label>Images</label>
-                <input type="file" class="form-control" name="prod_att[]" id="imageUpload" multiple accept="image/png, image/jpeg, image/jpg">
+                <input type="file" class="form-control" name="prod_att[]" id="imageUpload" multiple accept="image/png, image/jpeg, image/jpg, image/webp">  
                 @error('prod_att')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
             </div>
