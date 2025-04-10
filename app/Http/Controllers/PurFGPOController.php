@@ -404,6 +404,8 @@ class PurFGPOController extends Controller
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
+        $shownProductIds = []; // Track which products' images are already shown
+
     
         foreach ($purpos->details as $item) {
             $product = $item->product;
