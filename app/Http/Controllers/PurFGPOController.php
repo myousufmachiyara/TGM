@@ -316,7 +316,7 @@ class PurFGPOController extends Controller
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values'])->findOrFail($id);
+        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values' , 'voucherDetails'])->findOrFail($id);
 
         if (! $purpos) {
             abort(404, 'Purchase Order not found.');
@@ -464,7 +464,7 @@ class PurFGPOController extends Controller
 
         $totalAmount = 0;
 
-        foreach ($purpos->details as $item) {
+        foreach ($purpos->voucherDetails as $item) {
             $fabricName = $item->product->name ?? 'N/A';
             $description = $item->description ?? '';
             $qty = $item->qty ?? 0;
