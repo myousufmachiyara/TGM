@@ -408,14 +408,22 @@ class PurFGPOController extends Controller
         foreach ($purpos->details as $item) {
             $product = $item->product;
         
-            if ($product && $product->attachments) {
-                foreach ($product->attachments as $attachment) {
-                    $imagePath = storage_path('app/public/' . $attachment->image_path);
+            // Skip if we've already shown this product's image
+            if (!$product || in_array($product->id, $shownProductIds)) {
+                continue;
+            }
         
-                    if (file_exists($imagePath)) {
-                        $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
-                        $pdf->Ln(55); // spacing after image
-                    }
+            // Mark this product as shown
+            $shownProductIds[] = $product->id;
+        
+            // Show only the first image of this product (optional: you can loop if you want multiple)
+            if ($product->attachments->isNotEmpty()) {
+                $attachment = $product->attachments->first();
+                $imagePath = storage_path('app/public/' . $attachment->image_path);
+        
+                if (file_exists($imagePath)) {
+                    $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
+                    $pdf->Ln(55); // spacing after image
                 }
             }
         }
