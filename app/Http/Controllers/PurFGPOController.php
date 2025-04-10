@@ -316,7 +316,7 @@ class PurFGPOController extends Controller
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.variation.attribute_values', 'attachments'])->findOrFail($id);
+        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values'])->findOrFail($id);
 
         if (! $purpos) {
             abort(404, 'Purchase Order not found.');
@@ -404,10 +404,11 @@ class PurFGPOController extends Controller
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
-        foreach ($purpos->attachments as $attachment) {
-            $imagePath = storage_path('app/public/'.$attachment->att_path);
-
-            if (file_exists($imagePath)) {
+        foreach ($purpos->product->attachments as $pAttach) {
+            $productImagePath = storage_path('app/public/' . $pAttach->attachment_path);
+        
+            if (file_exists($productImagePath)) {
+                $pdf->Ln(2);
                 $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
                 $pdf->Ln(55); // Move cursor down after each image
             }
