@@ -56,8 +56,12 @@ class PurPOController extends Controller
     
             // Generate PO code in the format: PO-SequenceNo-CategoryCode
             $latestPo = PurPo::latest()->first();
-            $sequenceNo = $latestPo ? $latestPo->id + 1 : 1;  // Increment sequence number
-            $poCode = "PO-{$sequenceNo}-{$categoryCode}";
+            $sequenceNo = $latestPo ? $latestPo->id + 1 : 1;
+            
+            // Pad the number with leading zeros to make it 5 digits
+            $sequencePadded = str_pad($sequenceNo, 5, '0', STR_PAD_LEFT);
+            
+            $poCode = "PO-{$categoryCode}-{$sequencePadded}";
     
             // Create the Purchase Order
             $purpo = PurPo::create([
@@ -207,6 +211,23 @@ class PurPOController extends Controller
         $purpos = PurPO::paginate(10); // Add pagination for large datasets
 
         return PurPOResource::collection($purpos);
+    }
+
+    public function getPoCodes(Request $request)
+    {
+        $productId = $request->product_id;
+
+        $poIds = PurPosDetail::where('item_id', $productId)
+                    ->pluck('pur_pos_id')
+                    ->unique();
+
+        $poCodes = PurPo::whereIn('id', $poIds)
+                    ->pluck('po_code');
+
+        return response()->json([
+            'po_ids' => $poIds,
+            'po_codes' => $poCodes,
+        ]);
     }
 
     public function showAPI(PurPO $purpo)

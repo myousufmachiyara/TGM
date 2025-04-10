@@ -12,11 +12,16 @@ class PurFGPO extends Model
 
     protected $table = 'pur_fgpos';
 
-    protected $fillable = ['doc_code', 'vendor_id', 'order_date'];
+    protected $fillable = ['doc_code', 'vendor_id', 'order_date', 'category_id'];
 
     public function vendor()
     {
         return $this->belongsTo(ChartOfAccounts::class, 'vendor_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(ChartOfAccounts::class, 'category_id');
     }
 
     public function product()

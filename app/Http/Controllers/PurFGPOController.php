@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChartOfAccounts;
 use App\Models\JournalVoucher1;
 use App\Models\ProductAttributes;
+use App\Models\ProductCategory;
 use App\Models\Products;
 use App\Models\PurFGPO;
 use App\Models\PurFGPOAttachements;
@@ -31,8 +32,9 @@ class PurFGPOController extends Controller
         $fabrics = Products::where('item_type', 'raw')->get();  // Get all product categories
         $articles = Products::where('item_type', 'fg')->get();  // Get all product categories
         $attributes = ProductAttributes::with('values')->get();
+        $prodCat = ProductCategory::all();  // Get all product categories
 
-        return view('purchasing.fg-po.create', compact('coa', 'fabrics', 'articles', 'attributes'));
+        return view('purchasing.fg-po.create', compact('coa', 'fabrics', 'articles', 'attributes', 'prodCat'));
     }
 
     public function store(Request $request)
@@ -41,6 +43,7 @@ class PurFGPOController extends Controller
 
         $request->validate([
             'vendor_id' => 'required|exists:chart_of_accounts,id',
+            'category_id' => 'required|exists:product_categories,id',
             'order_date' => 'required|date',
             'product_id' => 'required|exists:products,id',
             'item_order' => 'required|array',

@@ -31,6 +31,17 @@
                   <label>PO #</label>
                   <input type="number" class="form-control"  placeholder="PO #" disabled/>
                 </div>
+
+                <div class="col-12 col-md-2">
+                  <label>Category<span style="color: red;"><strong>*</strong></span></label>
+                  <select data-plugin-selecttwo class="form-control select2-js" name="category_id" required>  <!-- Added name attribute for form submission -->
+                    <option value="" selected disabled>Select Category</option>
+                    @foreach ($prodCat as $cat)
+                      <option value="{{ $cat->id }}">{{ $cat->name }}</option> 
+                    @endforeach
+                  </select>
+                </div>
+
                 <div class="col-12 col-md-2 mb-3">
                   <label>Vendor Name</label>
                   <select data-plugin-selecttwo class="form-control select2-js" name="vendor_id" id="vendor_name" required>  <!-- Added name attribute for form submission -->
@@ -78,7 +89,7 @@
           </section>
         </div>
 
-        <div class="col-12 col-md-7 mb-3">
+        <div class="col-12 col-md-12 mb-3">
           <section class="card">
             <header class="card-header" style="display: flex;justify-content: space-between;">
               <h2 class="card-title">Fabric Details</h2>
@@ -87,33 +98,39 @@
               <table class="table table-bordered" id="myTable">
                 <thead>
                   <tr>
-                    <th width="25%">Fabric</th>
-                    <th width="25%">Description</th>
+                    <th>Fabric</th>
+                    <th>PO Code</th>
+                    <th>Description</th>
                     <th>Rate</th>
                     <th>Qty</th>
                     <th>Width</th>
                     <th>M.Unit</th>
                     <th>Total</th>
-                    <th width="8%"></th>
+                    <th width="5%"></th>
                   </tr>
                 </thead>
                 <tbody id="PurPOTbleBody">
                   <tr>
-                    <td width="25%">
-                      <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][product_id]" required>  <!-- Added name attribute for form submission -->
+                    <td>
+                      <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][product_id]" id="productSelect0" onchange="getData(0)" required>  <!-- Added name attribute for form submission -->
                         <option value="" selected disabled>Select Fabric</option>
                         @foreach ($fabrics as $item)
-                          <option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option> 
+                          <option value="{{ $item->id }}" data-unit="{{ $item->measurement_unit }}" data-width="{{ $item->width }}" >{{$item->sku }} - {{$item->name }}</option> 
                         @endforeach
                       </select>  
                     </td>
-                    <td width="25%"><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
+                    <td>
+                      <select data-plugin-selecttwo class="form-control select2-js" id="poIDSelect0" name="voucher_details[0][po_id]" required>  <!-- Added name attribute for form submission -->
+                        <option value="" selected disabled>Select PO Id</option>
+                      </select>  
+                    </td>
+                    <td><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
                     <td><input type="number" name="voucher_details[0][item_rate]" id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                     <td><input type="number" name="voucher_details[0][qty]" id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
-                    <td><input type="number" id="item_width_0" class="form-control" name="voucher_details[0][width]" placeholder="Width" disabled required/></td>
+                    <td><input type="number"  id="item_width_0" class="form-control" name="voucher_details[0][width]" placeholder="Width" disabled required/></td>
                     <td><input type="text" id="item_unit_0" class="form-control" name="voucher_details[0][unit]" placeholder="M.Unit" disabled required/></td>
                     <td><input type="number" id="item_total_0" class="form-control" placeholder="Total" disabled/></td>
-                    <td width="8%">
+                    <td width="5%">
                       <button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button>
                       <button type="button" class="btn btn-primary btn-xs"  onclick="addNewRow()" ><i class="fa fa-plus"></i></button>
                     </td>
@@ -142,24 +159,24 @@
           </section>
         </div>
 
-        <div class="col-12 col-md-12">
+        <div class="col-12 col-md-7">
           <section class="card">
             <header class="card-header" style="display: flex;justify-content: space-between;">
               <h2 class="card-title">Summary</h2>
             </header>
             <div class="card-body">
               <div class="row pb-4">
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-3">
                   <label>Total Fabric Quantity</label>
                   <input type="number" class="form-control" id="total_fab" placeholder="Total Fabric" disabled/>
                 </div>
 
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-3">
                   <label>Total Fabric Amount</label>
                   <input type="number" class="form-control" id="total_fab_amt" placeholder="Total Fabric Amount" disabled />
                 </div>
 
-                <div class="col-12 col-md-2">
+                <div class="col-12 col-md-3">
                   <label>Total Units (Estimated)</label>
                   <input type="number" class="form-control" id="total_units" placeholder="Total Units" disabled/>
                 </div>
@@ -216,19 +233,26 @@
         var cell5 = newRow.insertCell(4);
         var cell6 = newRow.insertCell(5);
         var cell7 = newRow.insertCell(6);
+        var cell8 = newRow.insertCell(7);
+        var cell9 = newRow.insertCell(8);
 
-        cell1.innerHTML  = '<select data-plugin-selecttwo class="form-control select2-js" name="voucher_details['+index+'][product_id]">'+
+        cell1.innerHTML  = '<select data-plugin-selecttwo id="productSelect'+index+'" class="form-control select2-js" onchange="getData('+index+')" name="voucher_details['+index+'][product_id]">'+
                             '<option value="" disabled selected>Select Fabric</option>'+
                             @foreach ($fabrics as $item)
-                              '<option value="{{ $item->id }}">{{$item->sku }} - {{$item->name }}</option>'+
+                              '<option value="{{ $item->id }}" data-unit="{{ $item->measurement_unit }}" data-width="{{ $item->width }}">{{$item->sku }} - {{$item->name }}</option>'+
                             @endforeach
                           '</select>';
-        cell2.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" required/>';
-        cell3.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
-        cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell5.innerHTML  = '<input type="text" id="item_unit_0" class="form-control" name="voucher_details['+index+'][unit]" placeholder="M.Unit" disabled required/>';
-        cell6.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
-        cell7.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
+
+        cell2.innerHTML  = '<select data-plugin-selecttwo id="poIDSelect'+index+'" class="form-control select2-js" name="voucher_details['+index+'][po_id]">'+
+                            '<option value="" disabled selected>Select PO Code</option>'+
+                          '</select>';
+        cell3.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" required/>';
+        cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
+        cell5.innerHTML  = '<input type="number" name="voucher_details['+index+'][qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
+        cell6.innerHTML  = '<input type="number"  id="item_width_'+index+'" class="form-control" name="voucher_details['+index+'][width]" placeholder="Width" disabled required/>';
+        cell7.innerHTML  = '<input type="text" id="item_unit_'+index+'" class="form-control" name="voucher_details['+index+'][unit]" placeholder="M.Unit" disabled required/>';
+        cell8.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
+        cell9.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
                           '<button type="button" class="btn btn-primary btn-xs" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
         index++;
         
@@ -307,7 +331,13 @@
       rows.forEach((row, key) => {
         let selects = row.querySelectorAll("select"); // Get all selects in the row
         let fabric = selects[0].options[selects[0].selectedIndex].text; // First dropdown (Fabric)
-        let unit = selects[1].options[selects[1].selectedIndex].text;   // Second dropdown (Unit)
+
+        let unitInput = row.querySelector(`#item_unit_${key}`);
+        let unit = unitInput?.value || '';
+
+        // If you also want width:
+        let widthInput = row.querySelector(`#item_width_${key}`);
+        let width = widthInput?.value || '';
 
         let description = row.querySelector("input[name='voucher_details["+key+"][description]']").value;
         let rate = row.querySelector("input[name='voucher_details["+key+"][item_rate]']").value;
@@ -315,7 +345,7 @@
         let total = row.querySelector("#item_total_" + key).value;
 
         if (fabric && quantity && rate && unit) {
-          items.push({ fabric, description, rate, quantity, unit, total });
+          items.push({ fabric, description, rate, quantity, unit, width, total });
         }
       });
       
@@ -433,5 +463,58 @@
     $(document).on("click", ".delete-row", function () {
       $(this).closest("tr").remove();
     });
+
+    function getData(row){
+
+      const productSelect = document.getElementById(`productSelect${row}`);
+      const productId = productSelect?.value;
+
+      if (!productId) {
+        alert("Please select a product first.");
+        return;
+      }
+
+      $.ajax({
+        url: '/get-po-codes', // Laravel route
+        type: 'POST',
+        data: {
+          product_id: productId,
+          _token: $('meta[name="csrf-token"]').attr('content') // CSRF
+        },
+        success: function(response) {
+          const dropdown = document.getElementById(`poIDSelect${row}`);
+          dropdown.innerHTML = '<option value="">Select PO ID</option>'; // Clear & reset
+
+          if (response.po_ids && response.po_codes) {
+            response.po_ids.forEach((id, index) => {
+              console.log(id,index);
+              const option = document.createElement("option");
+              option.value = id;
+              option.textContent = response.po_codes[index];
+              dropdown.appendChild(option);
+            });
+          }
+        },
+        error: function(xhr) {
+          console.error('Error fetching PO data:', xhr.responseText);
+        }
+      });
+
+      updateUnit(row);
+    }
+
+    function updateUnit(row) {
+      const productSelect = document.getElementById(`productSelect${row}`);
+      const selectedOption = productSelect.options[productSelect.selectedIndex];
+      const unit = selectedOption.getAttribute('data-unit'); // Get the unit from the selected option's data-unit attribute
+      const width = selectedOption.getAttribute('data-width'); // Get the unit from the selected option's data-unit attribute
+
+      // Set the unit text in the unit field
+      const unitField = document.getElementById(`item_unit_${row}`);
+      const widthField = document.getElementById(`item_width_${row}`);
+
+      unitField.value = unit || ''; // Set the unit, or clear it if not available
+      widthField.value = width || ''; // Set the unit, or clear it if not available
+    }
   </script>
 @endsection
