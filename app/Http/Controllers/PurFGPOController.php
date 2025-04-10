@@ -404,15 +404,15 @@ class PurFGPOController extends Controller
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
+        
         foreach ($purpos->details as $item) {
             if ($item->product && $item->product->attachments) {
                 foreach ($item->product->attachments as $attachment) {
                     $imagePath = storage_path('app/public/' . $attachment->attachment_path);
         
                     if (file_exists($imagePath)) {
-                        $pdf->Ln(2);
                         $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
-                        $pdf->Ln(52); // spacing after image
+                        $pdf->Ln(55); // Move cursor down after each image
                     }
                 }
             }
