@@ -490,18 +490,6 @@ class PurFGPOController extends Controller
         // Total Amount
         $pdf->writeHTML('<h4 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h4>', true, false, true, false, '');
 
-        // Signature Section
-        $signatures = '
-        <table cellspacing="0" cellpadding="10" style="margin-top:30px;">
-            <tr>
-                <td width="50%">
-                    <strong>Authorized By:</strong><br><br>
-                    ________________________
-                </td>
-            </tr>
-        </table>';
-        $pdf->writeHTML($signatures, true, false, true, false, '');
-
         // Move to the bottom of the page
         $pdf->SetY(-50); // Adjust value if needed to position correctly
 
