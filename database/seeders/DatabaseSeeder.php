@@ -68,11 +68,9 @@ class DatabaseSeeder extends Seeder
             ['id' => 5, 'name' => 'Scarf', 'cat_code' => 'SCF'],
             ['id' => 6, 'name' => 'Ladies FG', 'cat_code' => 'L-FG'],
             ['id' => 7, 'name' => "Men's Fancy Fabric", 'cat_code' => 'M-FAB-F'],
-            ['id' => 8, 'name' => "Men's Fancy FG", 'cat_code' => 'M-FG-F'],
-            ['id' => 9, 'name' => "Men's Plain Fabric", 'cat_code' => 'M-FAB-P'],
-            ['id' => 10, 'name' => "Men's Plain FG", 'cat_code' => 'M-FG-P'],
-            ['id' => 11, 'name' => 'Kids FG', 'cat_code' => 'K-FG'],
-            ['id' => 12, 'name' => 'Accessories', 'cat_code' => 'ACS'],
+            ['id' => 8, 'name' => "Men's Plain Fabric", 'cat_code' => 'M-FAB-P'],
+            ['id' => 9, 'name' => 'Kids FG', 'cat_code' => 'K-FG'],
+            ['id' => 10, 'name' => 'Accessories', 'cat_code' => 'ACS'],
         ]);
 
         ProductAttributes::insert([
