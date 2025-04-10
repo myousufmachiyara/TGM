@@ -483,7 +483,7 @@
         },
         success: function(response) {
           const dropdown = document.getElementById(`poIDSelect${row}`);
-          dropdown.innerHTML = '<option value="">Select PO ID</option>'; // Clear & reset
+          dropdown.innerHTML = '<option value="0">Select PO ID</option>'; // Clear & reset
 
           if (response.po_ids && response.po_codes) {
             response.po_ids.forEach((id, index) => {
