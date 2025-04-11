@@ -363,7 +363,7 @@ class PurFGPOController extends Controller
         //         <td width="30%" style="font-size:10px;">'.$purpos->remarks.'</td>
         //     </tr>
         // </table>';
-        // $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->writeHTML($html, true, false, true, false, '');
 
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:10px">
