@@ -340,7 +340,7 @@ class PurFGPOController extends Controller
         $pdf->writeHTML($heading, true, false, true, false, '');
 
         // Purchase Order Details Table
-        $html = '<table style="margin-bottom:10px">
+        $html = '<table style="margin-bottom:5px">
             <tr>
                 <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="text-decoration: underline;color:#000">'.$purpos->id.'</span></td>
                 <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
@@ -442,6 +442,25 @@ class PurFGPOController extends Controller
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
+        $pdf->SetY(-50); // Adjust value if needed to position correctly
+
+        $lineWidth = 60; // Line width in mm
+        $yPosition = $pdf->GetY(); // Get current Y position for alignment
+
+        // Draw lines for signatures
+        $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition); // Approved By
+        $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition); // Received By
+
+        $pdf->Ln(5); // Move cursor below the line
+
+        // Text below the lines
+        $pdf->SetXY(23, $yPosition);
+        $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
+
+        $pdf->SetXY(125, $yPosition);
+        $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
+
+        
         $shownProductIds = []; // Track which products' images are already shown
 
     
