@@ -366,7 +366,7 @@ class PurFGPOController extends Controller
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Items Table Header
-        $html = '<table border="0.3" style="text-align:center;margin-top:10px">
+        $html = '<table border="0.3" style="text-align:center;margin-top:5px">
             <tr>
                 <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
                 <th width="40%" style="font-size:10px;font-weight:bold;color:#17365D">Product</th>
@@ -460,7 +460,7 @@ class PurFGPOController extends Controller
         $pdf->SetXY(125, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
 
-        
+
         $shownProductIds = []; // Track which products' images are already shown
 
     
