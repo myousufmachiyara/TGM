@@ -436,7 +436,7 @@ class PurFGPOController extends Controller
 
         $challanTable .= '</tbody></table>';
         $pdf->writeHTML($challanTable, true, false, true, false, '');
-        
+
         // Attachments (Images)
         $pdf->Ln(5);
         $pdf->SetFont('helvetica', 'B', 12);
@@ -462,7 +462,7 @@ class PurFGPOController extends Controller
                 $imagePath = storage_path('app/public/' . $attachment->image_path);
         
                 if (file_exists($imagePath)) {
-                    $pdf->Image($imagePath, '', '', 40, 60, '', '', '', false, 300, '', false, false, 0, false, false, false);
+                    $pdf->Image($imagePath, '', '', 40, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
                     $pdf->Ln(55); // spacing after image
                 }
             }
