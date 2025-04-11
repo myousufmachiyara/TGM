@@ -468,7 +468,7 @@ class PurFGPOController extends Controller
             }
         }
 
-        $pdf->SetY(-60); // Adjust value if needed to position correctly
+        $pdf->SetY(-40); // Adjust value if needed to position correctly
 
         $lineWidth = 60; // Line width in mm
         $yPosition = $pdf->GetY(); // Get current Y position for alignment
