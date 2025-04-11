@@ -404,7 +404,7 @@ class PurFGPOController extends Controller
             <thead>
                 <tr style="background-color:#f2f2f2;">
                     <th><strong>Fabric</strong></th>
-                    <th width="30%" ><strong>Description</strong></th>
+                    <th ><strong>Description</strong></th>
                     <th><strong>Quantity</strong></th>
                     <th><strong>Rate</strong></th>
                     <th><strong>Total</strong></th>
@@ -427,7 +427,7 @@ class PurFGPOController extends Controller
             $challanTable .= "
                 <tr>
                     <td>{$fabricName}</td>
-                    <td width='30%'>{$description}</td>
+                    <td>{$description}</td>
                     <td>{$qty} {$unit}</td>
                     <td>{$rate}</td>
                     <td>{$total}</td>
