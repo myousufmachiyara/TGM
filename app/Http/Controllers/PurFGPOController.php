@@ -403,7 +403,7 @@ class PurFGPOController extends Controller
         <table border="1" cellpadding="5" cellspacing="0" style="font-size:10px;">
             <thead>
                 <tr style="background-color:#f2f2f2;">
-                    <th><strong>Fabric Name</strong></th>
+                    <th><strong>Fabric</strong></th>
                     <th><strong>Description</strong></th>
                     <th><strong>Quantity</strong></th>
                     <th><strong>Rate</strong></th>
@@ -526,7 +526,7 @@ class PurFGPOController extends Controller
         $pdf->writeHTML($challanTable, true, false, true, false, '');
 
         // Total Amount
-        $pdf->writeHTML('<h4 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h4>', true, false, true, false, '');
+        $pdf->writeHTML('<h3 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h3>', true, false, true, false, '');
 
         // Move to the bottom of the page
         $pdf->SetY(-50); // Adjust value if needed to position correctly
