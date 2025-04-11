@@ -440,7 +440,6 @@ class PurFGPOController extends Controller
         $pdf->writeHTML('<h3 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h3>', true, false, true, false, '');
 
         // Attachments (Images)
-        $pdf->Ln(5);
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
