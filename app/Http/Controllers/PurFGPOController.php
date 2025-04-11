@@ -462,7 +462,7 @@ class PurFGPOController extends Controller
                 $imagePath = storage_path('app/public/' . $attachment->image_path);
         
                 if (file_exists($imagePath)) {
-                    $pdf->Image($imagePath, '', '', 60, 80, '', '', '', false, 300, '', false, false, 0, false, false, false);
+                    $pdf->Image($imagePath, '', '', 80, 100, '', '', '', false, 300, '', false, false, 0, false, false, false);
                     $pdf->Ln(55); // spacing after image
                 }
             }
