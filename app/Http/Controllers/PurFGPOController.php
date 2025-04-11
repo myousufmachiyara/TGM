@@ -499,7 +499,7 @@ class PurFGPOController extends Controller
         <table cellspacing="0" cellpadding="5" style="font-size:10px;">
             <tr>
                 <td width="33%"><strong>Vendor:</strong> '.$purpos->vendor->name.'</td>
-                <td width="33%"><strong>PO No:</strong> FGPO-'.$purpos->id.'</td>
+                <td width="33%"><strong>Job No:</strong> FGPO-'.$purpos->id.'</td>
                 <td width="33%"><strong>Date:</strong> '.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</td>
             </tr>
         </table>';
