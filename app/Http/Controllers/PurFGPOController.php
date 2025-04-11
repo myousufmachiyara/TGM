@@ -349,21 +349,21 @@ class PurFGPOController extends Controller
         </table>';
 
         // Vendor and Account Details
-        $html .= '<table border="0.1" style="border-collapse: collapse;">
-            <tr>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Vendor Name</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->vendor->name.'</td>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Address</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->vendor->address.'</td>
-            </tr>
-            <tr>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Phone</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->vendor->phone_no.'</td>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Remarks</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->remarks.'</td>
-            </tr>
-        </table>';
-        $pdf->writeHTML($html, true, false, true, false, '');
+        // $html .= '<table border="0.1" style="border-collapse: collapse;">
+        //     <tr>
+        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Vendor Name</td>
+        //         <td width="30%" style="font-size:10px;">'.$purpos->vendor->name.'</td>
+        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Address</td>
+        //         <td width="30%" style="font-size:10px;">'.$purpos->vendor->address.'</td>
+        //     </tr>
+        //     <tr>
+        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Phone</td>
+        //         <td width="30%" style="font-size:10px;">'.$purpos->vendor->phone_no.'</td>
+        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Remarks</td>
+        //         <td width="30%" style="font-size:10px;">'.$purpos->remarks.'</td>
+        //     </tr>
+        // </table>';
+        // $pdf->writeHTML($html, true, false, true, false, '');
 
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:10px">
