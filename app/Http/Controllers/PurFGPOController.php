@@ -344,7 +344,7 @@ class PurFGPOController extends Controller
             <tr>
                 <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="text-decoration: underline;color:#000">'.$purpos->id.'</span></td>
                 <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Quotation No: <span style="text-decoration: underline;color:#000">N/A</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Unit: <span style="text-decoration: underline;color:#000">'.$purpos->vendor->name.'</span></td>
             </tr>
         </table>';
 
