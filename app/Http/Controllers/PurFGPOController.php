@@ -327,9 +327,9 @@ class PurFGPOController extends Controller
         // Set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('Purchase Order - '.$purpos->id);
-        $pdf->SetSubject('Purchase Order - '.$purpos->id);
-        $pdf->SetKeywords('Purchase Order, TCPDF, PDF');
+        $pdf->SetTitle('Job PO-'.$purpos->id);
+        $pdf->SetSubject('Job PO-'.$purpos->id);
+        $pdf->SetKeywords('Job PO, TCPDF, PDF');
 
         // Add a page
         $pdf->AddPage();
