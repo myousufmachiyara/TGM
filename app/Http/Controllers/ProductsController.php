@@ -130,17 +130,10 @@ class ProductsController extends Controller
     public function edit($id)
     {
         $product = Products::with(['variations', 'attachments'])->findOrFail($id);
-        $prodCat = ProductCategory::all(); // if needed for select dropdowns
+        $categories = ProductCategory::all(); // if needed for select dropdowns
         $attributes = ProductAttributes::with('values')->get(); // if you're using attributes in variations
     
-        // Debugging with dd()
-        dd($product, $prodCat, $attributes);
-    
-        // Alternatively, you can use print_r for each variable:
-        // print_r($product);
-        // print_r($prodCat);
-        // print_r($attributes);
-        return view('products.edit', compact('product', 'prodCat', 'attributes'));
+        return view('products.edit', compact('product', 'categories', 'attributes'));
     }
 
     public function update(Request $request, $id)

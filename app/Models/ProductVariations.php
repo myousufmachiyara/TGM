@@ -26,7 +26,7 @@ class ProductVariations extends Model
 
     public function attribute()
     {
-        return $this->belongsTo(ProductAttribute::class);
+        return $this->belongsTo(ProductAttributes::class);
     }
 
     public function attribute_values()

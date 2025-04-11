@@ -399,6 +399,44 @@ class PurFGPOController extends Controller
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
+        $challanTable = '
+        <table border="1" cellpadding="5" cellspacing="0" style="font-size:10px;">
+            <thead>
+                <tr style="background-color:#f2f2f2;">
+                    <th><strong>Fabric Name</strong></th>
+                    <th><strong>Description</strong></th>
+                    <th><strong>Quantity</strong></th>
+                    <th><strong>Rate</strong></th>
+                    <th><strong>Total</strong></th>
+                </tr>
+            </thead>
+            <tbody>';
+
+        $totalAmount = 0;
+
+        foreach ($purpos->voucherDetails as $item) {
+            $fabricName = $item->product->name ?? 'N/A';
+            $description = $item->description ?? '';
+            $qty = $item->qty ?? 0;
+            $unit = $item->product->measurement_unit ?? '';
+            $rate = number_format($item->rate ?? 0, 2);
+            $total = number_format(($item->qty ?? 0) * ($item->rate ?? 0), 2);
+
+            $totalAmount += ($item->qty ?? 0) * ($item->rate ?? 0);
+
+            $challanTable .= "
+                <tr>
+                    <td>{$fabricName}</td>
+                    <td>{$description}</td>
+                    <td>{$qty} {$unit}</td>
+                    <td>{$rate}</td>
+                    <td>{$total}</td>
+                </tr>";
+        }
+
+        $challanTable .= '</tbody></table>';
+        $pdf->writeHTML($challanTable, true, false, true, false, '');
+        
         // Attachments (Images)
         $pdf->Ln(5);
         $pdf->SetFont('helvetica', 'B', 12);
