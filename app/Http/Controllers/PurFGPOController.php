@@ -437,6 +437,8 @@ class PurFGPOController extends Controller
         $challanTable .= '</tbody></table>';
         $pdf->writeHTML($challanTable, true, false, true, false, '');
         
+        $pdf->writeHTML('<h3 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h3>', true, false, true, false, '');
+
         // Attachments (Images)
         $pdf->Ln(5);
         $pdf->SetFont('helvetica', 'B', 12);
