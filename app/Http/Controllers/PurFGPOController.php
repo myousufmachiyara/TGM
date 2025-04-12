@@ -317,12 +317,12 @@ class PurFGPOController extends Controller
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values' , 'voucherDetails.purchaseOrder'])->findOrFail($id);
+        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values' , 'voucherDetails.purPO'])->findOrFail($id);
 
         $voucherIds = $purpos->voucherDetails->pluck('voucher_id')->implode(', ');
 
         // Get the first non-null po_code from the related purPo
-        $poCode = optional($purpos->voucherDetails->first()->purchaseOrder)->po_code ?? 'N/A';
+        $poCode = optional($purpos->voucherDetails->first()->purPO)->po_code ?? 'N/A';
 
         if (! $purpos) {
             abort(404, 'Purchase Order not found.');

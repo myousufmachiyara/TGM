@@ -29,8 +29,8 @@ class PurFgpoVoucherDetails extends Model
         return $this->belongsTo(Products::class); // Laravel can infer the foreign key
     }
 
-    public function purchaseOrder()
+    public function purPO()
     {
-        return $this->belongsTo(PurPo::class, 'po_id');
+        return $this->belongsTo(PurPo::class);
     }
 }
