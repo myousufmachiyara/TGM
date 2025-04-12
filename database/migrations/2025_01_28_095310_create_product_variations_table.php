@@ -14,7 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('attribute_id');
             $table->unsignedBigInteger('attribute_value_id');
             $table->string('sku')->unique();
-            $table->decimal('price', 8, 2)->nullable();
+            $table->double('price', 8, 2)->nullable();
             $table->integer('stock')->nullable();
             $table->softDeletes();
             $table->timestamps();

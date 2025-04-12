@@ -317,7 +317,12 @@ class PurFGPOController extends Controller
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values' , 'voucherDetails'])->findOrFail($id);
+        $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values' , 'voucherDetails.purchaseOrder'])->findOrFail($id);
+
+        $voucherIds = $purpos->voucherDetails->pluck('voucher_id')->implode(', ');
+
+        // Get the first non-null po_code from the related purPo
+        $poCode = optional($purpos->voucherDetails->first()->purchaseOrder)->po_code ?? 'N/A';
 
         if (! $purpos) {
             abort(404, 'Purchase Order not found.');
@@ -337,15 +342,16 @@ class PurFGPOController extends Controller
         $pdf->setCellPadding(1.2);
 
         // Purchase Order Heading
-        $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
+        $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Job PO</h1>';
         $pdf->writeHTML($heading, true, false, true, false, '');
 
         // Purchase Order Details Table
         $html = '<table style="margin-bottom:5px">
             <tr>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Job No: <span style="text-decoration: underline;color:#000">'.$purpos->id.'</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Job No: <span style="text-decoration: underline;color:#000">'.$purpos->doc_code.'-'.$purpos->id.'</span></td>
                 <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Unit: <span style="text-decoration: underline;color:#000">'.$purpos->vendor->name.'</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Unit: <span style="color:#000">'.$purpos->vendor->name.'</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Challan #: <span style="color:#000">'.$voucherIds.'</span></td>
             </tr>
         </table>';
 
@@ -369,10 +375,10 @@ class PurFGPOController extends Controller
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:5px">
             <tr>
-                <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
+                <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
                 <th width="40%" style="font-size:10px;font-weight:bold;color:#17365D">Product</th>
                 <th width="40%" style="font-size:10px;font-weight:bold;color:#17365D">Variation</th>
-                <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
+                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
             </tr>
        ';
 
@@ -389,10 +395,10 @@ class PurFGPOController extends Controller
             $product_m_unit = $item->product->measurement_unit ?? 'N/A'; // Assuming 'measurement_unit' is the column name
 
             $html .= '<tr>
-                <td width="10%" style="font-size:10px;text-align:center;">'.$count.'</td>
+                <td width="5%" style="font-size:10px;text-align:center;">'.$count.'</td>
                 <td width="40%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
                 <td width="40%" style="font-size:10px;text-align:center;">'.$variation_name.'</td>
-                <td width="10%" style="font-size:10px;text-align:center;">'.$item->qty.' '.$product_m_unit.'</td>
+                <td width="15%" style="font-size:10px;text-align:center;">'.$item->qty.' '.$product_m_unit.'</td>
             </tr>';
             $count++;
         }
@@ -404,11 +410,12 @@ class PurFGPOController extends Controller
         <table border="1" cellpadding="5" cellspacing="0" style="font-size:10px;">
             <thead>
                 <tr style="background-color:#f2f2f2;">
-                    <th><strong>Fabric</strong></th>
-                    <th ><strong>Description</strong></th>
-                    <th><strong>Quantity</strong></th>
-                    <th><strong>Rate</strong></th>
-                    <th><strong>Total</strong></th>
+                    <th width="28%"><strong>PO No./Fabric ID</strong></th>
+                    <th width="30%"><strong>Description</strong></th>
+                    <th width="8%"><strong>Width</strong></th>
+                    <th width="10%"><strong>Qty</strong></th>
+                    <th width="10%"><strong>Rate</strong></th>
+                    <th width="13%"><strong>Total</strong></th>
                 </tr>
             </thead>
             <tbody>';
@@ -418,6 +425,7 @@ class PurFGPOController extends Controller
         foreach ($purpos->voucherDetails as $item) {
             $fabricName = $item->product->name ?? 'N/A';
             $description = $item->description ?? '';
+            $width = $item->width ?? 0;
             $qty = $item->qty ?? 0;
             $unit = $item->product->measurement_unit ?? '';
             $rate = number_format($item->rate ?? 0, 2);
@@ -425,14 +433,15 @@ class PurFGPOController extends Controller
 
             $totalAmount += ($item->qty ?? 0) * ($item->rate ?? 0);
 
-            $challanTable .= "
-                <tr>
-                    <td>{$fabricName}</td>
-                    <td>{$description}</td>
-                    <td>{$qty} {$unit}</td>
-                    <td>{$rate}</td>
-                    <td>{$total}</td>
-                </tr>";
+            $challanTable .= '
+            <tr>
+                <td width="28%">' . $poCode . '/' . $fabricName . '</td>
+                <td width="30%">' . $description . '</td>
+                <td width="8%">' . $width . '"</td>
+                <td width="10%">' . $qty . ' ' . $unit . '</td>
+                <td width="10%">' . $rate . '</td>
+                <td width="13%">' . $total . '</td>
+            </tr>';
         }
 
         $challanTable .= '</tbody></table>';

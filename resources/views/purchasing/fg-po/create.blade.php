@@ -127,7 +127,7 @@
                     <td><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
                     <td><input type="number" name="voucher_details[0][item_rate]" id="item_rate_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                     <td><input type="number" name="voucher_details[0][qty]" id="item_qty_0" onchange="rowTotal(0)" step="any" value="0" class="form-control" placeholder="Quantity" required/></td>
-                    <td><input type="number" id="item_width_0" class="form-control" name="voucher_details[0][width]" placeholder="Width" disabled required/></td>
+                    <td><input type="number" id="item_width_0" class="form-control" name="voucher_details[0][width]" placeholder="Width" required/></td>
                     <td><input type="text" id="item_unit_0" class="form-control" name="voucher_details[0][unit]" placeholder="M.Unit" disabled required/></td>
                     <td><input type="number" id="item_total_0" class="form-control" placeholder="Total" disabled/></td>
                     <td width="5%">
@@ -249,7 +249,7 @@
         cell3.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" />';
         cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
         cell5.innerHTML  = '<input type="number" name="voucher_details['+index+'][qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell6.innerHTML  = '<input type="number"  id="item_width_'+index+'" class="form-control" name="voucher_details['+index+'][width]" placeholder="Width" disabled required/>';
+        cell6.innerHTML  = '<input type="number"  id="item_width_'+index+'" class="form-control" name="voucher_details['+index+'][width]" placeholder="Width" required/>';
         cell7.innerHTML  = '<input type="text" id="item_unit_'+index+'" class="form-control" name="voucher_details['+index+'][unit]" placeholder="M.Unit" disabled required/>';
         cell8.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
         cell9.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
