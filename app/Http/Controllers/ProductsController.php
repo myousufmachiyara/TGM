@@ -39,7 +39,6 @@ class ProductsController extends Controller
                 'description' => 'nullable|string',
                 'category_id' => 'required|exists:product_categories,id',
                 'measurement_unit' => 'nullable|string|max:50',
-                'width' => '',
                 'item_type' => 'nullable|string|max:50',
                 'price' => 'required|numeric|min:0',
                 'sale_price' => 'required|numeric|min:0',

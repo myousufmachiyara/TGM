@@ -43,6 +43,8 @@ class PurPOController extends Controller
                 'delivery_date' => 'nullable|date',
                 'details' => 'required|array',
                 'details.*.item_id' => 'required|string|max:255',
+                'details.*.width' => 'required|numeric|min:0',
+                'details.*.description' => 'nullable|string|max:255',
                 'details.*.item_rate' => 'required|numeric|min:0',
                 'details.*.item_qty' => 'required|numeric|min:0',
                 'other_exp' => 'nullable|numeric|min:0',
@@ -79,6 +81,8 @@ class PurPOController extends Controller
                 PurPosDetail::create([
                     'pur_pos_id' => $purpo->id, // Foreign key
                     'item_id' => $detail['item_id'],
+                    'width' => $detail['width'],
+                    'description' => $detail['description'],
                     'item_rate' => $detail['item_rate'],
                     'item_qty' => $detail['item_qty'],
                 ]);
@@ -230,6 +234,18 @@ class PurPOController extends Controller
         ]);
     }
 
+    public function getWidth(Request $request)
+    {
+        $productId = $request->product_id;
+        $poId = $request->po_id;
+
+        $width = PurPosDetail::where('item_id', $productId)
+            ->where('pur_pos_id', $poId)
+            ->value('width');
+
+        return response()->json(['width' => $width]);
+    }
+
     public function showAPI(PurPO $purpo)
     {
         return new PurPOResource($purpo);
@@ -238,7 +254,7 @@ class PurPOController extends Controller
     public function print($id)
     {
         // Fetch the purchase order with related data
-        $purpos = PurPo::with(['vendor', 'details.category', 'attachments', 'details.product'])->findOrFail($id);
+        $purpos = PurPo::with(['vendor', 'details.product', 'attachments', 'details.product'])->findOrFail($id);
 
         if (! $purpos) {
             abort(404, 'Purchase Order not found.');
@@ -249,9 +265,9 @@ class PurPOController extends Controller
         // Set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('Purchase Order - '.$purpos->id);
-        $pdf->SetSubject('Purchase Order - '.$purpos->id);
-        $pdf->SetKeywords('Purchase Order, TCPDF, PDF');
+        $pdf->SetTitle('PO-'.$purpos->id);
+        $pdf->SetSubject('PO-'.$purpos->id);
+        $pdf->SetKeywords('PO, TCPDF, PDF');
 
         // Add a page
         $pdf->AddPage();
@@ -264,80 +280,63 @@ class PurPOController extends Controller
         // Purchase Order Details Table
         $html = '<table style="margin-bottom:10px">
             <tr>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="text-decoration: underline;color:#000">'.$purpos->id.'</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="color:#000">'.$purpos->po_code.'</span></td>
                 <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Quotation No: <span style="text-decoration: underline;color:#000">N/A</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Vendor: <span style="text-decoration: underline;color:#000">'.$purpos->vendor->name.'</span></td>
             </tr>
         </table>';
 
-        // Vendor and Account Details
-        $html .= '<table border="0.1" style="border-collapse: collapse;">
-            <tr>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Vendor Name</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->vendor->name.'</td>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Address</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->vendor->address.'</td>
-            </tr>
-            <tr>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Phone</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->vendor->phone_no.'</td>
-                <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Remarks</td>
-                <td width="30%" style="font-size:10px;">'.$purpos->remarks.'</td>
-            </tr>
-        </table>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Items Table Header
-        $html = '<table border="0.3" style="text-align:center;margin-top:10px">
+        $html= '<table border="0.3" style="text-align:center;margin-top:15px">
             <tr>
-                <th width="6%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
-                <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
-                <th width="30%" style="font-size:10px;font-weight:bold;color:#17365D">Product Name</th>
-                <th width="30%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
+                <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
+                <th width="25%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
+                <th width="21%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
+                <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
+                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
                 <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
                 <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
             </tr>
        ';
-
-        // Items Table Data
-        $total_amount = 0;
-        $count = 1;
+        $total_qty = 0;
+        $count = 0;
 
         foreach ($purpos->details as $item) {
-            $product_name = $item->category->name ?? 'N/A'; // Fetch product name safely
+            $count++;
+            $product_name = $item->product->name ?? 'N/A'; // Fetch product name safely
+            $sku = $item->product->sku ?? 'N/A'; // Fetch product name safely
+            $id = $item->product->id ?? 'N/A'; // Fetch product name safely
             $product_m_unit = $item->product->measurement_unit ?? 'N/A'; // Assuming 'measurement_unit' is the column name
-            $description = $item->product->description ?? 'N/A'; // Assuming 'measurement_unit' is the column name
+            $description = $item->description ?? 'N/A'; // Assuming 'measurement_unit' is the column name
 
             $total = $item->item_rate * $item->item_qty;
-            $total_amount += $total;
+            $total_qty += $item->item_qty;
 
             $html .= '<tr>
-                <td width="6%" style="font-size:10px;text-align:center;">'.$count.'</td>
-                <td width="10%" style="font-size:10px;text-align:center;">'.$item->item_qty.' '.$product_m_unit.'</td>
-                <td width="30%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
-                <td width="30%" style="font-size:10px;">'.$description.'</td>
+                <td width="5%" style="font-size:10px;text-align:center;">'.$count.'</td>
+                <td width="25%" style="font-size:10px;text-align:center;">'.$id.'-'.$product_name.'</td>
+                <td width="21%" style="font-size:10px;">'.$description.'</td>
+                <th width="10%" style="font-size:10px;">'.$item->width.'</th>
+                <td width="15%" style="font-size:10px;text-align:center;">'.$item->item_qty.' '.$product_m_unit.'</td>
                 <td width="12%" style="font-size:10px;text-align:center;">'.$item->item_rate.'</td>
                 <td width="12%" style="font-size:10px;text-align:center;">'.$total.'</td>
             </tr>';
-            $count++;
         }
 
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Summary Table
-        $net_amount = round($total_amount + $purpos->other_exp - $purpos->bill_discount);
 
-        $summary = '<table border="1" cellpadding="5" width="50%">
-            <tr><td><b>Total Amount:</b></td><td>'.$total_amount.'</td></tr>
-            <tr><td><b>Other Expenses:</b></td><td>'.$purpos->other_exp.'</td></tr>
-            <tr><td><b>Discount:</b></td><td>'.$purpos->bill_discount.'</td></tr>
-            <tr><td><b>Net Amount:</b></td><td>'.$net_amount.'</td></tr>
+        $summary = '<table border="0.3" cellpadding="2" width="35%">
+            <tr><td><strong>Total Quantity:</strong></td><td>'.$total_qty.'</td></tr>
+            <tr><td><strong>Total Item:</strong></td><td>'.$count.'</td></tr>
         </table>';
         $pdf->writeHTML($summary, true, false, true, false, '');
 
         // Attachments (Images)
-        $pdf->Ln(5);
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 

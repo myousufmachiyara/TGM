@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('po_id');
             $table->string('product_sku')->nullable();
             $table->string('description')->nullable();
+            $table->double('width', 15, 2);
             $table->double('qty', 15, 2);
             $table->double('rate', 15, 2);
             $table->timestamps();

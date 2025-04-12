@@ -111,6 +111,7 @@ class PurFGPOController extends Controller
                     'product_id' => $detail['product_id'],
                     'qty' => $detail['qty'],
                     'rate' => $detail['item_rate'],
+                    'width' => $detail['width'],
                     'description' => $detail['description'],
                 ]);
             }

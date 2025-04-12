@@ -12,7 +12,7 @@ class PurFgpoVoucherDetails extends Model
 
     protected $table = 'pur_fgpos_voucher_details';
 
-    protected $fillable = ['fgpo_id', 'voucher_id', 'product_id', 'qty', 'rate', 'description', 'po_id'];
+    protected $fillable = ['fgpo_id', 'voucher_id', 'product_id', 'qty', 'rate', 'description', 'po_id', 'width'];
 
     public function fgpo()
     {

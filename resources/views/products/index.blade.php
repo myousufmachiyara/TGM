@@ -23,7 +23,7 @@
                 <thead>
                     <tr>
                       <th>S.No</th>
-                      <th>Name</th>
+                      <th>Item Name </th>
                       <th>SKU</th>
                       <th>Category</th>
                       <th>Price</th>

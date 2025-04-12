@@ -36,7 +36,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('pur-pos', PurPOController::class);
     Route::get('pur-pos-rec/{id}', [PurPOController::class, 'receiving'])->name('pur-pos.rec');
     Route::post('/get-po-codes', [PurPOController::class, 'getPoCodes'])->name('get.po.codes');
-
+    Route::get('/get-po-width', [PurPOController::class, 'getWidth'])->name('get.po.width');
+    
     Route::resource('pur-fgpos', PurFGPOController::class);
     Route::get('pur-fgpos-rec/{id}', [PurFGPOController::class, 'receiving'])->name('pur-fgpos.rec');
     Route::post('pur-fgpos-received', [PurFGPOController::class, 'storeReceiving'])->name('pur-fgpos.store-rec');

@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('pur_pos_details', function (Blueprint $table) {
             $table->id(); // Primary key
             $table->unsignedBigInteger('pur_pos_id');
+            $table->text('description')->nullable();
+            $table->decimal('width');
             $table->unsignedBigInteger('item_id');
-            $table->decimal('item_rate', 10, 2);
+            $table->double('item_rate', 10, 2);
             $table->decimal('item_qty', 10, 2);
             $table->timestamps();
 

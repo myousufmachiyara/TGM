@@ -76,6 +76,8 @@
               <thead>
                 <tr>
                   <th>Item Name</th>
+                  <th>Width</th>
+                  <th>Description</th>
                   <th>Rate</th>
                   <th>Quantity</th>
                   <th>Unit</th>
@@ -93,6 +95,8 @@
                       @endforeach
                     </select>  
                   </td>
+                  <td><input type="number" name="details[0][width]"  id="item_width1" step="any" class="form-control" placeholder="Width" required/></td>
+                  <td><input type="text" name="details[0][description]"  id="item_description1" class="form-control" placeholder="Description" required/></td>
                   <td><input type="number" name="details[0][item_rate]"  id="item_rate1" onchange="rowTotal(1)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                   <td>
                     <input type="number" name="details[0][item_qty]" id="item_qty1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Quantity" required/>
@@ -171,6 +175,8 @@
         var cell4 = newRow.insertCell(3);
         var cell5 = newRow.insertCell(4);
         var cell6 = newRow.insertCell(5);
+        var cell7 = newRow.insertCell(6);
+        var cell8 = newRow.insertCell(7);
 
         cell1.innerHTML  = '<select data-plugin-selecttwo id="productSelect'+index+'" class="form-control select2-js" onchange="updateUnit('+index+')" name="details['+index+'][item_id]">'+
                             '<option value="" disabled selected>Select Category</option>'+
@@ -178,11 +184,13 @@
                               '<option value="{{ $item->id }}" data-unit="{{ $item->measurement_unit }}">{{$item->sku }} - {{$item->name }}</option>'+
                             @endforeach
                           '</select>';
-        cell2.innerHTML  = '<input type="number" name="details['+index+'][item_rate]" step="any" id="item_rate'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
-        cell3.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell4.innerHTML  = '<input type="text" id="unitSuffix'+index+'" class="form-control" placeholder="Quantity" disabled  />';
-        cell5.innerHTML  = '<input type="number" id="item_total'+index+'" class="form-control" placeholder="Total" disabled/>';
-        cell6.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button> '+
+        cell2.innerHTML  = '<input type="number" name="details['+index+'][width]" step="any" id="item_width'+index+'" class="form-control" placeholder="Width" required/>';
+        cell3.innerHTML  = '<input type="text" name="details['+index+'][description]" id="item_description'+index+'" class="form-control" placeholder="Description" required/>';
+        cell4.innerHTML  = '<input type="number" name="details['+index+'][item_rate]" step="any" id="item_rate'+index+'" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
+        cell5.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
+        cell6.innerHTML  = '<input type="text" id="unitSuffix'+index+'" class="form-control" placeholder="Quantity" disabled  />';
+        cell7.innerHTML  = '<input type="number" id="item_total'+index+'" class="form-control" placeholder="Total" disabled/>';
+        cell8.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button> '+
                           '<button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
         index++;
 
@@ -210,8 +218,8 @@
 
       for (var i = 0; i < tableRows; i++) {
         var currentRow =  table.rows[i];
-        totalQuantity = totalQuantity + Number(currentRow.cells[2].querySelector('input').value);
-        totalAmount = totalAmount + Number(currentRow.cells[4].querySelector('input').value);
+        totalQuantity = totalQuantity + Number(currentRow.cells[4].querySelector('input').value);
+        totalAmount = totalAmount + Number(currentRow.cells[6].querySelector('input').value);
       }
 
       $('#total_qty').val(totalQuantity);

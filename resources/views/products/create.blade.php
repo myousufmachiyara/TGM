@@ -54,11 +54,6 @@
                 @error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
-              <div class="col-12 col-md-1 mb-2">
-                <label>Width</label>
-                <input type="number" step=".00" class="form-control" value="{{ old('width', '0.00') }}" name="width" />
-                @error('width')<div class="text-danger">{{ $message }}</div>@enderror
-              </div>
 
               <div class="col-12 col-md-1 mb-2">
                 <label>Item Type</label>

@@ -12,6 +12,8 @@ class PurPosDetail extends Model
     protected $fillable = [
         'pur_pos_id',
         'item_id',
+        'width',
+        'description',
         'item_rate',
         'item_qty',
     ];
@@ -19,11 +21,6 @@ class PurPosDetail extends Model
     public function purPos()
     {
         return $this->belongsTo(PurPos::class, 'pur_pos_id');
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Products::class, 'item_id');
     }
 
     public function product() // Corrected method name

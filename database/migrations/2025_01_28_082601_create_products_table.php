@@ -19,9 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->string('measurement_unit')->nullable();
             $table->string('item_type')->nullable();
-            $table->decimal('width')->default(0);
-            $table->decimal('price', 10, 2)->default(0);
-            $table->decimal('sale_price', 10, 2)->default(0);
+            $table->double('price', 10, 2)->default(0);
+            $table->double('sale_price', 10, 2)->default(0);
             $table->text('purchase_note')->nullable();
             $table->decimal('opening_stock')->default(0);
             $table->boolean('has_variations')->default(0);

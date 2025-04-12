@@ -115,12 +115,12 @@
                       <select data-plugin-selecttwo class="form-control select2-js" name="voucher_details[0][product_id]" id="productSelect0" onchange="getData(0)" required>  <!-- Added name attribute for form submission -->
                         <option value="" selected disabled>Select Fabric</option>
                         @foreach ($fabrics as $item)
-                          <option value="{{ $item->id }}" data-unit="{{ $item->measurement_unit }}" data-width="{{ $item->width }}" >{{$item->sku }} - {{$item->name }}</option> 
+                          <option value="{{ $item->id }}" data-unit="{{ $item->measurement_unit }}" >{{$item->sku }} - {{$item->name }}</option> 
                         @endforeach
                       </select>  
                     </td>
                     <td>
-                      <select data-plugin-selecttwo class="form-control select2-js" id="poIDSelect0" name="voucher_details[0][po_id]" required>  <!-- Added name attribute for form submission -->
+                      <select data-plugin-selecttwo class="form-control select2-js" id="poIDSelect0" onchange="fetchWidth(0)" name="voucher_details[0][po_id]" required>  <!-- Added name attribute for form submission -->
                         <option value="0" selected>Select PO Id</option>
                       </select>  
                     </td>
@@ -239,11 +239,11 @@
         cell1.innerHTML  = '<select data-plugin-selecttwo id="productSelect'+index+'" class="form-control select2-js" onchange="getData('+index+')" name="voucher_details['+index+'][product_id]">'+
                             '<option value="" disabled selected>Select Fabric</option>'+
                             @foreach ($fabrics as $item)
-                              '<option value="{{ $item->id }}" data-unit="{{ $item->measurement_unit }}" data-width="{{ $item->width }}">{{$item->sku }} - {{$item->name }}</option>'+
+                              '<option value="{{ $item->id }}" data-unit="{{ $item->measurement_unit }}">{{$item->sku }} - {{$item->name }}</option>'+
                             @endforeach
                           '</select>';
 
-        cell2.innerHTML  = '<select data-plugin-selecttwo id="poIDSelect'+index+'" class="form-control select2-js" name="voucher_details['+index+'][po_id]">'+
+        cell2.innerHTML  = '<select data-plugin-selecttwo id="poIDSelect'+index+'" class="form-control select2-js" onchange="fetchWidth('+index+')" name="voucher_details['+index+'][po_id]">'+
                             '<option value="0" selected>Select PO Code</option>'+
                           '</select>';
         cell3.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" />';
@@ -487,7 +487,6 @@
 
           if (response.po_ids && response.po_codes) {
             response.po_ids.forEach((id, index) => {
-              console.log(id,index);
               const option = document.createElement("option");
               option.value = id;
               option.textContent = response.po_codes[index];
@@ -502,19 +501,43 @@
 
       updateUnit(row);
     }
-
+    
     function updateUnit(row) {
       const productSelect = document.getElementById(`productSelect${row}`);
       const selectedOption = productSelect.options[productSelect.selectedIndex];
       const unit = selectedOption.getAttribute('data-unit'); // Get the unit from the selected option's data-unit attribute
-      const width = selectedOption.getAttribute('data-width'); // Get the unit from the selected option's data-unit attribute
-
       // Set the unit text in the unit field
       const unitField = document.getElementById(`item_unit_${row}`);
-      const widthField = document.getElementById(`item_width_${row}`);
 
       unitField.value = unit || ''; // Set the unit, or clear it if not available
-      widthField.value = width || ''; // Set the unit, or clear it if not available
+    }
+
+    function fetchWidth(row) {
+      const productSelect = document.getElementById(`productSelect${row}`);
+      const productId = productSelect?.value;
+
+      const poSelect = document.getElementById(`poIDSelect${row}`);
+      const poId = poSelect?.value; 
+
+        if (productId && poId) {
+            $.ajax({
+                url: '{{ route("get.po.width") }}',
+                method: 'GET',
+                data: {
+                    product_id: productId,
+                    po_id: poId
+                },
+                success: function(response) {
+                  console.log(response.width);
+                  $(`#item_width_${row}`).val(response.width ?? '');
+                },
+                error: function() {
+                  $(`#item_width_${row}`).val('');
+                }
+            });
+        } else {
+            $('#width').val('');
+        }
     }
   </script>
 @endsection
