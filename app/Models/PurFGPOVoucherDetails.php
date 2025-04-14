@@ -31,6 +31,6 @@ class PurFgpoVoucherDetails extends Model
 
     public function purPO()
     {
-        return $this->belongsTo(PurPo::class);
+        return $this->belongsTo(PurPo::class,'po_id');
     }
 }

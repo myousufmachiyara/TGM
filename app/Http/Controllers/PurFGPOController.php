@@ -322,7 +322,6 @@ class PurFGPOController extends Controller
         $voucherIds = $purpos->voucherDetails->pluck('voucher_id')->implode(', ');
 
         // Get the first non-null po_code from the related purPo
-        $poCode = optional($purpos->voucherDetails->first()->purPO)->po_code ?? 'N/A';
 
         if (! $purpos) {
             abort(404, 'Purchase Order not found.');
@@ -423,7 +422,8 @@ class PurFGPOController extends Controller
         $totalAmount = 0;
 
         foreach ($purpos->voucherDetails as $item) {
-            $fabricName = $item->product->name ?? 'N/A';
+            $poCode = $item->purPO->po_code ?? 'N/A';
+            $fabID = $item->product->id ?? 'N/A';
             $description = $item->description ?? '';
             $width = $item->width ?? 0;
             $qty = $item->qty ?? 0;
@@ -435,7 +435,7 @@ class PurFGPOController extends Controller
 
             $challanTable .= '
             <tr>
-                <td width="28%">' . $poCode . '/' . $fabricName . '</td>
+                <td width="28%">' . $poCode . '/' . $fabID . '</td>
                 <td width="30%">' . $description . '</td>
                 <td width="8%">' . $width . '"</td>
                 <td width="10%">' . $qty . ' ' . $unit . '</td>
@@ -505,6 +505,17 @@ class PurFGPOController extends Controller
         // Header
         $pdf->writeHTML('<h3 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Fabric Challan '.$voucherIds.'</h3>',true, false, true, false, '');
 
+        $html = '<table style="margin-bottom:5px">
+            <tr>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Job No: <span style="text-decoration: underline;color:#000">'.$purpos->doc_code.'-'.$purpos->id.'</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Unit: <span style="color:#000">'.$purpos->vendor->name.'</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Challan #: <span style="color:#000">'.$voucherIds.'</span></td>
+            </tr>
+        </table>';
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
         // Top Info Row (Vendor, PO No, Date)
         $challanTable = '
         <table border="1" cellpadding="5" cellspacing="0" style="font-size:10px;">
@@ -523,7 +534,8 @@ class PurFGPOController extends Controller
         $totalAmount = 0;
 
         foreach ($purpos->voucherDetails as $item) {
-            $fabricName = $item->product->name ?? 'N/A';
+            $poCode = $item->purPO->po_code ?? 'N/A';
+            $fabricID = $item->product->id ?? 'N/A';
             $description = $item->description ?? '';
             $width = $item->width ?? 0;
             $qty = $item->qty ?? 0;
@@ -535,7 +547,7 @@ class PurFGPOController extends Controller
 
             $challanTable .= '
             <tr>
-                <td width="28%">' . $poCode . '/' . $fabricName . '</td>
+                <td width="28%">' . $poCode . '/' . $fabricID . '</td>
                 <td width="30%">' . $description . '</td>
                 <td width="8%">' . $width . '"</td>
                 <td width="10%">' . $qty . ' ' . $unit . '</td>
