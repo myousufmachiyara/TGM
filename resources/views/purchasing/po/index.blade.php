@@ -33,8 +33,8 @@
                   <th>S.No</th>
                   <th>PO Code</th>
                   <th>Vendor</th>
+                  <th>Items</th>
                   <th>Order Date</th>
-                  <th>Delivery Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -44,8 +44,8 @@
                     <td>{{$key+1}}</td>
                     <td>{{$row->po_code}}</td>
                     <td>{{ $row->vendor->name ?? 'N/A' }}</td>
+                    <td>{{ $row->details->pluck('product.name')->filter()->implode(', ') }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($row->delivery_date)->format('d-m-y') }}</td>
                     <td>
                       <a href="{{ route('pur-pos.rec', $row->id) }}" class="btn btn-success btn-xs">
                         <i class="fa fa-download"></i>
