@@ -7,7 +7,7 @@
     <div class="col">
       <section class="card">
         <header class="card-header" style="display: flex;justify-content: space-between;">
-          <h2 class="card-title">All PO</h2>
+          <h2 class="card-title">Job PO</h2>
           <div>
             <a class="btn btn-danger text-end" href="{{ route('pur-fgpos.new-challan') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> New Challan</a>
             <a class="btn btn-primary text-end" href="{{ route('pur-fgpos.create') }}"  aria-expanded="false" > <i class="fa fa-plus"></i> New PO</a>
