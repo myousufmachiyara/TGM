@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->string('measurement_unit')->nullable();
+            $table->string('material')->nullable();
+            $table->string('style')->nullable();
             $table->string('item_type')->nullable();
             $table->double('price', 10, 2)->default(0);
             $table->double('sale_price', 10, 2)->default(0);
