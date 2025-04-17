@@ -54,15 +54,38 @@
                 @error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
-
               <div class="col-12 col-md-1 mb-2">
                 <label>Item Type</label>
-                <select data-plugin-selecttwo class="form-control select2-js" name="item_type" required>
+                <select data-plugin-selecttwo class="form-control select2-js" name="item_type" id="item_type" required>
                   <option value="" selected disabled>Item Type</option>
                   <option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
+                  <option value="mfg" {{ old('item_type') == 'mfg' ? 'selected' : '' }}>Men's FG</option> 
                   <option value="raw" {{ old('item_type') == 'raw' ? 'selected' : '' }}>Raw</option> 
                 </select>
                 @error('item_type')<div class="text-danger">{{ $message }}</div>@enderror
+              </div>
+
+              <div id="div-mfg" class="col" style="display: none;">
+                <div class="col-12 mb-2">
+                  <label>Collar Style</label>
+                  <select data-plugin-selecttwo class="form-control select2-js" name="style">
+                    <option value="" selected disabled>Item Type</option>
+                    <option value="shirt" {{ old('style') == 'shirt' ? 'selected' : '' }}>Shirt Collar</option>
+                    <option value="sherwani" {{ old('style') == 'sherwani' ? 'selected' : '' }}>Sherwani Collar</option>
+                    <option value="round" {{ old('style') == 'round' ? 'selected' : '' }}>Round Collar</option> 
+                  </select>
+                  @error('style')<div class="text-danger">{{ $message }}</div>@enderror
+                </div>
+                <div class="col-12 mb-2">
+                  <label>Material</label>
+                  <select data-plugin-selecttwo class="form-control select2-js" name="material">
+                    <option value="" selected disabled>Item Type</option>
+                    <option value="cotton" {{ old('material') == 'cotton' ? 'selected' : '' }}>Cotton</option>
+                    <option value="ww" {{ old('material') == 'ww' ? 'selected' : '' }}>Washing Wear</option> 
+                    <option value="chicken" {{ old('material') == 'chicken' ? 'selected' : '' }}>Chicken</option> 
+                  </select>
+                  @error('material')<div class="text-danger">{{ $message }}</div>@enderror
+                </div>
               </div>
 
               <div class="col-12 col-md-1 mb-2">
@@ -283,6 +306,13 @@
       //   document.getElementById("base-sku").value = sku;
       //   document.getElementById("show-sku").value = sku;
       // });
+
+
+      // Trigger on change
+      $('#item_type').change(toggleDivs);
+
+      // Trigger on page load in case of old value
+      toggleDivs();
     });
 
     document.getElementById("imageUpload").addEventListener("change", function(event) {
@@ -307,5 +337,15 @@
             }
         }
     });
+
+    
+    function toggleDivs() {
+      var type = $('#item_type').val();
+      if (type === 'mfg') {
+        $('#div-mfg').show();
+      } else {
+        $('#div-mfg').hide();
+      }
+    }
   </script>
 @endsection
