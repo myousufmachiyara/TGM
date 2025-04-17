@@ -33,6 +33,7 @@
                 <tr>
                   <th>S.No</th>
                   <th>Vendor</th>
+                  <th>Job ID</th>
                   <th>Order Date</th>
                   <th>Items</th>
                   <th>status</th>
@@ -44,6 +45,7 @@
                   <tr>
                     <td>{{$key+1}}</td>
                     <td>{{ $row->vendor->name ?? 'N/A' }}</td>
+                    <td>{{ $row->doc_code }}-{{ $row->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>
                       @foreach($row->details as $value)
