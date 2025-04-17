@@ -285,8 +285,8 @@
 
       for (var i = 0; i < tableRows; i++) {
         var currentRow =  table.rows[i];
-        totalQuantity = totalQuantity + Number(currentRow.cells[3].querySelector('input').value);
-        totalAmount = totalAmount + Number(currentRow.cells[5].querySelector('input').value);
+        totalQuantity = totalQuantity + Number(currentRow.cells[4].querySelector('input').value);
+        totalAmount = totalAmount + Number(currentRow.cells[7].querySelector('input').value);
       }
 
       for (var j = 0; j < variationTableRows; j++) {
