@@ -319,7 +319,7 @@ class PurFGPOController extends Controller
         // Fetch the purchase order with related data
         $purpos = PurFGPO::with(['vendor', 'details.product', 'details.product.attachments' , 'details.variation.attribute_values' , 'voucherDetails.purPO'])->findOrFail($id);
 
-        $voucherIds = $purpos->voucherDetails->pluck('voucher_id')->implode(', ');
+        $voucherIds = $purpos->voucherDetails->pluck('voucher_id')->unique()->implode(', ');
 
         // Get the first non-null po_code from the related purPo
 
@@ -383,26 +383,57 @@ class PurFGPOController extends Controller
 
         // Items Table Data
         $total_amount = 0;
+        $html = '<table border="1" cellpadding="3" cellspacing="0" width="100%">
+        <thead>
+            <tr style="font-size:10px;text-align:center;">
+                <th width="5%">#</th>
+                <th width="40%">Product</th>
+                <th width="40%">Variation</th>
+                <th width="15%">Qty</th>
+            </tr>
+        </thead>
+        <tbody>';
+
         $count = 1;
+        $groupedItems = [];
 
         foreach ($purpos->details as $item) {
-            $product_name = $item->product->name ?? 'N/A';
-            $variation_name = 'N/A';
-            if ($item->variation && $item->variation->attribute_values) {
-                $variation_name = $item->variation->attribute_values->value ?? 'N/A';
-            }
-            $product_m_unit = $item->product->measurement_unit ?? 'N/A'; // Assuming 'measurement_unit' is the column name
-
-            $html .= '<tr>
-                <td width="5%" style="font-size:10px;text-align:center;">'.$count.'</td>
-                <td width="40%" style="font-size:10px;text-align:center;">'.$product_name.'</td>
-                <td width="40%" style="font-size:10px;text-align:center;">'.$variation_name.'</td>
-                <td width="15%" style="font-size:10px;text-align:center;">'.$item->qty.' '.$product_m_unit.'</td>
-            </tr>';
-            $count++;
+            $groupedItems[$item->product_id][] = $item;
         }
 
-        $html .= '</table>';
+        foreach ($groupedItems as $product_id => $items) {
+            $total_qty = 0;
+
+            $product_name = $items[0]->product->name ?? 'N/A';
+            $product_m_unit = $items[0]->product->measurement_unit ?? 'N/A';
+
+            foreach ($items as $item) {
+                $variation_name = 'N/A';
+                if ($item->variation && $item->variation->attribute_values) {
+                    $variation_name = $item->variation->attribute_values->value ?? 'N/A';
+                }
+
+                $html .= '<tr style="font-size:10px;text-align:center;">
+                    <td width="5%">'.$count.'</td>
+                    <td width="40%">'.$product_name.'</td>
+                    <td width="40%">'.$variation_name.'</td>
+                    <td width="15%">'.$item->qty.' '.$product_m_unit.'</td>
+                </tr>';
+
+                $total_qty += $item->qty;
+                $count++;
+            }
+
+            // Total row for product
+            $html .= '<tr style="font-size:10px;text-align:right;">
+                <td colspan="3"><strong>'.$product_name.' Total Pcs :</strong></td>
+                <td style="text-align:center;"><strong>'.$total_qty.' '.$product_m_unit.'</strong></td>
+            </tr>';
+        }
+
+        $html .= '</tbody></table>';
+
+        // Output HTML to PDF
         $pdf->writeHTML($html, true, false, true, false, '');
 
         $challanTable = '
@@ -583,6 +614,6 @@ class PurFGPOController extends Controller
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
 
         // Output the PDF
-        $pdf->Output('Purchase_Order_'.$purpos->id.'.pdf', 'I');
+        $pdf->Output('Job-PO-'.$purpos->id.'.pdf', 'I');
     }
 }

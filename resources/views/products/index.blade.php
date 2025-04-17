@@ -23,7 +23,7 @@
                 <thead>
                     <tr>
                       <th>S.No</th>
-                      <th>Item Name </th>
+                      <th>Item Name/ID </th>
                       <th>SKU</th>
                       <th>Category</th>
                       <th>Price</th>
@@ -35,7 +35,7 @@
                   @foreach ($products as $item)
                     <tr>
                       <td>{{ $loop->iteration }}</td>
-                      <td><strong>{{ $item->name }}</strong></td>
+                      <td><strong>{{ $item->name }}/{{ $item->id }}</strong></td>
                       <td>{{ $item->sku }}</td>
                       <td>{{ $item->category ? $item->category->name : 'No Category' }}</td>
                       <td>{{ $item->price }}</td>

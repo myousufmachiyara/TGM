@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('product_categories', function (Blueprint $table) {
             $table->id(); // Default id is BIGINT UNSIGNED
-            $table->string('name');
-            $table->string('cat_code');
+            $table->string('name')->unique();
+            $table->string('cat_code')->unique();
             $table->timestamps();
             $table->softDeletes();
             

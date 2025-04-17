@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('chart_of_accounts', function (Blueprint $table) {
             $table->id(); // Auto-increment primary key
             $table->unsignedBigInteger('shoa_id'); // Foreign key for sub_head_of_accounts
-            $table->string('name'); // Name of the account
+            $table->string('name')->unique(); // Name of the account
             $table->double('receivables')->default(0); // Default value for receivables
             $table->double('payables')->default(0); // Default value for payables
             $table->date('opening_date'); // Opening date for the account

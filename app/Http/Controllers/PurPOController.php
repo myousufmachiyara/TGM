@@ -369,6 +369,6 @@ class PurPOController extends Controller
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
 
         // Output the PDF
-        $pdf->Output('Purchase_Order_'.$purpos->id.'.pdf', 'I');
+        $pdf->Output('PO-'.$purpos->id.'.pdf', 'I');
     }
 }
