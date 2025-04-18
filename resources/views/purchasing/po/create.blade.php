@@ -96,7 +96,7 @@
                     </select>  
                   </td>
                   <td><input type="number" name="details[0][width]"  id="item_width1" step="any" class="form-control" placeholder="Width" required/></td>
-                  <td><input type="text" name="details[0][description]"  id="item_description1" class="form-control" placeholder="Description" required/></td>
+                  <td><input type="text" name="details[0][description]"  id="item_description1" class="form-control" placeholder="Description"/></td>
                   <td><input type="number" name="details[0][item_rate]"  id="item_rate1" onchange="rowTotal(1)" step="any" value="0" class="form-control" placeholder="Rate" required/></td>
                   <td>
                     <input type="number" name="details[0][item_qty]" id="item_qty1" onchange="rowTotal(1)" step="any" class="form-control" placeholder="Quantity" required/>
@@ -185,7 +185,7 @@
                             @endforeach
                           '</select>';
         cell2.innerHTML  = '<input type="number" name="details['+index+'][width]" step="any" id="item_width'+index+'" class="form-control" placeholder="Width" required/>';
-        cell3.innerHTML  = '<input type="text" name="details['+index+'][description]" id="item_description'+index+'" class="form-control" placeholder="Description" required/>';
+        cell3.innerHTML  = '<input type="text" name="details['+index+'][description]" id="item_description'+index+'" class="form-control" placeholder="Description"/>';
         cell4.innerHTML  = '<input type="number" name="details['+index+'][item_rate]" step="any" id="item_rate'+index+'" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
         cell5.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
         cell6.innerHTML  = '<input type="text" id="unitSuffix'+index+'" class="form-control" placeholder="Quantity" disabled  />';

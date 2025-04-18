@@ -291,8 +291,8 @@ class PurPOController extends Controller
         $html= '<table border="0.3" style="text-align:center;margin-top:15px">
             <tr>
                 <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
-                <th width="25%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
-                <th width="21%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
+                <th width="28%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
+                <th width="18%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
                 <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
                 <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
                 <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
