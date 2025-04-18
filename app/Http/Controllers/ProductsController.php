@@ -35,7 +35,7 @@ class ProductsController extends Controller
         try {
             // Validate the request
             $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:products',
                 'description' => 'nullable|string',
                 'category_id' => 'required|exists:product_categories,id',
                 'measurement_unit' => 'nullable|string|max:50',

@@ -75,7 +75,7 @@
             <table class="table table-bordered" id="myTable">
               <thead>
                 <tr>
-                  <th>Item Name</th>
+                  <th width="30%">Item Name</th>
                   <th>Width</th>
                   <th>Description</th>
                   <th>Rate</th>
@@ -87,7 +87,7 @@
               </thead>
               <tbody id="PurPOTbleBody">
                 <tr>
-                  <td>
+                  <td width="30%">
                     <select data-plugin-selecttwo class="form-control select2-js" id="productSelect1" onchange="updateUnit(1)" name="details[0][item_id]" required>  <!-- Added name attribute for form submission -->
                       <option value="" selected disabled>Select Item</option>
                       @foreach ($products as $item)
