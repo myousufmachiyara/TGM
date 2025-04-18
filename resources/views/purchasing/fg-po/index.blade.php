@@ -48,7 +48,6 @@
                     <td>{{ $row->doc_code }}-{{ $row->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td class="badge bg-dark">
-                      <span>
                       @foreach($row->details as $value)
                         <span class="badge bg-primary">
                           {{ $value->product->name ?? 'N/A'  }}
@@ -56,7 +55,7 @@
                             - {{ $value->variation->attribute_values->value }}
                           @endif
                         </span>
-                      <span>
+                      @endforeach
                     </td>
                     <td></td>
                     <td>
