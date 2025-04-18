@@ -69,7 +69,7 @@
                       <form action="{{ route('pur-fgpos.destroy', $row->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this purchase order?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-danger">
+                        <button type="submit" class="text-danger" style="background:none;border:none">
                           <i class="fa fa-trash"></i>
                         </button>
                       </form>
