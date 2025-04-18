@@ -56,20 +56,20 @@
                     </td>
                     <td></td>
                     <td>
-                      <a href="{{ route('pur-fgpos.print', $row->id) }}" class="btn btn-primary btn-xs">
+                      <a href="{{ route('pur-fgpos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>
                       </a>
-                      <a href="{{ route('pur-fgpos.rec', $row->id) }}" class="btn btn-success btn-xs">
+                      <a href="{{ route('pur-fgpos.rec', $row->id) }}" class="text-primary">
                         <i class="fa fa-download"></i>
                       </a>
-                      <a href="{{ route('pur-fgpos.edit', $row->id) }}" class="btn btn-warning btn-xs">
+                      <a href="{{ route('pur-fgpos.edit', $row->id) }}" class="text-warning">
                         <i class="fa fa-edit"></i>
                       </a>
                       <!-- Delete Link (with Confirmation) -->
                       <form action="{{ route('pur-fgpos.destroy', $row->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this purchase order?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-xs">
+                        <button type="submit" class="text-danger">
                           <i class="fa fa-trash"></i>
                         </button>
                       </form>
