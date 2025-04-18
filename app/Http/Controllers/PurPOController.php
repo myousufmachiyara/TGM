@@ -312,6 +312,7 @@ class PurPOController extends Controller
 
             $total = $item->item_rate * $item->item_qty;
             $total_qty += $item->item_qty;
+            $formattedTotal = number_format($total, 2); // 2 decimal places, e.g., 1,234.50
 
             $html .= '<tr>
                 <td width="5%" style="font-size:10px;text-align:center;">'.$count.'</td>
@@ -320,7 +321,7 @@ class PurPOController extends Controller
                 <th width="10%" style="font-size:10px;">'.$item->width.'</th>
                 <td width="15%" style="font-size:10px;text-align:center;">'.$item->item_qty.' '.$product_m_unit.'</td>
                 <td width="12%" style="font-size:10px;text-align:center;">'.$item->item_rate.'</td>
-                <td width="12%" style="font-size:10px;text-align:center;">'.$total.'</td>
+                <td width="12%" style="font-size:10px;text-align:center;">'.$formattedTotal.'</td>
             </tr>';
         }
 
@@ -328,7 +329,7 @@ class PurPOController extends Controller
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Summary Table
-
+        $pdf->SetFont('helvetica', 'B', 10);
         $summary = '<table border="0.3" cellpadding="2" width="35%">
             <tr><td><strong>Total Quantity:</strong></td><td>'.$total_qty.'</td></tr>
             <tr><td><strong>Total Item:</strong></td><td>'.$count.'</td></tr>
