@@ -455,6 +455,7 @@ class PurFGPOController extends Controller
         foreach ($purpos->voucherDetails as $item) {
             $poCode = $item->purPO->po_code ?? 'N/A';
             $fabID = $item->product->id ?? 'N/A';
+            $fabName = $item->product->name ?? 'N/A';
             $description = $item->description ?? '';
             $width = $item->width ?? 0;
             $qty = $item->qty ?? 0;
@@ -466,7 +467,7 @@ class PurFGPOController extends Controller
 
             $challanTable .= '
             <tr>
-                <td width="28%">' . $poCode . '/' . $fabID . '</td>
+                <td width="28%">' . $poCode . '/' . $fabName . '</td>
                 <td width="30%">' . $description . '</td>
                 <td width="8%">' . $width . '"</td>
                 <td width="10%">' . $qty . ' ' . $unit . '</td>
@@ -567,6 +568,7 @@ class PurFGPOController extends Controller
         foreach ($purpos->voucherDetails as $item) {
             $poCode = $item->purPO->po_code ?? 'N/A';
             $fabricID = $item->product->id ?? 'N/A';
+            $fabName = $item->product->name ?? 'N/A';
             $description = $item->description ?? '';
             $width = $item->width ?? 0;
             $qty = $item->qty ?? 0;
@@ -578,7 +580,7 @@ class PurFGPOController extends Controller
 
             $challanTable .= '
             <tr>
-                <td width="28%">' . $poCode . '/' . $fabricID . '</td>
+                <td width="28%">' . $poCode . '/' . $fabName . '</td>
                 <td width="30%">' . $description . '</td>
                 <td width="8%">' . $width . '"</td>
                 <td width="10%">' . $qty . ' ' . $unit . '</td>
