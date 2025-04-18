@@ -47,12 +47,14 @@
                     <td>{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td>{{ $row->doc_code }}-{{ $row->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
-                    <td>
+                    <td class="badge bg-dark">
+                      <span>
                       {{ $row->details->map(function($value) {
                         $name = $value->product->name ?? 'N/A';
                         $attribute = $value->variation->attribute_values->value ?? null;
                         return $attribute ? "$name - $attribute" : $name;
                       })->implode(', ') }}
+                      <span>
                     </td>
                     <td></td>
                     <td>
