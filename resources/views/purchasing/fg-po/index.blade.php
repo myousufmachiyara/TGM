@@ -49,11 +49,13 @@
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td class="badge bg-dark">
                       <span>
-                      {{ $row->details->map(function($value) {
-                        $name = $value->product->name ?? 'N/A';
-                        $attribute = $value->variation->attribute_values->value ?? null;
-                        return $attribute ? "$name - $attribute" : $name;
-                      })->implode(', ') }}
+                      @foreach($row->details as $value)
+                        <span class="badge bg-primary">
+                          {{ $value->product->name ?? 'N/A'  }}
+                          @if( $value->variation->attribute_values->value)
+                            - {{ $value->variation->attribute_values->value }}
+                          @endif
+                        </span>
                       <span>
                     </td>
                     <td></td>
