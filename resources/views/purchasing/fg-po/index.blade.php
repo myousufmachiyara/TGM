@@ -48,16 +48,12 @@
                     <td>{{ $row->doc_code }}-{{ $row->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>
-                      @foreach($row->details as $value)
-                        <span class="badge bg-primary">
-                          {{ $value->product->name ?? 'N/A'  }}
-                          @if($value->attribute_values)
-                            - {{ $value->attribute_values->value }}
-                          @endif
-                        </span>
-                      @endforeach
+                      {{ $row->details->map(function($value) {
+                        $name = $value->product->name ?? 'N/A';
+                        $attribute = $value->attribute_values->value ?? null;
+                        return $attribute ? "$name - $attribute" : $name;
+                      })->implode(', ') }}
                     </td>
-                    <td></td>
                     <td>
                       <a href="{{ route('pur-fgpos.print', $row->id) }}" class="btn btn-primary btn-xs">
                         <i class="fa fa-print"></i>
