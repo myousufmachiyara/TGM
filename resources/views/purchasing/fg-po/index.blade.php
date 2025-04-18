@@ -49,7 +49,7 @@
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>
                       @foreach($row->details as $value)
-                        <span class="badge bg-dark">
+                        <span class="px-2 text-light bg-dark">
                           {{ $value->product->name ?? 'N/A'  }}
                           @if( $value->variation->attribute_values->value)
                             - {{ $value->variation->attribute_values->value }}
