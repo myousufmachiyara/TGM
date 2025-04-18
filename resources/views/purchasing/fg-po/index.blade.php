@@ -54,6 +54,7 @@
                         return $attribute ? "$name - $attribute" : $name;
                       })->implode(', ') }}
                     </td>
+                    <td></td>
                     <td>
                       <a href="{{ route('pur-fgpos.print', $row->id) }}" class="btn btn-primary btn-xs">
                         <i class="fa fa-print"></i>
