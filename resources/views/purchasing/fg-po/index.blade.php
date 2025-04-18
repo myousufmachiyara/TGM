@@ -50,7 +50,7 @@
                     <td>
                       {{ $row->details->map(function($value) {
                         $name = $value->product->name ?? 'N/A';
-                        $attribute = $value->attribute_values->value ?? null;
+                        $attribute = $value->variation->attribute_values->value ?? null;
                         return $attribute ? "$name - $attribute" : $name;
                       })->implode(', ') }}
                     </td>
