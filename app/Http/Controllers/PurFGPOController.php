@@ -480,76 +480,60 @@ class PurFGPOController extends Controller
         $pdf->writeHTML($challanTable, true, false, true, false, '');
         
         $pdf->writeHTML('<h3 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h3>', true, false, true, false, '');
-        $requiredHeight = 110; // mm needed for attachments area
-        $currentY = $pdf->GetY();
-        $pageHeight = $pdf->getPageHeight();
-        $bottomMargin = $pdf->getBreakMargin();
-        $availableHeight = $pageHeight - $currentY - $bottomMargin;
-        
-        if ($availableHeight < $requiredHeight) {
-            $pdf->AddPage();
-        }
-        
+
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
-        
+
         $shownProductIds = [];
-        $imgWidth = 60;   // image box width
-        $imgHeight = 70;  // image height
-        $cellPadding = 10;
-        $columns = 3; // number of images per row
-        $colCount = 0;
-        $startY = $pdf->GetY();
-        $currentX = $pdf->GetX();
-        $initialX = $currentX;
-        
+
+        $imageWidth = 65;
+        $imageHeight = 85;
+        $gap = 10; // gap between images
+        $maxX = $pdf->getPageWidth() - $pdf->getMargins()['right'];
+        $startX = $pdf->GetX();
+        $currentX = $startX;
+        $currentY = $pdf->GetY();
+
         foreach ($purpos->details as $item) {
             $product = $item->product;
             if (!$product || in_array($product->id, $shownProductIds)) {
                 continue;
             }
-        
+
             $shownProductIds[] = $product->id;
-        
+
             if ($product->attachments->isNotEmpty()) {
                 $attachment = $product->attachments->first();
                 $imagePath = storage_path('app/public/' . $attachment->image_path);
-        
+
                 if (file_exists($imagePath)) {
-                    // Add page if height overflows
-                    $currentY = $pdf->GetY();
-                    $availableHeight = $pdf->getPageHeight() - $currentY - $bottomMargin;
-                    if ($availableHeight < ($imgHeight + 15)) {
-                        $pdf->AddPage();
-                        $startY = $pdf->GetY();
-                        $currentX = $initialX;
-                        $colCount = 0;
+
+                    // Wrap to next row if exceeding width
+                    if ($currentX + $imageWidth > $maxX) {
+                        $currentX = $startX;
+                        $currentY += $imageHeight + 15; // image + name + spacing
+
+                        // Check if there’s space vertically
+                        $availableHeight = $pdf->getPageHeight() - $currentY - $pdf->getBreakMargin();
+                        if ($availableHeight < $imageHeight + 10) {
+                            $pdf->AddPage();
+                            $currentY = $pdf->GetY();
+                        }
                     }
-        
-                    // Set position for this cell
-                    $pdf->SetXY($currentX, $startY);
-        
+
                     // Draw image
-                    $pdf->Image($imagePath, $currentX, $startY, $imgWidth, $imgHeight);
-        
-                    // Product name below image
-                    $pdf->SetXY($currentX, $startY + $imgHeight + 2);
-                    $pdf->SetFont('helvetica', '', 9);
-                    $pdf->MultiCell($imgWidth, 5, $product->name, 0, 'C', false, 1, '', '', true, 0, false, true, 5, 'M');
-        
-                    // Update column and X position
-                    $colCount++;
-                    if ($colCount >= $columns) {
-                        $colCount = 0;
-                        $startY += $imgHeight + 15; // move down for next row
-                        $currentX = $initialX;
-                    } else {
-                        $currentX += $imgWidth + $cellPadding;
-                    }
+                    $pdf->Image($imagePath, $currentX, $currentY, $imageWidth, $imageHeight);
+
+                    // Product name
+                    $pdf->SetXY($currentX, $currentY + $imageHeight + 2);
+                    $pdf->SetFont('helvetica', '', 10);
+                    $pdf->MultiCell($imageWidth, 5, $product->name, 0, 'C');
+
+                    // Move X for next image
+                    $currentX += $imageWidth + $gap;
                 }
             }
         }
-        
 
         $pdf->SetY(-40); // Adjust value if needed to position correctly
 
