@@ -485,31 +485,44 @@ class PurFGPOController extends Controller
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
-        $shownProductIds = []; // Track which products' images are already shown
+        $x = 10; // Start from left margin
+        $y = $pdf->GetY(); // Current Y position
+        $imageWidth = 45;
+        $imageHeight = 60;
+        $gap = 10;
+        $maxX = 190; // Page width boundary
 
-    
+        $shownProductIds = [];
+
         foreach ($purpos->details as $item) {
             $product = $item->product;
-        
-            // Skip if we've already shown this product's image
+
             if (!$product || in_array($product->id, $shownProductIds)) {
                 continue;
             }
-        
-            // Mark this product as shown
+
             $shownProductIds[] = $product->id;
-        
-            // Show only the first image of this product (optional: you can loop if you want multiple)
+
             if ($product->attachments->isNotEmpty()) {
                 $attachment = $product->attachments->first();
                 $imagePath = storage_path('app/public/' . $attachment->image_path);
-        
+
                 if (file_exists($imagePath)) {
-                    $pdf->Image($imagePath, '', '', 65, 85, '', '', '', false, 300, '', false, false, 0, false, false, false);
-                    $pdf->Ln(55); // spacing after image
+                    // Wrap to next row if beyond page width
+                    if ($x + $imageWidth > $maxX) {
+                        $x = 10;
+                        $y += $imageHeight + $gap;
+                    }
+
+                    $pdf->Image($imagePath, $x, $y, $imageWidth, $imageHeight, '', '', '', false, 300, '', false, false, 0, false, false, false);
+
+                    $x += $imageWidth + $gap;
                 }
             }
         }
+
+        // Add spacing after the image row
+        $pdf->SetY($y + $imageHeight + 10);
 
         $pdf->SetY(-40); // Adjust value if needed to position correctly
 
