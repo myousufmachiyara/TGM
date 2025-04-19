@@ -481,6 +481,24 @@ class PurFGPOController extends Controller
         
         $pdf->writeHTML('<h3 style="text-align:right;"><strong>Total Amount: </strong>'.number_format($totalAmount, 2).' PKR</h3>', true, false, true, false, '');
 
+        // Define the minimum height needed to fit images + signature block
+        $requiredHeight = 110; // in mm (adjust as needed)
+
+        // Get current Y position
+        $currentY = $pdf->GetY();
+
+        // Get page height and bottom margin
+        $pageHeight = $pdf->getPageHeight();
+        $bottomMargin = $pdf->getBreakMargin();
+
+        // Calculate available vertical space
+        $availableHeight = $pageHeight - $currentY - $bottomMargin;
+
+        // If not enough space, add a new page
+        if ($availableHeight < $requiredHeight) {
+            $pdf->AddPage();
+        }
+        
         // Attachments (Images)
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
