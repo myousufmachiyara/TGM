@@ -528,7 +528,6 @@ class PurFGPOController extends Controller
         }
 
         // Add spacing after the image row
-        $pdf->SetY($y + $imageHeight + 10);
 
         $pdf->SetY(-40); // Adjust value if needed to position correctly
 
