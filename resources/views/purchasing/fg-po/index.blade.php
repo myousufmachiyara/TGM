@@ -32,7 +32,7 @@
               <thead>
                 <tr>
                   <th width="4%">S.No</th>
-                  <th>Vendor</th>
+                  <th width="10%">Vendor</th>
                   <th>Job ID</th>
                   <th>Order Date</th>
                   <th width="60%">Items</th>
@@ -43,7 +43,7 @@
                 @foreach ($purpos as $key => $row)
                   <tr>
                     <td width="4%">{{$key+1}}</td>
-                    <td>{{ $row->vendor->name ?? 'N/A' }}</td>
+                    <td width="10%">{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td>{{ $row->doc_code }}-{{ $row->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td width="60%">
