@@ -32,9 +32,9 @@
                 <tr>
                   <th width="4%">S.No</th>
                   <th >PO Code</th>
+                  <th>Date</th>
                   <th width="10%">Vendor</th>
                   <th width="60%">Items</th>
-                  <th>Order Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -43,9 +43,9 @@
                   <tr>
                     <td width="4%"> {{$key+1}}</td>
                     <td > {{$row->po_code}}</td>
+                    <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td width="10%">{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td width="60%">{{ $row->details->pluck('product.name')->filter()->implode(', ') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>
                       <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>
