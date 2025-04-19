@@ -36,7 +36,6 @@
                   <th>Job ID</th>
                   <th>Order Date</th>
                   <th width="60%">Items</th>
-                  <th>status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -57,7 +56,6 @@
                         </span>
                       @endforeach
                     </td>
-                    <td></td>
                     <td>
                       <a href="{{ route('pur-fgpos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>
