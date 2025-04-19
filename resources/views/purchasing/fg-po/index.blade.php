@@ -31,7 +31,7 @@
             <table class="table table-bordered table-striped mb-0" id="cust-datatable-default">
               <thead>
                 <tr>
-                  <th width="8%">S.No</th>
+                  <th width="5%">S.No</th>
                   <th>Vendor</th>
                   <th>Job ID</th>
                   <th>Order Date</th>
@@ -42,7 +42,7 @@
               <tbody>
                 @foreach ($purpos as $key => $row)
                   <tr>
-                    <td width="8%">{{$key+1}}</td>
+                    <td width="5%">{{$key+1}}</td>
                     <td>{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td>{{ $row->doc_code }}-{{ $row->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
