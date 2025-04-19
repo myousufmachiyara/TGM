@@ -569,6 +569,7 @@ class PurFGPOController extends Controller
             $poCode = $item->purPO->po_code ?? 'N/A';
             $fabricID = $item->product->id ?? 'N/A';
             $fabName = $item->product->name ?? 'N/A';
+
             $description = $item->description ?? '';
             $width = $item->width ?? 0;
             $qty = $item->qty ?? 0;

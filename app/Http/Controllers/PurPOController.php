@@ -293,10 +293,10 @@ class PurPOController extends Controller
                 <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
                 <th width="28%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
                 <th width="18%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
-                <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
+                <th width="8%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
                 <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
                 <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
-                <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
+                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
             </tr>
        ';
         $total_qty = 0;
@@ -318,10 +318,10 @@ class PurPOController extends Controller
                 <td width="5%" style="font-size:10px;text-align:center;">'.$count.'</td>
                 <td width="28%" style="font-size:10px;text-align:center;">'.$id.'-'.$product_name.'</td>
                 <td width="18%" style="font-size:10px;">'.$description.'</td>
-                <th width="10%" style="font-size:10px;">'.$item->width.'</th>
+                <th width="8%" style="font-size:10px;">'.$item->width.'</th>
                 <td width="15%" style="font-size:10px;text-align:center;">'.$item->item_qty.' '.$product_m_unit.'</td>
                 <td width="12%" style="font-size:10px;text-align:center;">'.$item->item_rate.'</td>
-                <td width="12%" style="font-size:10px;text-align:center;">'.$formattedTotal.'</td>
+                <td width="15%" style="font-size:10px;text-align:center;">'.$formattedTotal.'</td>
             </tr>';
         }
 
