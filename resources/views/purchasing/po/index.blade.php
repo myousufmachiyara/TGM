@@ -47,13 +47,13 @@
                     <td>{{ $row->details->pluck('product.name')->filter()->implode(', ') }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td>
-                      <a href="{{ route('pur-pos.rec', $row->id) }}" class="btn btn-success btn-xs">
-                        <i class="fa fa-download"></i>
-                      </a>
-                      <a href="{{ route('pur-pos.print', $row->id) }}" class="btn btn-primary btn-xs">
+                      <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>
                       </a>
-                      <a href="{{ route('pur-pos.edit', $row->id) }}" class="btn btn-warning btn-xs">
+                      <a href="{{ route('pur-pos.rec', $row->id) }}" class="text-primary">
+                        <i class="fa fa-download"></i>
+                      </a>
+                      <a href="{{ route('pur-pos.edit', $row->id) }}" class="text-warning">
                         <i class="fa fa-edit "></i>
                       </a>
                       <!-- Delete Link (with Confirmation) -->
