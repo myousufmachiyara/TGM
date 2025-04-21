@@ -340,14 +340,41 @@ class PurPOController extends Controller
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
+        $imageWidth = 50;
+        $imageHeight = 50;
+        $margin = 10;
+        $maxX = $pdf->getPageWidth() - $pdf->getMargins()['right'];
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+        $rowHeight = $imageHeight + 5; // image + spacing
+        
         foreach ($purpos->attachments as $attachment) {
-            $imagePath = storage_path('app/public/'.$attachment->att_path);
-
+            $imagePath = storage_path('app/public/' . $attachment->att_path);
+        
             if (file_exists($imagePath)) {
-                $pdf->Image($imagePath, '', '', 50, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
-                $pdf->Ln(55); // Move cursor down after each image
+                // Check for page height before drawing
+                $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
+                if ($availableHeight < $rowHeight) {
+                    $pdf->AddPage();
+                    $x = $pdf->GetX();
+                    $y = $pdf->GetY();
+                }
+        
+                // If image goes beyond right margin, wrap to next row
+                if ($x + $imageWidth > $maxX) {
+                    $x = $pdf->GetMargins()['left'];
+                    $y += $rowHeight;
+                }
+        
+                $pdf->Image($imagePath, $x, $y, $imageWidth, $imageHeight, '', '', '', false, 300, '', false, false, 0, false, false, false);
+        
+                // Update X for next image
+                $x += $imageWidth + $margin;
             }
         }
+        
+        // Move cursor below last image row
+        $pdf->SetY($y + $rowHeight);
 
         // Move to the bottom of the page
         $pdf->SetY(-50); // Adjust value if needed to position correctly
