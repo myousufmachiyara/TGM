@@ -40,6 +40,11 @@ class Products extends Model
         return $this->hasMany(ProductAttachements::class, 'product_id', 'id');
     }
 
+    public function firstAttachment()
+    {
+        return $this->hasOne(ProductAttachements::class, 'product_id', 'id');
+    }
+
     public function purFgpoVoucherDetails()
     {
         return $this->hasMany(PurFGPOVoucherDetails::class, 'product_id', 'id');

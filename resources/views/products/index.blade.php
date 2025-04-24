@@ -23,6 +23,7 @@
                 <thead>
                     <tr>
                       <th>S.No</th>
+                      <th>Image</th>
                       <th>Item Name/ID </th>
                       <th>SKU</th>
                       <th>Category</th>
@@ -35,6 +36,13 @@
                   @foreach ($products as $item)
                     <tr>
                       <td>{{ $loop->iteration }}</td>
+                      <td>
+                        @if ($item->firstAttachment)
+                          <img src="{{ asset('storage/' . $item->firstAttachment->image_path) }}" alt="Product Image" width="50">
+                        @else
+                          <span>No Image</span>
+                        @endif
+                      </td>
                       <td><strong>{{ $item->name }}/{{ $item->id }}</strong></td>
                       <td>{{ $item->sku }}</td>
                       <td>{{ $item->category ? $item->category->name : 'No Category' }}</td>
