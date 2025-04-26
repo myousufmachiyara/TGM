@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="row">
-    <form action="{{ route('pur-fgpos.store-rec') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('pur-pos.store-rec') }}" method="POST" enctype="multipart/form-data">
       @csrf
       @if ($errors->has('error'))
         <strong class="text-danger">{{ $errors->first('error') }}</strong>
@@ -49,7 +49,6 @@
                 <thead>
                   <tr>
                     <th>Item</th>
-                    <th>Variation</th>
                     <th>Ordered Quantity</th>
                     <th>Received</th>
                     <th>Remaining</th>
@@ -60,7 +59,6 @@
                   @foreach($purpo->details as $detail)
                     <tr>
                       <td>{{ $detail->product->name ?? 'N/A' }}</td>
-                      <td>{{ $detail->sku ?? 'N/A' }}</td>
                       <td>{{ $detail->qty }}</td>
                       <td>{{ $detail->total_received }}</td>
                       <td>{{ $detail->qty - $detail->total_received }}</td>

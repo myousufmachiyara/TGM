@@ -135,6 +135,42 @@ class PurPOController extends Controller
         return view('purchasing.po.receiving', compact('purpo'));
     }
 
+    public function storeReceiving(Request $request)
+    {
+        $request->validate([
+            'po_id' => 'required|exists:pur_fgpos,id',
+            'rec_date' => 'required|date',
+            'received_qty' => 'required|array',
+            'received_qty.*' => 'nullable|integer|min:1',
+        ]);
+
+        // Create a new receiving record
+        $receiving = PurFGPORec::create([
+            'po_id' => $request->fgpo_id,
+            'rec_date' => $request->rec_date,
+        ]);
+
+        // Loop through received items and store details
+        foreach ($request->received_qty as $poDetailId => $receivedQty) {
+            if ($receivedQty > 0) {
+                // Fetch the ordered product details
+                $orderDetail = PurFGPODetails::find($poDetailId);
+
+                if ($orderDetail) {
+                    PurFGPORecDetails::create([
+                        'pur_fgpos_rec_id' => $receiving->id,
+                        'product_id' => $orderDetail->product_id,
+                        'variation_id' => $orderDetail->variation_id,
+                        'sku' => $orderDetail->sku ?? '',
+                        'qty' => $receivedQty,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('pur-fgpos.index')->with('success', 'Receiving recorded successfully.');
+    }
+
     public function update(Request $request, $id)
     {
         DB::beginTransaction();
