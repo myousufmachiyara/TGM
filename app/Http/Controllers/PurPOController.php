@@ -158,7 +158,7 @@ class PurPOController extends Controller
 
                 if ($orderDetail) {
                     PurFGPORecDetails::create([
-                        'pur_fgpos_rec_id' => $receiving->id,
+                        'pur_pos_rec_id' => $receiving->id,
                         'product_id' => $orderDetail->product_id,
                         'variation_id' => $orderDetail->variation_id,
                         'sku' => $orderDetail->sku ?? '',
