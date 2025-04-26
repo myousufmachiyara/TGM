@@ -14,7 +14,7 @@
           <section class="card">
             <header class="card-header">
               <div style="display: flex;justify-content: space-between;">
-                <h2 class="card-title">FGPO Receiving</h2>
+                <h2 class="card-title">PO Receiving</h2>
               </div>
             </header>
             <div class="card-body">

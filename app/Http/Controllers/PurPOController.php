@@ -132,7 +132,6 @@ class PurPOController extends Controller
     public function receiving($id)
     {
         $purpo = PurPo::with(['details', 'attachments'])->findOrFail($id);
-
         return view('purchasing.po.receiving', compact('purpo'));
     }
 
