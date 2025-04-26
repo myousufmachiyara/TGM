@@ -25,7 +25,7 @@
                 </div>
                 <div class="col-12 col-md-2 mb-3">
                   <label>PO #</label>
-                  <input type="text" class="form-control" placeholder="PO #" value="FGPO-{{$purpo->id}}" disabled/>
+                  <input type="text" class="form-control" placeholder="PO #" value="PO-{{$purpo->id}}" disabled/>
                   <input type="hidden" class="form-control" name="fgpo_id" value="{{$purpo->id}}"/>
                 </div>
                 
