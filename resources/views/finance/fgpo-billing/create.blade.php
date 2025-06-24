@@ -25,28 +25,26 @@
                 </div>
                 <div class="col-12 col-md-2 mb-3">
                   <label>Vendor</label>
-                  <select data-plugin-selecttwo class="form-control select2-js" required>  <!-- Added name attribute for form submission -->
+                  <select name="vendor_id" data-plugin-selecttwo class="form-control select2-js" required>
                     <option value="" selected disabled>Select Vendor</option>
                     @foreach ($coa as $item)
                       <option value="{{ $item->id }}">{{ $item->name }}</option> 
                     @endforeach
                   </select>
                 </div>
-                
                 <div class="col-12 col-md-2">
                   <label>Bill Date</label>
-                  <input type="date" name="bill_date" class="form-control" value="<?php echo date('Y-m-d'); ?>" required/>
+                  <input type="date" name="bill_date" class="form-control" value="{{ date('Y-m-d') }}" required/>
                 </div>
-                
                 <div class="col-12 col-md-2 mb-3">
                   <label>Ref Bill #</label>
-                  <input type="number" class="form-control" placeholder="Ref Bill #"/>
+                  <input type="number" name="ref_bill" class="form-control" placeholder="Ref Bill #"/>
                 </div>
-
               </div>
             </div>
           </section>
         </div>
+
         <div class="col-12 mb-4">
           <section class="card">
             <header class="card-header">
@@ -56,14 +54,14 @@
               <div class="row">
                 <div class="col-12 col-md-4 mb-3">
                   <label>Search PO No.</label>
-                  <select multiple data-plugin-selecttwo class="form-control select2-js" id="poSelect" required>  <!-- Added name attribute for form submission -->
+                  <select multiple data-plugin-selecttwo class="form-control select2-js" id="poSelect" required>
                     <option value="" disabled>Select PO</option>
                     @foreach ($fgpo as $item)
                       <option value="{{$item->id}}">{{$item->doc_code}}-{{$item->id}} </option> 
                     @endforeach
                   </select>
                 </div>
-                <div class="col-12 col-md-1">
+                <div class="col-12 col-md-2">
                   <label>PO Details</label>
                   <button type="button" class="d-block btn btn-success" onclick="getPODetails()">Get Details</button>
                 </div>
@@ -83,9 +81,7 @@
                     <th>Total</th>
                   </tr>
                 </thead>
-                <tbody id="POBillTbleBody">
-               
-                </tbody>
+                <tbody id="POBillTbleBody"></tbody>
               </table>
             </div>
           </section>
@@ -102,26 +98,22 @@
                   <label>Total Quantity Ordered</label>
                   <input type="number" class="form-control" id="total_fab" placeholder="Total Quantity Ordered" disabled/>
                 </div>
-
                 <div class="col-12 col-md-2">
                   <label>Total Quantity Received</label>
                   <input type="number" class="form-control" id="total_fab_amt" placeholder="Total Quantity Received" disabled />
                 </div>
-
                 <div class="col-12 col-md-2">
                   <label>Total Adjusted Amount</label>
                   <input type="number" class="form-control" id="total_adj_amount" placeholder="Total Adjusted Amount" disabled/>
                 </div>
-                
                 <div class="col-12 col-md-3">
                   <label>Total Bill</label>
                   <input type="number" class="form-control" id="total_bill" placeholder="Total Bill" disabled/>
                 </div>
               </div>
             </div>
-
             <footer class="card-footer text-end">
-              <a class="btn btn-danger" href="{{ route('pur-fgpos.index') }}" >Discard</a>
+              <a class="btn btn-danger" href="{{ route('pur-fgpos.index') }}">Discard</a>
               <button type="submit" class="btn btn-primary">Add Bill</button>
             </footer>
           </section>
@@ -129,10 +121,10 @@
       </div>
     </form>
   </div>
+
   <script>
     function getPODetails() {
-      var selectedPOs = $("#poSelect").val().map(Number); // Convert to integers
-
+      var selectedPOs = $("#poSelect").val().map(Number);
       if (selectedPOs.length === 0) {
         alert("Please select at least one PO.");
         return;
@@ -144,7 +136,6 @@
         data: { po_ids: selectedPOs },
         success: function(response) {
           if (response.success) {
-            console.log(response.summary);
             populateTable(response.summary);
           } else {
             alert(response.message);
@@ -158,58 +149,59 @@
     }
 
     function populateTable(summary) {
-    let tbody = $("#POBillTbleBody");
-    tbody.empty(); // Clear previous data
+      let tbody = $("#POBillTbleBody");
+      tbody.empty();
 
-    summary.forEach(po => {
-        // Extract fabric details
-        let fabricDetails = po.fabrics.map(f => `${f.fabric_name} (${f.fabric_rate.toFixed(2)})`).join(", ");
-        let totalFabricQty = po.fabrics.reduce((sum, f) => sum + parseFloat(f.fabric_qty), 0);
-        let totalFabricAmount = po.fabrics.reduce((sum, f) => sum + (f.fabric_qty * f.fabric_rate), 0).toFixed(2);
+      summary.forEach(po => {
+        let fabricDetails = po.fabrics.map(f => {
+          let rate = parseFloat(f.fabric_rate) || 0;
+          return `${f.fabric_name} (${rate.toFixed(2)})`;
+        }).join(", ");
 
-        // Calculate **total received quantity** across all products
-        let totalReceivedQty = po.products.reduce((sum, p) => sum + parseFloat(p.received_qty || 0), 0);
+        let totalFabricQty = po.fabrics.reduce((sum, f) => sum + (parseFloat(f.fabric_qty) || 0), 0);
+        let totalFabricAmount = po.fabrics.reduce((sum, f) => {
+          let qty = parseFloat(f.fabric_qty) || 0;
+          let rate = parseFloat(f.fabric_rate) || 0;
+          return sum + (qty * rate);
+        }, 0).toFixed(2);
+
+        let totalReceivedQty = po.products.reduce((sum, p) => sum + (parseFloat(p.received_qty) || 0), 0);
         let overallConsumption = totalReceivedQty > 0 ? (totalFabricQty / totalReceivedQty).toFixed(2) : "0.00";
 
-        // Generate main row (Fabric Summary)
         let mainRow = `
-            <tr class="table-secondary">
-                <td rowspan="${po.products.length + 1}">${po.fgpo_id}</td> 
-                <td colspan="2"><strong>Fabric:</strong> ${fabricDetails}</td>
-                <td ><strong>Consumption:</strong> ${overallConsumption}</td>
-                <td colspan="1"><strong>Fabric Amount:</strong> ${totalFabricAmount}</td>
-                <td colspan="1"><input type="number" class="form-control adjustment-input" Placeholder="Adjusted Amount"> </td>
-            </tr>
+          <tr class="table-secondary">
+            <td rowspan="${po.products.length + 1}">${po.fgpo_id}</td> 
+            <td colspan="2"><strong>Fabric:</strong> ${fabricDetails}</td>
+            <td><strong>Consumption:</strong> ${overallConsumption}</td>
+            <td><strong>Fabric Amount:</strong> ${totalFabricAmount}</td>
+            <td><input type="number" class="form-control adjustment-input" placeholder="Adjusted Amount"></td>
+          </tr>
         `;
         tbody.append(mainRow);
 
-        // Generate sub-rows (Product Details)
         po.products.forEach(product => {
-            let receivedQty = parseFloat(product.received_qty) || 0;
-            let orderedQty = parseFloat(product.ordered_qty) || 0;
-            let productConsumption = receivedQty > 0 ? (totalFabricQty / receivedQty).toFixed(2) : "0.00";
+          let receivedQty = parseFloat(product.received_qty) || 0;
+          let orderedQty = parseFloat(product.ordered_qty) || 0;
 
-            let productRow = `
-                <tr>
-                    <td>${product.product_name}</td>
-                    <td>${orderedQty}</td>
-                    <td>${receivedQty}</td>
-                    <td><input type="number" class="form-control rate-input" data-received-qty="${receivedQty}" value="0"></td>
-                    <td class="total-amount">0.00</td>
-                </tr>
-            `;
-            tbody.append(productRow);
+          let productRow = `
+            <tr>
+              <td>${product.product_name}</td>
+              <td>${orderedQty}</td>
+              <td>${receivedQty}</td>
+              <td><input type="number" class="form-control rate-input" data-received-qty="${receivedQty}" value="0"></td>
+              <td class="total-amount">0.00</td>
+            </tr>
+          `;
+          tbody.append(productRow);
         });
-    });
+      });
 
-    // Auto-calculate total when rate input changes
-    $(".rate-input").on("input", function () {
+      $(".rate-input").on("input", function () {
         let rate = parseFloat($(this).val()) || 0;
         let receivedQty = parseFloat($(this).data("received-qty")) || 0;
         let total = (rate * receivedQty).toFixed(2);
         $(this).closest("tr").find(".total-amount").text(total);
-    });
-}
-
+      });
+    }
   </script>
 @endsection

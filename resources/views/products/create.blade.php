@@ -89,19 +89,19 @@
               </div>
 
               <div class="col-12 col-md-1 mb-2">
-                <label>Purchase Price</label>
+                <label>P.Price</label>
                 <input type="number" step=".00" class="form-control" value="{{ old('price', '0.00') }}" name="price" required />
                 @error('price')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
               <div class="col-12 col-md-1 mb-2">
-                <label>Sale Price</label>
+                <label>S.Price</label>
                 <input type="number" step=".00" class="form-control" value="{{ old('sale_price', '0.00') }}" name="sale_price" required />
                 @error('sale_price')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
               <div class="col-12 col-md-1 mb-2">
-                <label>Opening Stock</label>
+                <label>Opening</label>
                 <input type="number" step=".00" class="form-control" value="{{ old('opening_stock', '0') }}" name="opening_stock" required />
                 @error('opening_stock')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
