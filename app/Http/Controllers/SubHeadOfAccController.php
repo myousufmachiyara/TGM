@@ -31,15 +31,13 @@ class SubHeadOfAccController extends Controller
     public function show(string $id)
     {
         $subHeadOfAccount = SubHeadOfAccounts::findOrFail($id);
-
         return view('shoa.show', compact('subHeadOfAccount')); // Return a detailed view
     }
 
-    public function edit(string $id)
+    public function edit($id)
     {
         $subHeadOfAccount = SubHeadOfAccounts::findOrFail($id);
-
-        return view('shoa.edit', compact('subHeadOfAccount')); // Return a form view for editing
+        return response()->json($subHeadOfAccount);
     }
 
     public function update(Request $request, string $id)

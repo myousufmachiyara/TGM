@@ -38,7 +38,7 @@
                 <label>Vendor Name</label>
                 <select data-plugin-selecttwo class="form-control select2-js" name="vendor_id" required>  <!-- Added name attribute for form submission -->
                   <option value="" selected disabled>Select Vendor</option>
-                  @foreach ($coa as $item)
+                  @foreach ($vendors as $item)
                     <option value="{{ $item->id }}">{{ $item->name }}</option> 
                   @endforeach
                 </select>
@@ -48,17 +48,18 @@
                 <label>Order Date</label>
                 <input type="date" name="order_date" class="form-control" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
               </div>
-
-              <div class="col-12 col-md-2">
-                <label>Delivery Date</label>
-                <input type="date" name="delivery_date" class="form-control" placeholder="Delivery Date" />
+             <div class="col-12 col-md-2">
+                <label>Order By</label>
+                <input type="text" class="form-control" name="order_by" placeholder="Order By" />
               </div>
-             
               <div class="col-12 col-md-3">
                 <label>Attachements</label>
                 <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
               </div>
-
+              <div class="col-12 col-md-3 mt-3">
+                <label>Remarks</label>
+                <textarea class="form-control" name="remarks"></textarea>
+              </div>
             </div>
           </div>
         </section>
@@ -122,14 +123,6 @@
               <div class="col-12 col-md-2">
                 <label>Total Amount</label>
                 <input type="number" class="form-control" id="total_amt" placeholder="Total Amount" disabled />
-              </div>
-              <div class="col-12 col-md-2">
-                <label>Other Expenses</label>
-                <input type="number" class="form-control" name="other_exp" id="other_exp" onchange="netTotal()" value=0 placeholder="Other Expenses" />
-              </div>
-              <div class="col-12 col-md-2">
-                <label>Bill Discount</label>
-                <input type="number" class="form-control" name="bill_discount" id="bill_disc" onchange="netTotal()" value=0 placeholder="Bill Discount"  />
               </div>
               <div class="col-12 pb-sm-3 pb-md-0 text-end">
                 <h3 class="font-weight-bold mt-3 mb-0 text-5 text-primary">Net Amount</h3>
@@ -231,11 +224,7 @@
     function netTotal(){
       var netTotal = 0;
       var total = Number($('#total_amt').val());
-      var other_exp = Number($('#other_exp').val());
-      var bill_discount = Number($('#bill_disc').val());
-
-      netTotal = total + other_exp - bill_discount;
-      netTotal = netTotal.toFixed(0);
+      netTotal = total.toFixed(0);
       FormattednetTotal = formatNumberWithCommas(netTotal);
       document.getElementById("netTotal").innerHTML = '<span class="text-4 text-danger">'+FormattednetTotal+'</span>';
       $('#net_amount').val(netTotal);

@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
 
         User::insert([
             'name' => 'admin',
-            'email' => 'yousufmachiyara.tgm@gmail.com',
+            'email' => 'admin@tgm.com',
             'password' => Hash::make('Arefifth@12'),
         ]);
 
@@ -49,15 +49,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         ChartOfAccounts::insert([
-            ['id' => 1, 'shoa_id' => 1, 'name' => 'Cash', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Asset', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 2, 'shoa_id' => 1, 'name' => 'Bank', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Asset', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 3, 'shoa_id' => 1, 'name' => 'Accounts Receivable', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Customer Accounts', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 4, 'shoa_id' => 2, 'name' => 'Raw Material Inventory', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Inventory', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 5, 'shoa_id' => 2, 'name' => 'Finished Goods Inventory', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Inventory', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 6, 'shoa_id' => 3, 'name' => 'Accounts Payable', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Supplier Accounts', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 7, 'shoa_id' => 5, 'name' => 'Sale Account', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Revenue', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 8, 'shoa_id' => 6, 'name' => 'Expense Account', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Expense', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 9, 'shoa_id' => 7, 'name' => "Owner's Equity", 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Equity', 'address' => '', 'phone_no' => '', 'credit_limit' => '0', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 1, 'shoa_id' => 1, 'name' => 'Cash', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Asset', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 2, 'shoa_id' => 1, 'name' => 'Bank', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Asset', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 3, 'shoa_id' => 1, 'name' => 'Accounts Receivable', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Customer Accounts', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 4, 'shoa_id' => 2, 'name' => 'Raw Material Inventory', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Inventory', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 5, 'shoa_id' => 2, 'name' => 'Finished Goods Inventory', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Inventory', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 6, 'shoa_id' => 3, 'name' => 'Accounts Payable', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Supplier Accounts', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 7, 'shoa_id' => 5, 'name' => 'Sale Account', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Revenue', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 8, 'shoa_id' => 6, 'name' => 'Expense Account', 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Expense', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 9, 'shoa_id' => 7, 'name' => "Owner's Equity", 'receivables' => '0', 'payables' => '0', 'opening_date' => '2025-01-01', 'remarks' => 'Equity', 'address' => '', 'phone_no' => '', 'created_at' => $now, 'updated_at' => $now],
         ]);
 
         ProductCategory::insert([

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('fgpo_id')->references('id')->on('pur_fgpos')->onDelete('cascade');
-            $table->foreign('voucher_id')->references('id')->on('jv1')->onDelete('cascade');
+            $table->foreign('voucher_id')->references('id')->on('payment_vouchers')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('po_id')->references('id')->on('pur_pos')->onDelete('cascade');
         });

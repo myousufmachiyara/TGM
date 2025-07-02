@@ -15,10 +15,10 @@ class PurPO extends Model
         'vendor_id',
         'category_id',
         'po_code',
+        'remarks',
+        'order_by',
         'order_date',
-        'delivery_date',
-        'other_exp',
-        'bill_discount',
+        'created_by',
     ];
 
     protected $casts = [
@@ -38,7 +38,8 @@ class PurPO extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(ChartOfAccounts::class, 'vendor_id', 'id');
+        return $this->belongsTo(ChartOfAccounts::class, 'vendor_id', 'id')
+        ->where('account_type', 'vendor');
     }
 
     public function category()

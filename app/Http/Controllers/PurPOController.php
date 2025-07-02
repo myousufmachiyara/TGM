@@ -11,6 +11,7 @@ use App\Models\PurPosDetail;
 use App\Services\myPDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PurPOController extends Controller
 {
@@ -23,10 +24,10 @@ class PurPOController extends Controller
     public function create()
     {
         $prodCat = ProductCategory::all();  // Get all product categories
-        $coa = ChartOfAccounts::all();  // Get all product categories
-        $products = Products::all();  // Get all product categories
+        $vendors = ChartOfAccounts::where('account_type', 'vendor')->get();
+        $products = Products::where('item_type','raw')->get();
 
-        return view('purchasing.po.create', compact('prodCat', 'coa', 'products'));
+        return view('purchasing.po.create', compact('prodCat', 'vendors', 'products'));
     }
 
     public function store(Request $request)
@@ -39,15 +40,14 @@ class PurPOController extends Controller
                 'vendor_id' => 'required|exists:chart_of_accounts,id', // Ensure vendor exists
                 'category_id' => 'required|exists:product_categories,id',
                 'order_date' => 'required|date',
-                'delivery_date' => 'nullable|date',
+                'order_by' => 'required|string|max:255',
+                'remarks' => 'nullable|string|max:255',
                 'details' => 'required|array',
-                'details.*.item_id' => 'required|string|max:255',
+                'details.*.item_id' => 'required|exists:products,id',
                 'details.*.width' => 'required|numeric|min:0',
                 'details.*.description' => 'nullable|string|max:255',
                 'details.*.item_rate' => 'required|numeric|min:0',
                 'details.*.item_qty' => 'required|numeric|min:0',
-                'other_exp' => 'nullable|numeric|min:0',
-                'bill_discount' => 'nullable|numeric|min:0',
                 'att.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Image validation
             ]);
     
@@ -70,9 +70,9 @@ class PurPOController extends Controller
                 'category_id' => $validatedData['category_id'],
                 'po_code' => $poCode,  // Use the generated PO code
                 'order_date' => $validatedData['order_date'],
-                'delivery_date' => $validatedData['delivery_date'],
-                'other_exp' => $validatedData['other_exp'] ?? 0,
-                'bill_discount' => $validatedData['bill_discount'] ?? 0,
+                'order_by' => $validatedData['order_by'],
+                'remarks' => $validatedData['remarks'],
+                'created_by' => Auth::id()
             ]);
     
             // Store Purchase Order Details
@@ -235,7 +235,6 @@ class PurPOController extends Controller
         }
     }
     
-
     public function destroy(PurPo $purpo)
     {
         $purpo->details()->delete(); // Delete associated details
@@ -285,152 +284,129 @@ class PurPOController extends Controller
         return new PurPOResource($purpo);
     }
 
-    public function print($id)
-    {
-        // Fetch the purchase order with related data
-        $purpos = PurPo::with(['vendor', 'details.product', 'attachments', 'details.product'])->findOrFail($id);
+public function print($id)
+{
+    $purpos = PurPo::with(['vendor', 'details.product.attachments'])->findOrFail($id);
 
-        if (! $purpos) {
-            abort(404, 'Purchase Order not found.');
-        }
+    $pdf = new MyPDF;
 
-        $pdf = new MyPDF;
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('TGM');
+    $pdf->SetTitle('PO-' . $purpos->id);
+    $pdf->SetSubject('PO-' . $purpos->id);
+    $pdf->SetKeywords('PO, TCPDF, PDF');
 
-        // Set document information
-        $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('PO-'.$purpos->id);
-        $pdf->SetSubject('PO-'.$purpos->id);
-        $pdf->SetKeywords('PO, TCPDF, PDF');
+    $pdf->AddPage();
+    $pdf->setCellPadding(1.2);
 
-        // Add a page
-        $pdf->AddPage();
-        $pdf->setCellPadding(1.2);
+    $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
+    $pdf->writeHTML($heading, true, false, true, false, '');
 
-        // Purchase Order Heading
-        $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
-        $pdf->writeHTML($heading, true, false, true, false, '');
+    $html = '<table style="margin-bottom:10px">
+        <tr>
+            <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="color:#000">' . $purpos->po_code . '</span></td>
+            <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">' . \Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y') . '</span></td>
+            <td style="font-size:10px;font-weight:bold;color:#17365D">Vendor: <span style="text-decoration: underline;color:#000">' . $purpos->vendor->name . '</span></td>
+            <td style="font-size:10px;font-weight:bold;color:#17365D">Order By: <span style="text-decoration: underline;color:#000">' . $purpos->order_by . '</span></td>
+        </tr>
+    </table>';
+    $pdf->writeHTML($html, true, false, true, false, '');
 
-        // Purchase Order Details Table
-        $html = '<table style="margin-bottom:10px">
-            <tr>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="color:#000">'.$purpos->po_code.'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Vendor: <span style="text-decoration: underline;color:#000">'.$purpos->vendor->name.'</span></td>
-            </tr>
-        </table>';
+    $html = '<table border="0.3" style="text-align:center;margin-top:15px">
+        <tr>
+            <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
+            <th width="28%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
+            <th width="18%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
+            <th width="8%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
+            <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
+            <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
+            <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
+        </tr>';
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+    $total_qty = 0;
+    $count = 0;
 
-        // Items Table Header
-        $html= '<table border="0.3" style="text-align:center;margin-top:15px">
-            <tr>
-                <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
-                <th width="28%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
-                <th width="18%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
-                <th width="8%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
-                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
-                <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
-                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
-            </tr>
-       ';
-        $total_qty = 0;
-        $count = 0;
+    foreach ($purpos->details as $item) {
+        $count++;
+        $product = $item->product;
+        $total = $item->item_rate * $item->item_qty;
+        $total_qty += $item->item_qty;
 
-        foreach ($purpos->details as $item) {
-            $count++;
-            $product_name = $item->product->name ?? 'N/A'; // Fetch product name safely
-            $sku = $item->product->sku ?? 'N/A'; // Fetch product name safely
-            $id = $item->product->id ?? 'N/A'; // Fetch product name safely
-            $product_m_unit = $item->product->measurement_unit ?? 'N/A'; // Assuming 'measurement_unit' is the column name
-            $description = $item->description ?? 'N/A'; // Assuming 'measurement_unit' is the column name
+        $html .= '<tr>
+            <td style="font-size:10px;">' . $count . '</td>
+            <td style="font-size:10px;">' . ($product->id ?? '-') . '-' . ($product->name ?? '-') . '</td>
+            <td style="font-size:10px;">' . ($item->description ?? '-') . '</td>
+            <td style="font-size:10px;">' . ($item->width ?? '-') . '</td>
+            <td style="font-size:10px;">' . $item->item_qty . ' ' . ($product->measurement_unit ?? '-') . '</td>
+            <td style="font-size:10px;">' . number_format($item->item_rate, 2) . '</td>
+            <td style="font-size:10px;">' . number_format($total, 2) . '</td>
+        </tr>';
+    }
 
-            $total = $item->item_rate * $item->item_qty;
-            $total_qty += $item->item_qty;
-            $formattedTotal = number_format($total, 2); // 2 decimal places, e.g., 1,234.50
+    $html .= '</table>';
+    $pdf->writeHTML($html, true, false, true, false, '');
 
-            $html .= '<tr>
-                <td width="5%" style="font-size:10px;text-align:center;">'.$count.'</td>
-                <td width="28%" style="font-size:10px;text-align:center;">'.$id.'-'.$product_name.'</td>
-                <td width="18%" style="font-size:10px;">'.$description.'</td>
-                <th width="8%" style="font-size:10px;">'.$item->width.'</th>
-                <td width="15%" style="font-size:10px;text-align:center;">'.$item->item_qty.' '.$product_m_unit.'</td>
-                <td width="12%" style="font-size:10px;text-align:center;">'.$item->item_rate.'</td>
-                <td width="15%" style="font-size:10px;text-align:center;">'.$formattedTotal.'</td>
-            </tr>';
-        }
+    $summary = '<table border="0.3" cellpadding="2" width="35%">
+        <tr><td><strong>Total Quantity</strong></td><td>' . $total_qty . '</td></tr>
+        <tr><td><strongTotal Item</strong></td><td>' . $count . '</td></tr>
+    </table>';
+    $pdf->writeHTML($summary, true, false, true, false, '');
 
-        $html .= '</table>';
-        $pdf->writeHTML($html, true, false, true, false, '');
+    // ✅ Product Attachment Images
+    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->Cell(0, 10, 'Product Attachments:', 0, 1, 'L');
 
-        // Summary Table
-        $pdf->SetFont('helvetica', 'B', 10);
-        $summary = '<table border="0.3" cellpadding="2" width="35%">
-            <tr><td><strong>Total Quantity:</strong></td><td>'.$total_qty.'</td></tr>
-            <tr><td><strong>Total Item:</strong></td><td>'.$count.'</td></tr>
-        </table>';
-        $pdf->writeHTML($summary, true, false, true, false, '');
+    $imageWidth = 50;
+    $imageHeight = 50;
+    $margin = 10;
+    $maxX = $pdf->getPageWidth() - $pdf->getMargins()['right'];
+    $x = $pdf->GetX();
+    $y = $pdf->GetY();
+    $rowHeight = $imageHeight + 5;
 
-        // Attachments (Images)
-        $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
+    foreach ($purpos->details as $detail) {
+        if ($detail->product && $detail->product->attachments) {
+            foreach ($detail->product->attachments as $attachment) {
+                $imagePath = storage_path('app/public/' . $attachment->image_path);
 
-        $imageWidth = 50;
-        $imageHeight = 50;
-        $margin = 10;
-        $maxX = $pdf->getPageWidth() - $pdf->getMargins()['right'];
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-        $rowHeight = $imageHeight + 5; // image + spacing
-        
-        foreach ($purpos->attachments as $attachment) {
-            $imagePath = storage_path('app/public/' . $attachment->att_path);
-        
-            if (file_exists($imagePath)) {
-                // Check for page height before drawing
-                $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
-                if ($availableHeight < $rowHeight) {
-                    $pdf->AddPage();
-                    $x = $pdf->GetX();
-                    $y = $pdf->GetY();
+                if (file_exists($imagePath)) {
+                    $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
+                    if ($availableHeight < $rowHeight) {
+                        $pdf->AddPage();
+                        $x = $pdf->GetMargins()['left'];
+                        $y = $pdf->GetY();
+                    }
+
+                    if ($x + $imageWidth > $maxX) {
+                        $x = $pdf->GetMargins()['left'];
+                        $y += $rowHeight;
+                    }
+
+                    $pdf->Image($imagePath, $x, $y, '40', '60', '', '', '', false, 300, '', false, false, 0, false, false, false);
+                    $x += $imageWidth + $margin;
                 }
-        
-                // If image goes beyond right margin, wrap to next row
-                if ($x + $imageWidth > $maxX) {
-                    $x = $pdf->GetMargins()['left'];
-                    $y += $rowHeight;
-                }
-        
-                $pdf->Image($imagePath, $x, $y, $imageWidth, $imageHeight, '', '', '', false, 300, '', false, false, 0, false, false, false);
-        
-                // Update X for next image
-                $x += $imageWidth + $margin;
             }
         }
-        
-        // Move cursor below last image row
-        $pdf->SetY($y + $rowHeight);
-
-        // Move to the bottom of the page
-        $pdf->SetY(-50); // Adjust value if needed to position correctly
-
-        $lineWidth = 60; // Line width in mm
-        $yPosition = $pdf->GetY(); // Get current Y position for alignment
-
-        // Draw lines for signatures
-        $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition); // Approved By
-        $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition); // Received By
-
-        $pdf->Ln(5); // Move cursor below the line
-
-        // Text below the lines
-        $pdf->SetXY(23, $yPosition);
-        $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
-
-        $pdf->SetXY(125, $yPosition);
-        $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
-
-        // Output the PDF
-        $pdf->Output('PO-'.$purpos->id.'.pdf', 'I');
     }
+
+    $pdf->SetY($y + $rowHeight);
+
+    // Footer Signatures
+    $pdf->SetY(-50);
+    $lineWidth = 60;
+    $yPosition = $pdf->GetY();
+
+    $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition);
+    $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition);
+    $pdf->Ln(5);
+
+    $pdf->SetXY(23, $yPosition);
+    $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
+
+    $pdf->SetXY(125, $yPosition);
+    $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
+
+    return $pdf->Output('PO-' . $purpos->id . '.pdf', 'I');
+}
+
 }

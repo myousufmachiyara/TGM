@@ -10,6 +10,8 @@ use App\Http\Controllers\PurFGPOController;
 use App\Http\Controllers\PurPOController;
 use App\Http\Controllers\ShopifyController;
 use App\Http\Controllers\SubHeadOfAccController;
+use App\Http\Controllers\PaymentVoucherController;
+
 use Illuminate\Support\Facades\Route;
 
 Auth::routes([
@@ -51,8 +53,9 @@ Route::middleware(['auth'])->group(function () {
     // Billing
     Route::resource('fgpo-bills', POBillsController::class);
 
-    // Vouchers
-    Route::resource('jv1', JournalVoucher1Controller::class);
+    // Payment Vouchers
+    Route::resource('payment-vouchers', PaymentVoucherController::class);
+
 });
 
 Auth::routes();

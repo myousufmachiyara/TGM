@@ -16,15 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger('vendor_id');
             $table->unsignedBigInteger('category_id');  // Ensure this is unsignedBigInteger
             $table->string('po_code');
+            $table->string('order_by');
+            $table->string('remarks')->nullable();
             $table->date('order_date'); // A date column for the order date
-            $table->date('delivery_date')->nullable(); // A date column for the delivery date
-            $table->double('other_exp', 10, 2)->nullable()->default(0);
-            $table->double('bill_discount', 10, 2)->nullable()->default(0);
-            $table->unsignedBigInteger('created_by')->default(1); // Use unsignedBigInteger for foreign keys or IDs
+            $table->unsignedBigInteger('created_by'); // Use unsignedBigInteger for foreign keys or IDs
             $table->softDeletes();
-            $table->timestamps(); // Adds created_at and updated_at columns
-        
+            $table->timestamps(); // Adds created_at and updated_at columns 
             
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

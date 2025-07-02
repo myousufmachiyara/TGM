@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ChartOfAccounts extends Model
 {
@@ -13,15 +13,14 @@ class ChartOfAccounts extends Model
     protected $fillable = [
         'shoa_id',
         'name',
+        'account_type',
         'receivables',
         'payables',
         'opening_date',
         'remarks',
         'address',
         'phone_no',
-        'credit_limit',
-        'days_limit',
-        'created_by',
+        'created_by'
     ];
 
     // Define the relationship with SubHeadOfAccounts (belongs to)
