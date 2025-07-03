@@ -23,8 +23,8 @@ class PurPosDetail extends Model
         return $this->belongsTo(PurPos::class, 'pur_pos_id');
     }
 
-    public function product() // Corrected method name
+    public function product()
     {
-        return $this->belongsTo(Products::class, 'item_id'); // Ensure 'Product' is the correct model name
+        return $this->belongsTo(Products::class, 'item_id');
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->string('sku');
             $table->unsignedBigInteger('qty');
+            $table->decimal('rate', 10, 2)->default(0);
             $table->timestamps();
 
             $table->foreign('pur_pos_rec_id')->references('id')->on('pur_pos_rec')->onDelete('cascade');

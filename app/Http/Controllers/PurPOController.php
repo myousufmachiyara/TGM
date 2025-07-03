@@ -8,10 +8,13 @@ use App\Models\Products;
 use App\Models\PurPO;
 use App\Models\PurPoAttachment;
 use App\Models\PurPosDetail;
+use App\Models\PurPORec;
+use App\Models\PurPORecDetails;
 use App\Services\myPDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PurPOController extends Controller
 {
@@ -131,44 +134,102 @@ class PurPOController extends Controller
 
     public function receiving($id)
     {
-        $purpo = PurPo::with(['details', 'attachments'])->findOrFail($id);
+        // Load PO with product relation
+        $purpo = PurPo::with('details.product')->findOrFail($id);
+
+        // Sum of received quantities by product_id
+        $receivedQuantities = PurPORecDetails::whereHas('receiving', function ($query) use ($id) {
+            $query->where('po_id', $id);
+        })->selectRaw('product_id, SUM(qty) as total_received')
+        ->groupBy('product_id')
+        ->pluck('total_received', 'product_id'); // [product_id => received]
+
+        // Attach received and remaining quantities to each detail
+        foreach ($purpo->details as $detail) {
+            $productId = $detail->item_id; // This is the product_id
+
+            $detail->product_name = $detail->product->name ?? 'N/A';
+            $detail->total_received = $receivedQuantities[$productId] ?? 0;
+            $detail->remaining_qty = $detail->item_qty - $detail->total_received;
+        }
+
         return view('purchasing.po.receiving', compact('purpo'));
     }
 
     public function storeReceiving(Request $request)
-    {
+    {                                                                                                                                               
+        Log::debug('--- storeReceiving() CALLED ---');
+        Log::debug('Request Data:', $request->all());
+
         $request->validate([
-            'po_id' => 'required|exists:pur_fgpos,id',
+            'po_id' => 'required|exists:pur_pos,id',
             'rec_date' => 'required|date',
             'received_qty' => 'required|array',
-            'received_qty.*' => 'nullable|integer|min:1',
+            'received_qty.*' => 'nullable|numeric|min:0.01',
+            'received_rate' => 'required|array',
+            'received_rate.*' => 'nullable|numeric|min:0',
         ]);
 
-        // Create a new receiving record
-        $receiving = PurFGPORec::create([
-            'po_id' => $request->fgpo_id,
-            'rec_date' => $request->rec_date,
-        ]);
+        DB::beginTransaction();
 
-        // Loop through received items and store details
-        foreach ($request->received_qty as $poDetailId => $receivedQty) {
-            if ($receivedQty > 0) {
-                // Fetch the ordered product details
-                $orderDetail = PurFGPODetails::find($poDetailId);
+        try {
+            // Create the receiving record
+            $receiving = PurPORec::create([
+                'po_id'      => $request->po_id,
+                'rec_date'   => $request->rec_date,
+                'created_by' => auth()->id() ?? 0,
+            ]);
 
-                if ($orderDetail) {
-                    PurFGPORecDetails::create([
+            Log::debug('Created PurPosRec ID: ' . $receiving->id);
+
+            $stored = false;
+
+            foreach ($request->received_qty as $detailId => $qty) {
+                Log::debug("Processing detail ID: $detailId with qty: $qty");
+
+                if ($qty > 0) {
+                    $orderDetail = DB::table('pur_pos_details')->where('id', $detailId)->first();
+
+                    if (!$orderDetail) {
+                        Log::error("❌ PurPosDetail not found for ID: $detailId");
+                        continue;
+                    }
+
+                    if (!$orderDetail->item_id) {
+                        Log::error("❌ item_id is NULL for PurPosDetail ID: $detailId");
+                        continue;
+                    }
+
+                    $rate = isset($request->received_rate[$detailId]) ? floatval($request->received_rate[$detailId]) : 0;
+
+                    PurPORecDetails::create([
                         'pur_pos_rec_id' => $receiving->id,
-                        'product_id' => $orderDetail->product_id,
-                        'variation_id' => $orderDetail->variation_id,
-                        'sku' => $orderDetail->sku ?? '',
-                        'qty' => $receivedQty,
+                        'product_id'     => $orderDetail->item_id,
+                        'sku'            => $orderDetail->sku ?? '',
+                        'qty'            => $qty,
+                        'rate'           => $rate,
                     ]);
+
+                    Log::info("✅ Received: product_id={$orderDetail->item_id}, qty=$qty, rate=$rate");
+                    $stored = true;
                 }
             }
-        }
 
-        return redirect()->route('pur-fgpos.index')->with('success', 'Receiving recorded successfully.');
+            if (!$stored) {
+                DB::rollBack();
+                Log::warning('❌ No valid items saved. Rolling back.');
+                return back()->with('error', 'No items were recorded. Please check your input.');
+            }
+
+            DB::commit();
+            Log::info('✅ Receiving transaction committed successfully.');
+
+            return redirect()->route('pur-pos.index')->with('success', 'Receiving recorded successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('❌ Exception in storeReceiving: ' . $e->getMessage());
+            return back()->with('error', 'Receiving failed: ' . $e->getMessage());
+        }
     }
 
     public function update(Request $request, $id)
@@ -284,129 +345,129 @@ class PurPOController extends Controller
         return new PurPOResource($purpo);
     }
 
-public function print($id)
-{
-    $purpos = PurPo::with(['vendor', 'details.product.attachments'])->findOrFail($id);
+    public function print($id)
+    {
+        $purpos = PurPo::with(['vendor', 'details.product.attachments'])->findOrFail($id);
 
-    $pdf = new MyPDF;
+        $pdf = new MyPDF;
 
-    $pdf->SetCreator(PDF_CREATOR);
-    $pdf->SetAuthor('TGM');
-    $pdf->SetTitle('PO-' . $purpos->id);
-    $pdf->SetSubject('PO-' . $purpos->id);
-    $pdf->SetKeywords('PO, TCPDF, PDF');
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('TGM');
+        $pdf->SetTitle('PO-' . $purpos->id);
+        $pdf->SetSubject('PO-' . $purpos->id);
+        $pdf->SetKeywords('PO, TCPDF, PDF');
 
-    $pdf->AddPage();
-    $pdf->setCellPadding(1.2);
+        $pdf->AddPage();
+        $pdf->setCellPadding(1.2);
 
-    $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
-    $pdf->writeHTML($heading, true, false, true, false, '');
+        $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
+        $pdf->writeHTML($heading, true, false, true, false, '');
 
-    $html = '<table style="margin-bottom:10px">
-        <tr>
-            <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="color:#000">' . $purpos->po_code . '</span></td>
-            <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">' . \Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y') . '</span></td>
-            <td style="font-size:10px;font-weight:bold;color:#17365D">Vendor: <span style="text-decoration: underline;color:#000">' . $purpos->vendor->name . '</span></td>
-            <td style="font-size:10px;font-weight:bold;color:#17365D">Order By: <span style="text-decoration: underline;color:#000">' . $purpos->order_by . '</span></td>
-        </tr>
-    </table>';
-    $pdf->writeHTML($html, true, false, true, false, '');
+        $html = '<table style="margin-bottom:10px">
+            <tr>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="color:#000">' . $purpos->po_code . '</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">' . \Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y') . '</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Vendor: <span style="text-decoration: underline;color:#000">' . $purpos->vendor->name . '</span></td>
+                <td style="font-size:10px;font-weight:bold;color:#17365D">Order By: <span style="text-decoration: underline;color:#000">' . $purpos->order_by . '</span></td>
+            </tr>
+        </table>';
+        $pdf->writeHTML($html, true, false, true, false, '');
 
-    $html = '<table border="0.3" style="text-align:center;margin-top:15px">
-        <tr>
-            <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
-            <th width="28%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
-            <th width="18%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
-            <th width="8%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
-            <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
-            <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
-            <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
-        </tr>';
+        $html = '<table border="0.3" style="text-align:center;margin-top:15px">
+            <tr>
+                <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
+                <th width="28%" style="font-size:10px;font-weight:bold;color:#17365D">Item ID-Name</th>
+                <th width="18%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
+                <th width="8%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
+                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
+                <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
+                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
+            </tr>';
 
-    $total_qty = 0;
-    $count = 0;
+        $total_qty = 0;
+        $count = 0;
 
-    foreach ($purpos->details as $item) {
-        $count++;
-        $product = $item->product;
-        $total = $item->item_rate * $item->item_qty;
-        $total_qty += $item->item_qty;
+        foreach ($purpos->details as $item) {
+            $count++;
+            $product = $item->product;
+            $total = $item->item_rate * $item->item_qty;
+            $total_qty += $item->item_qty;
 
-        $html .= '<tr>
-            <td style="font-size:10px;">' . $count . '</td>
-            <td style="font-size:10px;">' . ($product->id ?? '-') . '-' . ($product->name ?? '-') . '</td>
-            <td style="font-size:10px;">' . ($item->description ?? '-') . '</td>
-            <td style="font-size:10px;">' . ($item->width ?? '-') . '</td>
-            <td style="font-size:10px;">' . $item->item_qty . ' ' . ($product->measurement_unit ?? '-') . '</td>
-            <td style="font-size:10px;">' . number_format($item->item_rate, 2) . '</td>
-            <td style="font-size:10px;">' . number_format($total, 2) . '</td>
-        </tr>';
-    }
+            $html .= '<tr>
+                <td style="font-size:10px;">' . $count . '</td>
+                <td style="font-size:10px;">' . ($product->id ?? '-') . '-' . ($product->name ?? '-') . '</td>
+                <td style="font-size:10px;">' . ($item->description ?? '-') . '</td>
+                <td style="font-size:10px;">' . ($item->width ?? '-') . '</td>
+                <td style="font-size:10px;">' . $item->item_qty . ' ' . ($product->measurement_unit ?? '-') . '</td>
+                <td style="font-size:10px;">' . number_format($item->item_rate, 2) . '</td>
+                <td style="font-size:10px;">' . number_format($total, 2) . '</td>
+            </tr>';
+        }
 
-    $html .= '</table>';
-    $pdf->writeHTML($html, true, false, true, false, '');
+        $html .= '</table>';
+        $pdf->writeHTML($html, true, false, true, false, '');
 
-    $summary = '<table border="0.3" cellpadding="2" width="35%">
-        <tr><td><strong>Total Quantity</strong></td><td>' . $total_qty . '</td></tr>
-        <tr><td><strongTotal Item</strong></td><td>' . $count . '</td></tr>
-    </table>';
-    $pdf->writeHTML($summary, true, false, true, false, '');
+        $summary = '<table border="0.3" cellpadding="2" width="35%">
+            <tr><td><strong>Total Quantity</strong></td><td>' . $total_qty . '</td></tr>
+            <tr><td><strongTotal Item</strong></td><td>' . $count . '</td></tr>
+        </table>';
+        $pdf->writeHTML($summary, true, false, true, false, '');
 
-    // ✅ Product Attachment Images
-    $pdf->SetFont('helvetica', 'B', 12);
-    $pdf->Cell(0, 10, 'Product Attachments:', 0, 1, 'L');
+        // ✅ Product Attachment Images
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Cell(0, 10, 'Product Attachments:', 0, 1, 'L');
 
-    $imageWidth = 50;
-    $imageHeight = 50;
-    $margin = 10;
-    $maxX = $pdf->getPageWidth() - $pdf->getMargins()['right'];
-    $x = $pdf->GetX();
-    $y = $pdf->GetY();
-    $rowHeight = $imageHeight + 5;
+        $imageWidth = 50;
+        $imageHeight = 50;
+        $margin = 10;
+        $maxX = $pdf->getPageWidth() - $pdf->getMargins()['right'];
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+        $rowHeight = $imageHeight + 5;
 
-    foreach ($purpos->details as $detail) {
-        if ($detail->product && $detail->product->attachments) {
-            foreach ($detail->product->attachments as $attachment) {
-                $imagePath = storage_path('app/public/' . $attachment->image_path);
+        foreach ($purpos->details as $detail) {
+            if ($detail->product && $detail->product->attachments) {
+                foreach ($detail->product->attachments as $attachment) {
+                    $imagePath = storage_path('app/public/' . $attachment->image_path);
 
-                if (file_exists($imagePath)) {
-                    $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
-                    if ($availableHeight < $rowHeight) {
-                        $pdf->AddPage();
-                        $x = $pdf->GetMargins()['left'];
-                        $y = $pdf->GetY();
+                    if (file_exists($imagePath)) {
+                        $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
+                        if ($availableHeight < $rowHeight) {
+                            $pdf->AddPage();
+                            $x = $pdf->GetMargins()['left'];
+                            $y = $pdf->GetY();
+                        }
+
+                        if ($x + $imageWidth > $maxX) {
+                            $x = $pdf->GetMargins()['left'];
+                            $y += $rowHeight;
+                        }
+
+                        $pdf->Image($imagePath, $x, $y, '40', '60', '', '', '', false, 300, '', false, false, 0, false, false, false);
+                        $x += $imageWidth + $margin;
                     }
-
-                    if ($x + $imageWidth > $maxX) {
-                        $x = $pdf->GetMargins()['left'];
-                        $y += $rowHeight;
-                    }
-
-                    $pdf->Image($imagePath, $x, $y, '40', '60', '', '', '', false, 300, '', false, false, 0, false, false, false);
-                    $x += $imageWidth + $margin;
                 }
             }
         }
+
+        $pdf->SetY($y + $rowHeight);
+
+        // Footer Signatures
+        $pdf->SetY(-50);
+        $lineWidth = 60;
+        $yPosition = $pdf->GetY();
+
+        $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition);
+        $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition);
+        $pdf->Ln(5);
+
+        $pdf->SetXY(23, $yPosition);
+        $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
+
+        $pdf->SetXY(125, $yPosition);
+        $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
+
+        return $pdf->Output('PO-' . $purpos->id . '.pdf', 'I');
     }
-
-    $pdf->SetY($y + $rowHeight);
-
-    // Footer Signatures
-    $pdf->SetY(-50);
-    $lineWidth = 60;
-    $yPosition = $pdf->GetY();
-
-    $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition);
-    $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition);
-    $pdf->Ln(5);
-
-    $pdf->SetXY(23, $yPosition);
-    $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
-
-    $pdf->SetXY(125, $yPosition);
-    $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
-
-    return $pdf->Output('PO-' . $purpos->id . '.pdf', 'I');
-}
 
 }

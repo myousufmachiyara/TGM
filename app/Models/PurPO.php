@@ -51,4 +51,6 @@ class PurPO extends Model
     {
         return $this->hasMany(PurFgposVoucherDetail::class, 'po_id');
     }
+
+    
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChartOfAccounts;
-use App\Models\JournalVoucher1;
+use App\Models\PaymentVoucher;
 use App\Models\ProductAttributes;
 use App\Models\ProductCategory;
 use App\Models\Products;
@@ -28,7 +28,7 @@ class PurFGPOController extends Controller
 
     public function create()
     {
-        $coa = ChartOfAccounts::all();  // Get all product categories
+        $coa = ChartOfAccounts::where('account_type','vendor')->get();  // Get all product categories
         $fabrics = Products::where('item_type', 'raw')->get();  // Get all product categories
         $articles = Products::whereIn('item_type', ['fg', 'mfg'])->get();
         $attributes = ProductAttributes::with('values')->get();
@@ -89,14 +89,14 @@ class PurFGPOController extends Controller
     
             // Step 3: Create Journal Voucher
             \Log::info('Creating Journal Voucher');
-            $voucher = JournalVoucher1::create([
-                'debit_acc_id' => $request->vendor_id,
-                'credit_acc_id' => '4',
+            $voucher = PaymentVoucher::create([
+                'ac_dr_sid' => $request->vendor_id,
+                'ac_cr_sid' => '4',
                 'amount' => $request->voucher_amount,
                 'date' => $request->order_date,
-                'narration' => 'Transaction Against FGPO',
-                'ref_doc_id' => $fgpo->id,
-                'ref_doc_code' => 'FGPO',
+                'remarks' => 'Transaction Against FGPO',
+                // 'ref_doc_id' => $fgpo->id,
+                // 'ref_doc_code' => 'FGPO',
             ]);
             \Log::info('Journal Voucher Created', ['voucher_id' => $voucher->id]);
     

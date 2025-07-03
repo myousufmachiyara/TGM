@@ -58,7 +58,7 @@
 
                 <div class="col-12 col-md-4 mb-3">
                   <label>Item Name <a href="#" ><i class="fa fa-plus"></i></a></label>
-                  <select multiple data-plugin-selecttwo class="form-control select2-js" name="product_id" id="item_name" required>  <!-- Added name attribute for form submission -->
+                  <select multiple data-plugin-selecttwo class="form-control" name="product_id" id="item_name" required>  <!-- Added name attribute for form submission -->
                     <option value=""  disabled>Select Item</option>
                     @foreach ($articles as $item)
                       <option value="{{ $item->id }}">{{ $item->sku }}-{{ $item->name }}</option> 

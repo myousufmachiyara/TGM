@@ -16,6 +16,7 @@ class PurPORecDetails extends Model
         'product_id',
         'sku',
         'qty',
+        'rate', 
     ];
 
     public function receiving()
