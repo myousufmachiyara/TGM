@@ -50,7 +50,7 @@
               </div>
              <div class="col-12 col-md-2">
                 <label>Order By</label>
-                <input type="text" class="form-control" name="order_by" placeholder="Order By" />
+                <input type="text" class="form-control" name="order_by" placeholder="Order By" required/>
               </div>
               <div class="col-12 col-md-3">
                 <label>Attachements</label>
