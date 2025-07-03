@@ -28,7 +28,7 @@ class PurPOController extends Controller
     {
         $prodCat = ProductCategory::all();  // Get all product categories
         $vendors = ChartOfAccounts::where('account_type', 'vendor')->get();
-        $products = Products::where('item_type','raw')->get();
+        $products = Products::get();
 
         return view('purchasing.po.create', compact('prodCat', 'vendors', 'products'));
     }
