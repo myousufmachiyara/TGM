@@ -130,68 +130,93 @@ class ProductsController extends Controller
     public function edit($id)
     {
         $product = Products::with(['variations', 'attachments'])->findOrFail($id);
-        $categories = ProductCategory::all(); // if needed for select dropdowns
+        $prodCat = ProductCategory::all(); // if needed for select dropdowns
         $attributes = ProductAttributes::with('values')->get(); // if you're using attributes in variations
     
-        return view('products.edit', compact('product', 'categories', 'attributes'));
+        return view('products.edit', compact('product', 'prodCat', 'attributes'));
+    }
+
+    public function getValues($id)
+    {
+        $attribute = Attribute::with('values')->find($id);
+
+        if (!$attribute) {
+            return response()->json(['error' => 'Attribute not found'], 404);
+        }
+
+        return response()->json($attribute->values);
     }
 
     public function update(Request $request, $id)
     {
         try {
-            // Validate the request
+            // Validate incoming data
             $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:products,name,' . $id,
                 'description' => 'nullable|string',
                 'category_id' => 'required|exists:product_categories,id',
                 'measurement_unit' => 'nullable|string|max:50',
-                'width' => '',
                 'item_type' => 'nullable|string|max:50',
-                'price' => 'required|numeric|min:0',
-                'sale_price' => 'required|numeric|min:0',
+                'style' => 'nullable|string|max:50',
+                'material' => 'nullable|string|max:50',
                 'purchase_note' => 'nullable|string',
                 'opening_stock' => 'required|numeric|min:0',
                 'prod_att' => 'nullable|array',
-                'prod_att.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'prod_att.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
                 'variations' => 'nullable|array',
                 'variations.*.price' => 'required|numeric|min:0',
                 'variations.*.stock' => 'required|numeric|min:0',
                 'variations.*.attribute_id' => 'required|exists:product_attributes,id',
                 'variations.*.attribute_value_id' => 'required|exists:product_attributes_values,id',
+                'variations.*.sku' => 'nullable|string',
             ]);
-    
+
             DB::beginTransaction();
-    
+
+            // Fetch product
             $product = Products::findOrFail($id);
-    
-            // SKU should not change during update
-            $validatedData['sku'] = $product->sku;
-    
-            // Update main product
-            $product->update($validatedData);
-    
-            // === Handle Variations ===
+
+            // Update basic fields
+            $product->update([
+                'name' => $validatedData['name'],
+                'description' => $validatedData['description'] ?? null,
+                'category_id' => $validatedData['category_id'],
+                'measurement_unit' => $validatedData['measurement_unit'] ?? null,
+                'item_type' => $validatedData['item_type'] ?? null,
+                'style' => $validatedData['style'] ?? null,
+                'material' => $validatedData['material'] ?? null,
+                'purchase_note' => $validatedData['purchase_note'] ?? null,
+                'opening_stock' => $validatedData['opening_stock'],
+            ]);
+
+            // Handle variations
             if ($request->has('variations')) {
-                // Remove old variations
-                ProductVariations::where('product_id', $product->id)->delete();
-    
-                foreach ($request->variations as $variation) {
-                    $attrValue = ProductAttributesValues::findOrFail($variation['attribute_value_id']);
-                    $variationSlug = Str::slug($attrValue->value);
-                    $variationSku = $product->sku . '-' . strtoupper($variationSlug);
-    
-                    ProductVariations::create([
-                        'product_id' => $product->id,
-                        'price' => $variation['price'],
-                        'stock' => $variation['stock'],
-                        'attribute_id' => $variation['attribute_id'],
-                        'attribute_value_id' => $variation['attribute_value_id'],
-                        'sku' => $variationSku,
-                    ]);
+                // Delete removed variations
+                $submittedIds = collect($request->input('variations'))->pluck('attribute_value_id')->toArray();
+                ProductVariations::where('product_id', $product->id)
+                    ->whereNotIn('attribute_value_id', $submittedIds)
+                    ->delete();
+
+                foreach ($request->input('variations') as $variation) {
+                    $variationSku = $variation['sku'];
+
+                    // Create or update variation
+                    ProductVariations::updateOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'attribute_value_id' => $variation['attribute_value_id']
+                        ],
+                        [
+                            'price' => $variation['price'],
+                            'stock' => $variation['stock'],
+                            'attribute_id' => $variation['attribute_id'],
+                            'sku' => $variationSku ?? $product->sku . '-' . strtoupper(Str::slug(ProductAttributesValues::find($variation['attribute_value_id'])->value)),
+                        ]
+                    );
                 }
             }
-    
-            // === Handle New Images ===
+
+            // Handle image uploads
             if ($request->hasFile('prod_att')) {
                 foreach ($request->file('prod_att') as $image) {
                     $imagePath = $image->store('products/images', 'public');
@@ -201,16 +226,16 @@ class ProductsController extends Controller
                     ]);
                 }
             }
-    
+
             DB::commit();
-    
+
             return redirect()->route('products.index')->with('success', 'Product updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-    }    
-
+    }
+   
     public function destroy($id)
     {
         DB::beginTransaction(); // Start the transaction

@@ -25,6 +25,17 @@ class ProductAttributesController extends Controller
         return response()->json($attribute);
     }
 
+    public function getAttributeValues($id)
+    {
+        $attribute = ProductAttributes::with('values')->find($id);
+
+        if (!$attribute) {
+            return response()->json(['error' => 'Attribute not found'], 404);
+        }
+
+        return response()->json($attribute->values);
+    }
+
     public function store(Request $request)
     {
         // Validate the request

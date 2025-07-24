@@ -24,7 +24,7 @@
                     <tr>
                       <th>S.No</th>
                       <th>Image</th>
-                      <th>Item Name/ID </th>
+                      <th>Item Name (ID) </th>
                       <th>SKU</th>
                       <th>Category</th>
                       <th>Price</th>
@@ -43,7 +43,7 @@
                           <span>No Image</span>
                         @endif
                       </td>
-                      <td><strong>{{ $item->name }}/{{ $item->id }}</strong></td>
+                      <td><strong>{{ $item->name }}({{ $item->id }})</strong></td>
                       <td>{{ $item->sku }}</td>
                       <td>{{ $item->category ? $item->category->name : 'No Category' }}</td>
                       <td>{{ $item->price }}</td>

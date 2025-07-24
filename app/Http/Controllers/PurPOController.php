@@ -468,6 +468,12 @@ public function update(Request $request, $id)
                         }
 
                         $pdf->Image($imagePath, $x, $y, '40', '60', '', '', '', false, 300, '', false, false, 0, false, false, false);
+
+                        // Move cursor below the image to print product name
+                        $pdf->SetXY($x, $y + 62); // Adjust vertical spacing as needed
+                        $pdf->SetFont('helvetica', '', 8);
+                        $pdf->MultiCell(40, 10, $detail->product->name ?? '-', 0, 'C', false, 1);
+
                         $x += $imageWidth + $margin;
                     }
                 }

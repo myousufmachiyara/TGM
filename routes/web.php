@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('product-categories', ProductCategoriesController::class);
     Route::resource('products', ProductsController::class);
     Route::post('productDetails', [ProductsController::class, 'getProductDetails'])->name('product.details');
+    Route::get('/attributes/{id}/values', [ProductAttributesController::class, 'getAttributeValues']);
 
     // Purchase Orders
     Route::resource('pur-pos', PurPOController::class);

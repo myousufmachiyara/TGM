@@ -42,9 +42,9 @@
                 @error('sku')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
-              <div class="col-12 col-md-1 mb-2">
+              <div class="col-12 col-md-2 mb-2">
                 <label>Unit</label>
-                <select data-plugin-selecttwo class="form-control select2-js" name="measurement_unit" required>
+                <select class="form-control" name="measurement_unit" required>
                   <option value="" selected disabled>Select Unit</option>
                   <option value="mtr" {{ old('measurement_unit') == 'mtr' ? 'selected' : '' }}>meter</option>
                   <option value="pcs" {{ old('measurement_unit') == 'pcs' ? 'selected' : '' }}>pieces</option> 
@@ -54,9 +54,9 @@
                 @error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
-              <div class="col-12 col-md-1 mb-2">
+              <div class="col-12 col-md-2 mb-2">
                 <label>Item Type</label>
-                <select data-plugin-selecttwo class="form-control select2-js" name="item_type" id="item_type" required>
+                <select class="form-control" name="item_type" id="item_type" required>
                   <option value="" selected disabled>Item Type</option>
                   <option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
                   <option value="mfg" {{ old('item_type') == 'mfg' ? 'selected' : '' }}>Men's FG</option> 
@@ -88,19 +88,19 @@
                 </div>
               </div>
 
-              <div class="col-12 col-md-1 mb-2">
+              <div hidden class="col-12 col-md-1 mb-2">
                 <label>P.Price</label>
                 <input type="number" step=".00" class="form-control" value="{{ old('price', '0.00') }}" name="price" required />
                 @error('price')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
-              <div class="col-12 col-md-1 mb-2">
+              <div hidden class="col-12 col-md-1 mb-2">
                 <label>S.Price</label>
                 <input type="number" step=".00" class="form-control" value="{{ old('sale_price', '0.00') }}" name="sale_price" required />
                 @error('sale_price')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
-              <div class="col-12 col-md-1 mb-2">
+              <div class="col-12 col-md-2 mb-2">
                 <label>Opening</label>
                 <input type="number" step=".00" class="form-control" value="{{ old('opening_stock', '0') }}" name="opening_stock" required />
                 @error('opening_stock')<div class="text-danger">{{ $message }}</div>@enderror

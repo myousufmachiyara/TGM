@@ -45,7 +45,9 @@
                     <td > {{$row->po_code}}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td width="10%">{{ $row->vendor->name ?? 'N/A' }}</td>
-                    <td width="60%">{{ $row->details->pluck('product.name')->filter()->implode(', ') }}</td>
+                    <td width="60%">{{ $row->details->map(function($d) {
+                          return optional($d->product)->name . ' (' . optional($d->product)->id . ')';
+                      })->filter()->implode(', ') }}</td>
                     <td>
                       <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>
