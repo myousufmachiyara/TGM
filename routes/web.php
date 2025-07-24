@@ -37,7 +37,7 @@ Route::middleware(['auth'])->group(function () {
     // Purchase Orders
     Route::resource('pur-pos', PurPOController::class);
     Route::get('pur-pos-rec/{id}', [PurPOController::class, 'receiving'])->name('pur-pos.rec');
-    Route::post('pur-pos-received', [PurPOControllerPurPOController::class, 'storeReceiving'])->name('pur-pos.store-rec');
+    Route::post('pur-pos-received', [PurPOController::class, 'storeReceiving'])->name('pur-pos.store-rec');
     Route::post('/get-po-codes', [PurPOController::class, 'getPoCodes'])->name('get.po.codes');
     Route::get('/get-po-width', [PurPOController::class, 'getWidth'])->name('get.po.width');
     
@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('pur-fgpos-new-challan', [PurFGPOController::class, 'newChallan'])->name('pur-fgpos.new-challan');
     Route::get('pur-fgpos-get-details', [PurFGPOController::class, 'getDetails'])->name('pur-fgpos.get-details');
 
-    Route::get('pur-pos/print/{id}', [PurPoController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
+    Route::get('pur-pos/print/{id}', [PurPOController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
     Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
 
     // Billing

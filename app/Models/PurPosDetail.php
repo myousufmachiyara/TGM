@@ -20,7 +20,7 @@ class PurPosDetail extends Model
 
     public function purPos()
     {
-        return $this->belongsTo(PurPos::class, 'pur_pos_id');
+        return $this->belongsTo(PurPO::class, 'pur_pos_id');
     }
 
     public function product()
