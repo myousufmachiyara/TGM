@@ -35,7 +35,7 @@
               </div>
 
               <div class="col-12 col-md-2">
-                <label>Vendor Name</label>
+                <label>Vendor Name <span style="color: red;"><strong>*</strong></span></label>
                 <select data-plugin-selecttwo class="form-control select2-js" name="vendor_id" required>  <!-- Added name attribute for form submission -->
                   <option value="" selected disabled>Select Vendor</option>
                   @foreach ($vendors as $item)
@@ -45,11 +45,11 @@
               </div>
 
               <div class="col-12 col-md-2">
-                <label>Order Date</label>
+                <label>Order Date <span style="color: red;"><strong>*</strong></span></label>
                 <input type="date" name="order_date" class="form-control" value="<?php echo date('Y-m-d'); ?>"   placeholder="Order Date" required/>
               </div>
              <div class="col-12 col-md-2">
-                <label>Order By</label>
+                <label>Order By <span style="color: red;"><strong>*</strong></span></label>
                 <input type="text" class="form-control" name="order_by" placeholder="Order By" required/>
               </div>
               <div class="col-12 col-md-3">
