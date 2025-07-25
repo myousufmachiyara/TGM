@@ -44,7 +44,7 @@
                 </div>
                 <div class="col-md-3">
                     <label>Remarks</label>
-                    <input type="text" name="remarks" class="form-control" value="{{ $purPo->remarks }}">
+                    <textarea class="form-control" name="remarks">{{ $purPo->remarks }}</textarea>
                 </div>
             </div>
 
@@ -98,7 +98,7 @@
                         @endforeach
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-outline-primary" id="addRowBtn"><i class="fas fa-plus"></i> Add Item</button>
+                <button type="button" class="btn btn-outline-primary mb-3" id="addRowBtn"><i class="fas fa-plus"></i> Add Item</button>
             </div>
 
             <div class="row mb-3">
