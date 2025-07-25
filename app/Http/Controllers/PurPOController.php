@@ -435,7 +435,7 @@ class PurPOController extends Controller
         // Summary
         $summary = '<table border="0.3" cellpadding="3" width="35%">
             <tr><td style="font-size:11px"><strong>Total Quantity</strong></td><td>' . $total_qty . '</td></tr>
-            <tr><td><strong>Total Items</strong></td><td>' . $count . '</td></tr>
+            <tr><td style="font-size:11px"><strong>Total Items</strong></td><td>' . $count . '</td></tr>
         </table>';
         $pdf->writeHTML($summary, true, false, true, false, '');
 
