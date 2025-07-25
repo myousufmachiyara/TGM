@@ -467,14 +467,16 @@ class PurPOController extends Controller
                     $y += $rowHeight;
                 }
 
-                $pdf->Image($imagePath, $x, $y, '40', '60', '', '', '', false, 300, '', false, false, 0, false, false, false);
+                $pdf->Image($imagePath, $x, $y, 40, 60, '', '', '', false, 300, '', false, false, 0, false, false, false);
 
-                // Caption below image
+                // Caption below image (you may update it with a better reference if available)
                 $pdf->SetXY($x, $y + 62);
                 $pdf->SetFont('helvetica', '', 8);
                 $pdf->MultiCell(40, 10, 'Attachment', 0, 'C', false, 1);
 
                 $x += $imageWidth + $margin;
+            } else {
+                \Log::warning('Image not found at path: ' . $imagePath);
             }
         }
 
