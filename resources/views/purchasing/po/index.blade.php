@@ -16,10 +16,10 @@
           <div>
             <div class="col-md-5" style="display:flex;">
               <select class="form-control" style="margin-right:10px" id="columnSelect">
-                <option selected disabled>Search by</option>
-                <option value="1">by Delivery Date</option>
-                <option value="2">by Order Date</option>
-                <option value="3">by Vendor</option>
+                <option selected disabled>Filter by</option>
+                <option value="1">Pending</option>
+                <option value="2">Partially Received</option>
+                <option value="3">Completed</option>
               </select>
               <input type="text" class="form-control" id="columnSearch" placeholder="Search By Column"/>
 
