@@ -43,7 +43,7 @@
               </div>
 
               <div class="col-12 col-md-2 mb-2">
-                <label>Unit</label>
+                <label>Unit <span style="color: red;"><strong>*</strong></span></label>
                 <select class="form-control" name="measurement_unit" required>
                   <option value="" selected disabled>Select Unit</option>
                   <option value="mtr" {{ old('measurement_unit') == 'mtr' ? 'selected' : '' }}>meter</option>
@@ -55,7 +55,7 @@
               </div>
 
               <div class="col-12 col-md-2 mb-2">
-                <label>Item Type</label>
+                <label>Item Type <span style="color: red;"><strong>*</strong></span></label>
                 <select class="form-control" name="item_type" id="item_type" required>
                   <option value="" selected disabled>Item Type</option>
                   <option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
@@ -119,7 +119,7 @@
               </div>
 				
               <div class="col-12 col-md-3 mb-2">
-                <label>Images</label>
+                <label>Images <span style="color: red;"><strong>*</strong></span></label>
                 <input type="file" class="form-control" name="prod_att[]" id="imageUpload" multiple accept="image/png, image/jpeg, image/jpg, image/webp" required>  
                 @error('prod_att')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
