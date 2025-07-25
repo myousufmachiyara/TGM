@@ -14,8 +14,8 @@
         </header>
         <div class="card-body">
           <div>
-            <div class="col-md-5" style="display:flex;">
-              <select class="form-control" style="margin-right:10px" id="columnSelect">
+            <div class="col-md-3" style="display:flex;">
+              <select class="form-control" style="margin-right:10px">
                 <option selected disabled>Filter by</option>
                 <option value="1">Pending</option>
                 <option value="2">Partially Received</option>
