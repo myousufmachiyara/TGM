@@ -374,8 +374,8 @@ public function update(Request $request, $id)
 
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('PO-' . $purpos->id);
-        $pdf->SetSubject('PO-' . $purpos->id);
+        $pdf->SetTitle($purpos->po_code);
+        $pdf->SetSubject($purpos->po_code);
         $pdf->SetKeywords('PO, TCPDF, PDF');
 
         $pdf->AddPage();
@@ -496,6 +496,6 @@ public function update(Request $request, $id)
         $pdf->SetXY(125, $yPosition);
         $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
 
-        return $pdf->Output('PO-' . $purpos->id . '.pdf', 'I');
+        return $pdf->Output($purpos->po_code. '.pdf', 'I');
     }
 }
