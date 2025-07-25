@@ -230,91 +230,90 @@ class PurPOController extends Controller
     }
 
 
-public function update(Request $request, $id)
-{
-    DB::beginTransaction();
+    public function update(Request $request, $id)
+    {
+        DB::beginTransaction();
 
-    try {
-        Log::info("Purchase Order Update Start", ['id' => $id]);
+        try {
+            Log::info("Purchase Order Update Start", ['id' => $id]);
 
-        $validatedData = $request->validate([
-            'vendor_id' => 'required|exists:chart_of_accounts,id',
-            'category_id' => 'required|exists:product_categories,id',
-            'order_date' => 'required|date',
-            'order_by' => 'required|string|max:255',
-            'remarks' => 'nullable|string|max:255',
-            'details' => 'required|array',
-            'details.*.item_id' => 'required|exists:products,id',
-            'details.*.width' => 'required|numeric|min:0',
-            'details.*.description' => 'nullable|string|max:255',
-            'details.*.item_rate' => 'required|numeric|min:0',
-            'details.*.item_qty' => 'required|numeric|min:0',
-            'att.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
-
-        Log::info("Validated Data", $validatedData);
-
-        $purPo = PurPo::findOrFail($id);
-
-        $purPo->update([
-            'vendor_id'     => $validatedData['vendor_id'],
-            'category_id'   => $validatedData['category_id'],
-            'order_date'    => $validatedData['order_date'],
-            'order_by'      => $validatedData['order_by'],
-            'remarks'       => $validatedData['remarks'],
-            'updated_by'    => Auth::id(),
-        ]);
-
-        Log::info("Purchase Order Updated", ['pur_po_id' => $purPo->id]);
-
-        // Delete old details
-        $purPo->details()->delete();
-
-        // Re-create new details
-        foreach ($validatedData['details'] as $detail) {
-            $purPo->details()->create([
-                'item_id'     => $detail['item_id'],
-                'width'       => $detail['width'],
-                'description' => $detail['description'] ?? '',
-                'item_rate'   => $detail['item_rate'],
-                'item_qty'    => $detail['item_qty'],
+            $validatedData = $request->validate([
+                'vendor_id' => 'required|exists:chart_of_accounts,id',
+                'category_id' => 'required|exists:product_categories,id',
+                'order_date' => 'required|date',
+                'order_by' => 'required|string|max:255',
+                'remarks' => 'nullable|string|max:255',
+                'details' => 'required|array',
+                'details.*.item_id' => 'required|exists:products,id',
+                'details.*.width' => 'required|numeric|min:0',
+                'details.*.description' => 'nullable|string|max:255',
+                'details.*.item_rate' => 'required|numeric|min:0',
+                'details.*.item_qty' => 'required|numeric|min:0',
+                'att.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ]);
-        }
 
-        Log::info("Purchase Order Details Updated");
+            Log::info("Validated Data", $validatedData);
 
-        // Handle new attachments (if any)
-        if ($request->hasFile('att')) {
-            foreach ($request->file('att') as $file) {
-                $filePath = $file->store('purchase_orders', 'public');
+            $purPo = PurPo::findOrFail($id);
 
-                PurPoAttachment::create([
-                    'pur_po_id' => $purPo->id,
-                    'att_path'  => $filePath,
+            $purPo->update([
+                'vendor_id'     => $validatedData['vendor_id'],
+                'category_id'   => $validatedData['category_id'],
+                'order_date'    => $validatedData['order_date'],
+                'order_by'      => $validatedData['order_by'],
+                'remarks'       => $validatedData['remarks'],
+                'updated_by'    => Auth::id(),
+            ]);
+
+            Log::info("Purchase Order Updated", ['pur_po_id' => $purPo->id]);
+
+            // Delete old details
+            $purPo->details()->delete();
+
+            // Re-create new details
+            foreach ($validatedData['details'] as $detail) {
+                $purPo->details()->create([
+                    'item_id'     => $detail['item_id'],
+                    'width'       => $detail['width'],
+                    'description' => $detail['description'] ?? '',
+                    'item_rate'   => $detail['item_rate'],
+                    'item_qty'    => $detail['item_qty'],
                 ]);
             }
 
-            Log::info("Attachments Uploaded", ['files' => count($request->file('att'))]);
+            Log::info("Purchase Order Details Updated");
+
+            // Handle new attachments (if any)
+            if ($request->hasFile('att')) {
+                foreach ($request->file('att') as $file) {
+                    $filePath = $file->store('purchase_orders', 'public');
+
+                    PurPoAttachment::create([
+                        'pur_po_id' => $purPo->id,
+                        'att_path'  => $filePath,
+                    ]);
+                }
+
+                Log::info("Attachments Uploaded", ['files' => count($request->file('att'))]);
+            }
+
+            DB::commit();
+
+            Log::info("Purchase Order Update Completed", ['pur_po_id' => $purPo->id]);
+
+            return redirect()->route('pur-pos.index', $purPo->id)->with('success', 'Purchase Order updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error("Purchase Order Update Failed", [
+                'error' => $e->getMessage(),
+                'line'  => $e->getLine(),
+                'file'  => $e->getFile(),
+            ]);
+
+            return back()->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
         }
-
-        DB::commit();
-
-        Log::info("Purchase Order Update Completed", ['pur_po_id' => $purPo->id]);
-
-        return redirect()->route('pur-pos.index', $purPo->id)->with('success', 'Purchase Order updated successfully!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-
-        Log::error("Purchase Order Update Failed", [
-            'error' => $e->getMessage(),
-            'line'  => $e->getLine(),
-            'file'  => $e->getFile(),
-        ]);
-
-        return back()->withErrors(['error' => 'Update failed: ' . $e->getMessage()]);
     }
-}
-
 
     public function destroy(PurPo $purpo)
     {

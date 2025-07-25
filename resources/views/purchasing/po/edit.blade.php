@@ -101,17 +101,6 @@
                 <button type="button" class="btn btn-outline-primary" id="addRowBtn"><i class="fas fa-plus"></i> Add Item</button>
             </div>
 
-            <div class="row mt-3 mb-3">
-                <div class="col-md-2">
-                    <label>Other Expenses</label>
-                    <input type="number" step="0.01" class="form-control" name="other_exp" value="{{ $purPo->other_exp }}">
-                </div>
-                <div class="col-md-2">
-                    <label>Bill Discount</label>
-                    <input type="number" step="0.01" class="form-control" name="bill_discount" value="{{ $purPo->bill_discount }}">
-                </div>
-            </div>
-
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label>Attachments (if any)</label>
