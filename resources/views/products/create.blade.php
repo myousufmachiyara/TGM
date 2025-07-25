@@ -102,7 +102,7 @@
 
               <div class="col-12 col-md-2 mb-2">
                 <label>Opening</label>
-                <input type="number" step=".00" class="form-control" value="{{ old('opening_stock', '0') }}" name="opening_stock" required />
+                <input type="number" step=".00" class="form-control" value="{{ old('opening_stock', '0') }}" name="opening_stock" />
                 @error('opening_stock')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
 
