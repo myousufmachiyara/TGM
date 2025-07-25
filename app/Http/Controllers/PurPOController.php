@@ -441,7 +441,7 @@ class PurPOController extends Controller
 
         // ✅ PurPoAttachment Images
         $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 10, 'PO Attachments:', 0, 1, 'L');
+        $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
 
         $imageWidth = 50;
         $imageHeight = 50;
