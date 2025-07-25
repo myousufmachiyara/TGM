@@ -45,7 +45,7 @@ class ProductsController extends Controller
                 'sale_price' => 'required|numeric|min:0',
                 'purchase_note' => 'nullable|string',
                 'opening_stock' => 'nullable|numeric|min:0',
-                'prod_att' => 'required|array',
+                'prod_att' => 'nullable|array',
                 'prod_att.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
                 'variations' => 'nullable|array',
                 'variations.*.price' => 'required|numeric|min:0',
