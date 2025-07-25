@@ -33,6 +33,7 @@
                   <th>Date</th>
                   <th width="10%">Vendor</th>
                   <th width="60%">Items</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -46,6 +47,7 @@
                     <td width="60%">{{ $row->details->map(function($d) {
                           return optional($d->product)->name . ' (' . optional($d->product)->id . ')';
                       })->filter()->implode(', ') }}</td>
+                    <td> Status </td>
                     <td>
                       <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>
