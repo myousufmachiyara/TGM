@@ -61,6 +61,9 @@
                   <option value="fg" {{ old('item_type') == 'fg' ? 'selected' : '' }}>F.G</option>
                   <option value="mfg" {{ old('item_type') == 'mfg' ? 'selected' : '' }}>Men's FG</option> 
                   <option value="raw" {{ old('item_type') == 'raw' ? 'selected' : '' }}>Raw</option> 
+                  <option value="packaging" {{ old('item_type') == 'fg' ? 'selected' : '' }}>Packaging</option>
+                  <option value="office-supplies" {{ old('item_type') == 'fg' ? 'selected' : '' }}>Office Supplies</option>
+                  <option value="others" {{ old('item_type') == 'fg' ? 'selected' : '' }}>others</option>
                 </select>
                 @error('item_type')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
