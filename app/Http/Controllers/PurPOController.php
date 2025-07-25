@@ -400,8 +400,8 @@ class PurPOController extends Controller
             <tr>
                 <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
                 <th width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Name(ID)</th>
-                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Category</th>
-                <th width="18%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
+                <th width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Category</th>
+                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
                 <th width="8%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
                 <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
                 <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>

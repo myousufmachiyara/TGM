@@ -53,7 +53,7 @@
                         <i class="fa fa-print"></i>
                       </a>
                       <a href="{{ route('pur-pos.rec', $row->id) }}" class="text-primary">
-                        <i class="fa fa-download"></i>
+                        <i class="fa fa-arrow-left"></i>
                       </a>
                       <a href="{{ route('pur-pos.edit', $row->id) }}" class="text-warning">
                         <i class="fa fa-edit "></i>
