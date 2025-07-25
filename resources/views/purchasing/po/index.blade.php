@@ -21,8 +21,6 @@
                 <option value="2">Partially Received</option>
                 <option value="3">Completed</option>
               </select>
-              <input type="text" class="form-control" id="columnSearch" placeholder="Search By Column"/>
-
             </div>
           </div>
 
