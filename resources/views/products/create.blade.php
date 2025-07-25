@@ -50,6 +50,8 @@
                   <option value="pcs" {{ old('measurement_unit') == 'pcs' ? 'selected' : '' }}>pieces</option> 
                   <option value="yrd" {{ old('measurement_unit') == 'yrd' ? 'selected' : '' }}>yards</option> 
                   <option value="rd" {{ old('measurement_unit') == 'rd' ? 'selected' : '' }}>round</option> 
+                  <option value="boxes" {{ old('measurement_unit') == 'rd' ? 'selected' : '' }}>boxes</option> 
+                  <option value="bundles" {{ old('measurement_unit') == 'rd' ? 'selected' : '' }}>bundles</option> 
                 </select>
                 @error('measurement_unit')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
