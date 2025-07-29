@@ -136,31 +136,22 @@ class ProductsController extends Controller
         return view('products.edit', compact('product', 'prodCat', 'attributes'));
     }
 
-    public function getValues($id)
-    {
-        $attribute = Attribute::with('values')->find($id);
-
-        if (!$attribute) {
-            return response()->json(['error' => 'Attribute not found'], 404);
-        }
-
-        return response()->json($attribute->values);
-    }
-
     public function update(Request $request, $id)
     {
         try {
-            // Validate incoming data
+            $product = Products::with('variations')->findOrFail($id);
+
+            // Validate input
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255|unique:products,name,' . $id,
                 'description' => 'nullable|string',
                 'category_id' => 'required|exists:product_categories,id',
-                'measurement_unit' => 'nullable|string|max:50',
-                'item_type' => 'nullable|string|max:50',
+                'measurement_unit' => 'required|string|max:50',
+                'item_type' => 'required|string|max:50',
                 'style' => 'nullable|string|max:50',
                 'material' => 'nullable|string|max:50',
                 'purchase_note' => 'nullable|string',
-                'opening_stock' => 'required|numeric|min:0',
+                'opening_stock' => 'nullable|numeric|min:0',
                 'prod_att' => 'nullable|array',
                 'prod_att.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
                 'variations' => 'nullable|array',
@@ -168,55 +159,61 @@ class ProductsController extends Controller
                 'variations.*.stock' => 'required|numeric|min:0',
                 'variations.*.attribute_id' => 'required|exists:product_attributes,id',
                 'variations.*.attribute_value_id' => 'required|exists:product_attributes_values,id',
-                'variations.*.sku' => 'nullable|string',
             ]);
 
             DB::beginTransaction();
 
-            // Fetch product
-            $product = Products::findOrFail($id);
-
-            // Update basic fields
+            // Update product fields (excluding SKU)
             $product->update([
                 'name' => $validatedData['name'],
                 'description' => $validatedData['description'] ?? null,
                 'category_id' => $validatedData['category_id'],
-                'measurement_unit' => $validatedData['measurement_unit'] ?? null,
-                'item_type' => $validatedData['item_type'] ?? null,
+                'measurement_unit' => $validatedData['measurement_unit'],
+                'item_type' => $validatedData['item_type'],
                 'style' => $validatedData['style'] ?? null,
                 'material' => $validatedData['material'] ?? null,
                 'purchase_note' => $validatedData['purchase_note'] ?? null,
-                'opening_stock' => $validatedData['opening_stock'],
+                'opening_stock' => $validatedData['opening_stock'] ?? 0,
             ]);
 
-            // Handle variations
-            if ($request->has('variations')) {
-                // Delete removed variations
-                $submittedIds = collect($request->input('variations'))->pluck('attribute_value_id')->toArray();
-                ProductVariations::where('product_id', $product->id)
-                    ->whereNotIn('attribute_value_id', $submittedIds)
-                    ->delete();
+            $existingVariationIds = $product->variations->pluck('id')->toArray();
+            $submittedVariationKeys = array_keys($request->variations ?? []);
 
-                foreach ($request->input('variations') as $variation) {
-                    $variationSku = $variation['sku'];
+            $processedIds = [];
 
-                    // Create or update variation
-                    ProductVariations::updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'attribute_value_id' => $variation['attribute_value_id']
-                        ],
-                        [
+            foreach ($request->variations ?? [] as $key => $variation) {
+                if (is_numeric($key)) {
+                    // Existing variation - update
+                    $existing = $product->variations->get($key);
+                    if ($existing) {
+                        $existing->update([
                             'price' => $variation['price'],
                             'stock' => $variation['stock'],
-                            'attribute_id' => $variation['attribute_id'],
-                            'sku' => $variationSku ?? $product->sku . '-' . strtoupper(Str::slug(ProductAttributesValues::find($variation['attribute_value_id'])->value)),
-                        ]
-                    );
+                        ]);
+                        $processedIds[] = $existing->id;
+                    }
+                } elseif (Str::startsWith($key, 'new_')) {
+                    // New variation - create
+                    $attrValue = ProductAttributesValues::findOrFail($variation['attribute_value_id']);
+                    $variationSlug = Str::slug($attrValue->value);
+                    $variationSku = $product->sku . '-' . strtoupper($variationSlug);
+
+                    ProductVariations::create([
+                        'product_id' => $product->id,
+                        'price' => $variation['price'],
+                        'stock' => $variation['stock'],
+                        'attribute_id' => $variation['attribute_id'],
+                        'attribute_value_id' => $variation['attribute_value_id'],
+                        'sku' => $variationSku,
+                    ]);
                 }
             }
 
-            // Handle image uploads
+            // Delete removed variations
+            $toDelete = array_diff($existingVariationIds, $processedIds);
+            ProductVariations::whereIn('id', $toDelete)->delete();
+
+            // Handle new attachments
             if ($request->hasFile('prod_att')) {
                 foreach ($request->file('prod_att') as $image) {
                     $imagePath = $image->store('products/images', 'public');
@@ -235,7 +232,18 @@ class ProductsController extends Controller
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
-   
+
+    public function getValues($id)
+    {
+        $attribute = Attribute::with('values')->find($id);
+
+        if (!$attribute) {
+            return response()->json(['error' => 'Attribute not found'], 404);
+        }
+
+        return response()->json($attribute->values);
+    }
+
     public function destroy($id)
     {
         DB::beginTransaction(); // Start the transaction

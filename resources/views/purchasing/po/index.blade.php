@@ -14,14 +14,17 @@
         </header>
         <div class="card-body">
           <div>
-            <div class="col-md-3" style="display:flex;">
-              <select class="form-control" style="margin-right:10px">
-                <option selected disabled>Filter by</option>
-                <option value="1">Pending</option>
-                <option value="2">Partially Received</option>
-                <option value="3">Completed</option>
-              </select>
-            </div>
+            <form method="GET" action="{{ route('pur-pos.index') }}" class="mb-3 d-flex">
+              <div class="col-md-2" style="display:flex;">
+                <select name="status" class="form-control" style="margin-right:10px" onchange="this.form.submit()">
+                  <option value="">Filter by</option>
+                  <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All</option>
+                  <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                  <option value="Partially Received" {{ request('status') == 'Partially Received' ? 'selected' : '' }}>Partially Received</option>
+                  <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                </select>
+              </div>
+            <form>
           </div>
 
           <div class="modal-wrapper table-scroll">
@@ -32,7 +35,7 @@
                   <th >PO Code</th>
                   <th>Date</th>
                   <th width="10%">Vendor</th>
-                  <th width="60%">Items</th>
+                  <th width="55%">Items</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -44,10 +47,14 @@
                     <td > {{$row->po_code}}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
                     <td width="10%">{{ $row->vendor->name ?? 'N/A' }}</td>
-                    <td width="60%">{{ $row->details->map(function($d) {
+                    <td width="55%">{{ $row->details->map(function($d) {
                           return optional($d->product)->name . ' (' . optional($d->product)->id . ')';
                       })->filter()->implode(', ') }}</td>
-                    <td> Status </td>
+                    <td>
+                      <span class="{{ $row->status_class }}">
+                        {{ $row->status_text }}
+                      </span>
+                    </td>                    
                     <td>
                       <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>

@@ -63,7 +63,7 @@
                     $received = number_format($detail->total_received ?? 0, 2);
                     $remaining = number_format($detail->remaining_qty ?? ($detail->item_qty - $detail->total_received), 2);
                   @endphp
-                  <tr>
+                  <tr class="receiving-row">
                     <td>{{ $detail->product_name }}</td>
                     <td>{{ $ordered }}</td>
                     <td>{{ $received }}</td>
@@ -80,6 +80,17 @@
             </table>
 
             <footer class="card-footer text-end mt-2">
+              <div class="row mt-2 mb-4">
+                <div class="col-md-3 offset-md-6">
+                  <label><strong>Total Receiving Quantity</strong></label>
+                  <input type="number" id="total_receiving_qty" class="form-control" placeholder="0.00" readonly />
+                </div>
+
+                <div class="col-md-3">
+                  <label><strong>Total Bill</strong></label>
+                  <input type="number" id="total_bill" class="form-control" placeholder="0.00" readonly />
+                </div>
+              </div>
               <a class="btn btn-danger" href="{{ route('pur-pos.index') }}">Discard</a>
               <button type="submit" class="btn btn-primary">Receive</button>
             </footer>
@@ -89,4 +100,44 @@
     </div>
   </form>
 </div>
+<script>
+  function updateSummary() {
+    let totalQty = 0;
+    let totalBill = 0;
+
+    document.querySelectorAll('tr.receiving-row').forEach(row => {
+      const qtyInput = row.querySelector('input[name^="received_qty"]');
+      const rateInput = row.querySelector('input[name^="received_rate"]');
+
+      const qty = parseFloat(qtyInput?.value) || 0;
+      const rate = parseFloat(rateInput?.value) || 0;
+
+      totalQty += qty;
+      totalBill += qty * rate;
+    });
+
+    document.getElementById('total_receiving_qty').value = totalQty.toFixed(2);
+    document.getElementById('total_bill').value = totalBill.toFixed(2);
+  }
+
+  function bindInputListeners() {
+    document.querySelectorAll('input[name^="received_qty"], input[name^="received_rate"]').forEach(input => {
+      input.removeEventListener('input', updateSummary); // avoid multiple bindings
+      input.addEventListener('input', updateSummary);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    bindInputListeners();
+    updateSummary();
+  });
+
+  // Call this after adding any new row dynamically
+  function onRowAdded() {
+    bindInputListeners();
+    updateSummary();
+  }
+</script>
+
+
 @endsection

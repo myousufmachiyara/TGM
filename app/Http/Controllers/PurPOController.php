@@ -18,10 +18,40 @@ use Illuminate\Support\Facades\Log;
 
 class PurPOController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $filter = $request->input('status'); // Values: pending, partially received, completed, all (optional)
+
         $purpos = PurPO::with(['vendor', 'details.product'])->get();
-        return view('purchasing.po.index', compact('purpos'));
+
+        foreach ($purpos as $po) {
+            $totalOrderedQty = $po->details->sum('item_qty');
+
+            $receivedQty = DB::table('pur_pos_rec_details')
+                ->join('pur_pos_rec', 'pur_pos_rec.id', '=', 'pur_pos_rec_details.pur_pos_rec_id')
+                ->where('pur_pos_rec.po_id', $po->id)
+                ->sum('pur_pos_rec_details.qty');
+
+            if ($receivedQty <= 0) {
+                $po->status_text = 'Pending';
+                $po->status_class = 'badge bg-danger text-dark';
+            } elseif ($receivedQty < $totalOrderedQty) {
+                $po->status_text = 'Partially Received';
+                $po->status_class = 'badge bg-warning text-dark';
+            } else {
+                $po->status_text = 'Completed';
+                $po->status_class = 'badge bg-success';
+            }
+        }
+
+        // Apply filter if not "all" or empty
+        if ($filter && strtolower($filter) !== 'all') {
+            $purpos = $purpos->filter(function ($po) use ($filter) {
+                return strtolower($po->status_text) === strtolower($filter);
+            })->values(); // Reindex
+        }
+
+        return view('purchasing.po.index', compact('purpos', 'filter'));
     }
 
     public function create()
