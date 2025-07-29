@@ -34,7 +34,7 @@ class PurPOController extends Controller
 
             if ($receivedQty <= 0) {
                 $po->status_text = 'Pending';
-                $po->status_class = 'badge bg-danger text-dark';
+                $po->status_class = 'badge bg-danger text-light';
             } elseif ($receivedQty < $totalOrderedQty) {
                 $po->status_text = 'Partially Received';
                 $po->status_class = 'badge bg-warning text-dark';
