@@ -104,7 +104,7 @@
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label>Attachments (if any)</label>
-                    <input type="file" name="att[]" class="form-control" multiple>
+                    <input type="file" name="att[]" class="form-control" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
                 </div>
             </div>
         </div>
