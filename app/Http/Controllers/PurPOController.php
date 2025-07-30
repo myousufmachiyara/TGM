@@ -482,7 +482,7 @@ class PurPOController extends Controller
         $rowHeight = $imageHeight + 5;
 
         foreach ($purpos->attachments as $attachment) {
-            $imagePath = public_path('storage/' . $attachment->image_path);
+            $imagePath = public_path('storage/' . $attachment->att_path);
 
             if (file_exists($imagePath)) {
                 $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
