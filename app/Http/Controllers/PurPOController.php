@@ -448,14 +448,14 @@ class PurPOController extends Controller
             $total_qty += $item->item_qty;
 
             $html .= '<tr>
-                <td style="font-size:10px;">' . $count . '</td>
-                <td style="font-size:10px;">' . ($product->name ?? '-') . ' (' . ($product->id ?? '-') .')'. '</td>
-                <td style="font-size:10px;">' . ($product->category->name ?? '-') . '</td>
-                <td style="font-size:10px;">' . ($item->description ?? '-') . '</td>
-                <td style="font-size:10px;">' . ($item->width ?? '-') . '</td>
-                <td style="font-size:10px;">' . $item->item_qty . ' ' . ($product->measurement_unit ?? '-') . '</td>
-                <td style="font-size:10px;">' . number_format($item->item_rate, 2) . '</td>
-                <td style="font-size:10px;">' . number_format($total, 2) . '</td>
+            <td style="font-size:10px;">' . $count . '</td>
+            <td style="font-size:10px;">' . ($product->name ?? '-') . ' (' . ($product->id ?? '-') .')'. '</td>
+            <td style="font-size:10px;">' . ($product->category->name ?? '-') . '</td>
+            <td style="font-size:10px;">' . ($item->description ?? '-') . '</td>
+            <td style="font-size:10px;">' . ($item->width ?? '-') . '</td>
+            <td style="font-size:10px;">' . $item->item_qty . ' ' . ($product->measurement_unit ?? '-') . '</td>
+            <td style="font-size:10px;">' . number_format($item->item_rate, 2) . '</td>
+            <td style="font-size:10px;">' . number_format($total, 2) . '</td>
             </tr>';
         }
 
@@ -481,35 +481,30 @@ class PurPOController extends Controller
         $y = $pdf->GetY();
         $rowHeight = $imageHeight + 5;
 
-        foreach ($purpos->details as $row) {
-            $product = $row->product;
-            $attachments = $product ? $product->attachments ?? [] : [];
+        foreach ($purpos->attachments as $attachment) {
+            $imagePath = public_path('storage/' . $attachment->image_path);
 
-            foreach ($attachments as $attachment) {
-                $imagePath = public_path('storage/' . $attachment->image_path);
-
-                if (file_exists($imagePath)) {
-                    $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
-                    if ($availableHeight < $rowHeight) {
-                        $pdf->AddPage();
-                        $x = $pdf->GetMargins()['left'];
-                        $y = $pdf->GetY();
-                    }
-
-                    if ($x + $imageWidth > $maxX) {
-                        $x = $pdf->GetMargins()['left'];
-                        $y += $rowHeight;
-                    }
-
-                    // Show image
-                    $pdf->Image($imagePath, $x, $y, $imageWidth, 50, '', '', '', false, 300, '', false, false, 0, false, false, false);
-
-                    // Show product name below
-                    $pdf->SetXY($x, $y + 52);
-                    $pdf->MultiCell($imageWidth, 10, optional($product)->name ?? 'No name', 0, 'C');
-
-                    $x += $imageWidth + $margin;
+            if (file_exists($imagePath)) {
+                $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
+                if ($availableHeight < $rowHeight) {
+                    $pdf->AddPage();
+                    $x = $pdf->GetMargins()['left'];
+                    $y = $pdf->GetY();
                 }
+
+                if ($x + $imageWidth > $maxX) {
+                    $x = $pdf->GetMargins()['left'];
+                    $y += $rowHeight;
+                }
+
+                // Show image
+                $pdf->Image($imagePath, $x, $y, $imageWidth, $imageHeight, '', '', '', false, 300, '', false, false, 0, false, false, false);
+
+                // Optional: filename or caption
+                $pdf->SetXY($x, $y + 52);
+                $pdf->MultiCell($imageWidth, 10, pathinfo($attachment->image_path, PATHINFO_FILENAME), 0, 'C');
+
+                $x += $imageWidth + $margin;
             }
         }
 
