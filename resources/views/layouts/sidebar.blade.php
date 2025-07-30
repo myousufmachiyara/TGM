@@ -72,9 +72,8 @@
               <span>Reports</span>
             </a>
             <ul class="nav nav-children">
-              <li><a class="nav-link"> Fabric </a></li>	
-              <li><a class="nav-link"> Finish Goods </a></li>	
-              <li><a class="nav-link"> Units </a></li>	
+              <li><a class="nav-link" href="{{ route('reports.item_ledger')}}"> Item Ledger </a></li>	
+              <li><a class="nav-link" href="{{ route('reports.party_ledger')}}"> Party Ledger </a></li>	
             </ul>
           </li>
         </ul>	

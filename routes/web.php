@@ -11,6 +11,7 @@ use App\Http\Controllers\PurPOController;
 use App\Http\Controllers\ShopifyController;
 use App\Http\Controllers\SubHeadOfAccController;
 use App\Http\Controllers\PaymentVoucherController;
+use App\Http\Controllers\ReportController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Payment Vouchers
     Route::resource('payment-vouchers', PaymentVoucherController::class);
+
+    // Reports
+    Route::get('/reports/item-ledger', [ReportController::class, 'itemLedger'])->name('reports.item_ledger');
+    Route::get('/reports/party-ledger', [ReportController::class, 'partyLedger'])->name('reports.party_ledger');
 
 });
 
