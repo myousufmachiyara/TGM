@@ -38,7 +38,7 @@
                       <td>{{ $loop->iteration }}</td>
                       <td>
                         @if ($item->firstAttachment)
-                          <img src="{{ public_path('storage/' . $item->firstAttachment->image_path) }}" alt="Product Image" width="50">
+                          <img src="{{ asset('storage/' . $item->firstAttachment->image_path) }}" alt="Product Image" width="50">
                         @else
                           <span>No Image</span>
                         @endif
