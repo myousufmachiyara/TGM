@@ -29,7 +29,7 @@ class PurFGPOController extends Controller
     public function create()
     {
         $coa = ChartOfAccounts::where('account_type','vendor')->get();  // Get all product categories
-        $fabrics = Products::where('item_type', 'raw')->get();  // Get all product categories
+        $fabrics = Products::where('item_type', 'raw')->where('item_type', 'mfg')->get();  // Get all product categories
         $articles = Products::whereIn('item_type', ['fg', 'mfg'])->get();
         $attributes = ProductAttributes::with('values')->get();
         $prodCat = ProductCategory::all();  // Get all product categories
