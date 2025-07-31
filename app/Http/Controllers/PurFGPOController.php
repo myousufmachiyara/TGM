@@ -30,7 +30,7 @@ class PurFGPOController extends Controller
     {
         $coa = ChartOfAccounts::where('account_type','vendor')->get();  // Get all product categories
         $fabrics = Products::where('item_type', 'raw')->get();  // Get all product categories
-        $articles = Products::where('item_type', 'fg')->where('item_type', 'mfg')->get();
+        $articles = Products::whereIn('item_type', ['fg', 'mfg'])->get();
         $attributes = ProductAttributes::with('values')->get();
         $prodCat = ProductCategory::all();  // Get all product categories
 
