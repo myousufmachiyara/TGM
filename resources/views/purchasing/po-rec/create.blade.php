@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="row">
-  <form action="{{ route('pur-pos.store-rec') }}" method="POST" enctype="multipart/form-data">
+  <form action="{{ route('pur-po-rec.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     @if ($errors->has('error'))

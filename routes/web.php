@@ -12,6 +12,7 @@ use App\Http\Controllers\ShopifyController;
 use App\Http\Controllers\SubHeadOfAccController;
 use App\Http\Controllers\PaymentVoucherController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PurPORecController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -38,11 +39,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Purchase Orders
     Route::resource('pur-pos', PurPOController::class);
-    Route::get('pur-pos-rec/{id}', [PurPOController::class, 'receiving'])->name('pur-pos.rec');
-    Route::post('pur-pos-received', [PurPOController::class, 'storeReceiving'])->name('pur-pos.store-rec');
     Route::post('/get-po-codes', [PurPOController::class, 'getPoCodes'])->name('get.po.codes');
     Route::get('/get-po-width', [PurPOController::class, 'getWidth'])->name('get.po.width');
     
+    Route::get('pur-po-rec/{id}', [PurPORecController::class, 'createForm'])->name('pur-po-rec.createForm');
+    Route::resource('pur-po-rec', PurPORecController::class);
+
     Route::resource('pur-fgpos', PurFGPOController::class);
     Route::get('pur-fgpos-rec/{id}', [PurFGPOController::class, 'receiving'])->name('pur-fgpos.rec');
     Route::post('pur-fgpos-received', [PurFGPOController::class, 'storeReceiving'])->name('pur-fgpos.store-rec');

@@ -47,11 +47,13 @@
           <li class="nav-parent">
             <a class="nav-link" href="#">
               <i style="font-size:16px" class="fa fa-file-import" aria-hidden="true"></i>
-              <span>Purchasing</span>
+              <span>Purchase Orders</span>
             </a>
             <ul class="nav nav-children">
-              <li><a class="nav-link" href="{{ route('pur-pos.index') }}">Purchase Order</a></li>	
+              <li><a class="nav-link" href="{{ route('pur-pos.index') }}">PO</a></li>
+              <li><a class="nav-link" href="{{ route('pur-po-rec.index') }}">PO Receiving</a></li>              	
               <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> Job PO </a></li>
+              <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> Job PO Receiving</a></li>
             </ul>
           </li>
 

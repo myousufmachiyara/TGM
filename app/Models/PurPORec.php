@@ -24,7 +24,7 @@ class PurPORec extends Model
      */
     public function PO()
     {
-        return $this->belongsTo(PurPO::class, 'fgpo_id');
+        return $this->belongsTo(PurPO::class, 'po_id');
     }
 
     /**
@@ -32,6 +32,6 @@ class PurPORec extends Model
      */
     public function details()
     {
-        return $this->hasMany(PurPOReceivingDetail::class, 'receiving_id');
+        return $this->hasMany(PurPORecDetails::class, 'pur_pos_rec_id');
     }
 }

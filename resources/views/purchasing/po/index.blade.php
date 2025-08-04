@@ -59,7 +59,7 @@
                       <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>
                       </a>
-                      <a href="{{ route('pur-pos.rec', $row->id) }}" class="text-primary">
+                      <a href="{{ route('pur-po-rec.createForm', $row->id) }}" class="text-primary">
                         <i class="fa fa-arrow-left"></i>
                       </a>
                       <a href="{{ route('pur-pos.edit', $row->id) }}" class="text-warning">
