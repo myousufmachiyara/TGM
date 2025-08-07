@@ -105,7 +105,7 @@
               <input type="file" class="form-control" name="prod_att[]" multiple accept="image/*">
               <div class="mt-2 d-flex flex-wrap gap-2">
                 @foreach ($product->attachments as $img)
-                  <img src="{{ asset('storage/' . $img->path) }}" style="max-width:100px; border:1px solid #ccc; border-radius:5px; padding:4px">
+                  <img src="{{ asset('public/storage/' . $img->path) }}" style="max-width:100px; border:1px solid #ccc; border-radius:5px; padding:4px">
                 @endforeach
               </div>
             </div>
