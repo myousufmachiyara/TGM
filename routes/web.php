@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('pur-fgpos-get-details', [PurFGPOController::class, 'getDetails'])->name('pur-fgpos.get-details');
 
     Route::get('pur-pos/print/{id}', [PurPOController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
+    Route::get('pur-po-rec/print/{id}', [PurPORecController::class, 'print'])->name('pur-po-rec.print'); // Exceptional Route
     Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
 
     // Billing

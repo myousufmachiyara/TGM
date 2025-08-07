@@ -35,7 +35,10 @@
                   {{ $rec->details->sum('qty') }}
                 </td>
                 <td>
-                  <a href="{{ route('pur-po-rec.edit', $rec->id) }}" class="text-warning me-2" title="Edit">
+                  <a href="{{ route('pur-po-rec.print', $rec->id) }}" class="text-success">
+                    <i class="fa fa-print"></i>
+                  </a>
+                  <a href="{{ route('pur-po-rec.edit', $rec->id) }}" class="text-warning" title="Edit">
                     <i class="fa fa-edit"></i>
                   </a>
                   <form action="{{ route('pur-po-rec.destroy', $rec->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this receiving?');">
