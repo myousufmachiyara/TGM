@@ -51,7 +51,7 @@
             </a>
             <ul class="nav nav-children">
               <li><a class="nav-link" href="{{ route('pur-pos.index') }}">PO</a></li>
-              <li><a class="nav-link" href="{{ route('pur-po-rec.index') }}">PO Receiving</a></li>              	
+              <li><a class="nav-link" href="{{ route('pur-po-rec.index') }}">PO Received</a></li>              	
               <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> Job PO </a></li>
               <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> Job PO Receiving</a></li>
             </ul>
