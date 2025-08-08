@@ -308,108 +308,96 @@ class PurPOController extends Controller
         $pdf->AddPage();
         $pdf->setCellPadding(1.2);
 
-        // Heading
-        $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Purchase Order</h1>';
-        $pdf->writeHTML($heading, true, false, true, false, '');
+        // Logo
+        $logoPath = public_path('assets/img/TGM-Logo.jpg');
+        if (file_exists($logoPath)) {
+            $pdf->Image($logoPath, 10, 10, 30);
+        }
 
-        // Basic Info Table
-        $html = '<table style="margin-bottom:10px">
-            <tr>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">PO No: <span style="color:#000">' . $purpos->po_code . '</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">' . \Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y') . '</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Vendor: <span style="text-decoration: underline;color:#000">' . $purpos->vendor->name . '</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Order By: <span style="text-decoration: underline;color:#000">' . $purpos->order_by . '</span></td>
-            </tr>
+        // Company Info next to logo
+        $pdf->SetXY(45, 12);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->MultiCell(100, 5,
+            "The Great Master\nTariq Road Karachi.\nTel #",
+            0, 'L', false, 1, '', '', true, 0, false, true, 0, 'T'
+        );
+
+        // PO Details just below PO box
+        $pdf->SetXY(150, 12);
+        $invoiceInfo = '
+        <table cellpadding="2" style="font-size:10px;">
+            <tr><td><b>PO #</b></td><td>' . $purpos->po_code . '</td></tr>
+            <tr><td><b>Date</b></td><td>' . \Carbon\Carbon::parse($purpos->order_date)->format('d/m/Y') . '</td></tr>
+            <tr><td><b>Order By </b></td><td>' . $purpos->order_by . '</td></tr>
         </table>';
-        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->writeHTML($invoiceInfo, false, false, false, false, '');
+        
+        $pdf->SetXY(10, 40); // reset position to left side, Y around 60mm
 
-        // Table Headers
-        $html = '<table border="0.3" style="text-align:center;margin-top:15px">
-            <tr>
-                <th width="5%" style="font-size:10px;font-weight:bold;color:#17365D">S/N</th>
-                <th width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Name(ID)</th>
-                <th width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Category</th>
-                <th width="15%" style="font-size:10px;font-weight:bold;color:#17365D">Description</th>
-                <th width="8%" style="font-size:10px;font-weight:bold;color:#17365D">Width</th>
-                <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Qty</th>
-                <th width="10%" style="font-size:10px;font-weight:bold;color:#17365D">Rate</th>
-                <th width="12%" style="font-size:10px;font-weight:bold;color:#17365D">Total</th>
+        $partyname = '
+        <table cellpadding="2" style="font-size:12px;">
+            <tr><td><b>Party Name:</b>' . $purpos->vendor->name . '</td></tr>
+        </table>';
+        $pdf->writeHTML($partyname, false, false, false, false, '');
+        
+        // Horizontal Line (left to PO box only)
+        $pdf->Line(10, 53, 150, 53); // Line ends just before the blue box
+
+        // Blue PO box (same position)
+        $pdf->SetXY(150, 49);
+        $pdf->SetFillColor(23, 54, 93); // Blue
+        $pdf->SetTextColor(255, 255, 255); // White
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Cell(50, 8, 'Purchase Order', 0, 1, 'C', 1);
+        $pdf->SetTextColor(0, 0, 0); // Reset to black
+
+        $pdf->SetXY(10, 63);
+
+        // Items Table Header
+        $html = '<table border="0.3" cellpadding="4" style="font-size:10px;">
+            <tr style="background-color:#f5f5f5;">
+                <th width="5%">S.#</th>
+                <th width="35%">Item Name</th>
+                <th width="15%">Qty</th>
+                <th width="15%">Rate</th>
+                <th width="30%">Amount</th>
             </tr>';
 
-        $total_qty = 0;
         $count = 0;
+        $grandTotal = 0;
+        $grandDiscount = 0;
+        $netTotal = 0;
 
         foreach ($purpos->details as $item) {
             $count++;
             $product = $item->product;
-            $total = $item->item_rate * $item->item_qty;
-            $total_qty += $item->item_qty;
+            $qty = $item->item_qty;
+            $rate = $item->item_rate;
+            $amount = $qty * $rate;
+            $grandTotal += $amount;
 
-            $html .= '<tr>
-            <td style="font-size:10px;">' . $count . '</td>
-            <td style="font-size:10px;">' . ($product->name ?? '-') . ' (' . ($product->id ?? '-') .')'. '</td>
-            <td style="font-size:10px;">' . ($product->category->name ?? '-') . '</td>
-            <td style="font-size:10px;">' . ($item->description ?? '-') . '</td>
-            <td style="font-size:10px;">' . ($item->width ?? '-') . '</td>
-            <td style="font-size:10px;">' . $item->item_qty . ' ' . ($product->measurement_unit ?? '-') . '</td>
-            <td style="font-size:10px;">' . number_format($item->item_rate, 2) . '</td>
-            <td style="font-size:10px;">' . number_format($total, 2) . '</td>
+            $html .= '
+            <tr>
+                <td align="center">' . $count . '</td>
+                <td>' . ($product->name ?? '-') . ' (' . ($product->id ?? '-') . ')</td>
+                <td align="center">' . $qty . '</td>
+                <td align="right">' . number_format($rate, 2) . '</td>
+                <td align="right">' . number_format($amount, 2) . '</td>
             </tr>';
         }
 
-        $html .= '</table>';
+        // Totals row
+        $html .= '
+        <tr>
+            <td colspan="4" align="right"><b>Total</b></td>
+            <td align="right"><b>' . number_format($grandTotal, 2) . '</b></td>
+        </tr>
+        </table>';
+
         $pdf->writeHTML($html, true, false, true, false, '');
 
-        // Summary
-        $summary = '<table border="0.3" cellpadding="3" width="35%">
-            <tr><td style="font-size:11px"><strong>Total Quantity</strong></td><td>' . $total_qty . '</td></tr>
-            <tr><td style="font-size:11px"><strong>Total Items</strong></td><td>' . $count . '</td></tr>
-        </table>';
-        $pdf->writeHTML($summary, true, false, true, false, '');
-
-        // ✅ PurPoAttachment Images
-        $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 10, 'Attachments:', 0, 1, 'L');
-
-        $imageWidth = 50;
-        $imageHeight = 50;
-        $margin = 10;
-        $maxX = $pdf->getPageWidth() - $pdf->getMargins()['right'];
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-        $rowHeight = $imageHeight + 5;
-
-        foreach ($purpos->attachments as $attachment) {
-            $imagePath = public_path('storage/' . $attachment->att_path);
-
-            if (file_exists($imagePath)) {
-                $availableHeight = $pdf->getPageHeight() - $pdf->GetY() - $pdf->getBreakMargin();
-                if ($availableHeight < $rowHeight) {
-                    $pdf->AddPage();
-                    $x = $pdf->GetMargins()['left'];
-                    $y = $pdf->GetY();
-                }
-
-                if ($x + $imageWidth > $maxX) {
-                    $x = $pdf->GetMargins()['left'];
-                    $y += $rowHeight;
-                }
-
-                // Show image
-                $pdf->Image($imagePath, $x, $y, $imageWidth, $imageHeight, '', '', '', false, 300, '', false, false, 0, false, false, false);
-
-                // Optional: filename or caption
-                $pdf->SetXY($x, $y + 52);
-                $pdf->MultiCell($imageWidth, 10, pathinfo($attachment->image_path, PATHINFO_FILENAME), 0, 'C');
-
-                $x += $imageWidth + $margin;
-            }
-        }
-
-        $pdf->SetY($y + $rowHeight);
-
-        // Footer Signatures
-        $pdf->SetY(-50);
+        // Footer Signature Lines
+        $pdf->Ln(20);
         $lineWidth = 60;
         $yPosition = $pdf->GetY();
 
@@ -418,11 +406,9 @@ class PurPOController extends Controller
         $pdf->Ln(5);
 
         $pdf->SetXY(23, $yPosition);
-        $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
-
-        $pdf->SetXY(125, $yPosition);
-        $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
+        $pdf->Cell($lineWidth, 10, 'Prepared / Checked By', 0, 0, 'C');
 
         return $pdf->Output($purpos->po_code. '.pdf', 'I');
     }
+
 }
