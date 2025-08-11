@@ -69,6 +69,33 @@ class PurFGPOController extends Controller
         return view('purchasing.fg-po.create', compact('coa', 'fabrics', 'articles', 'attributes', 'prodCat'));
     }
 
+    public function edit($id)
+    {
+        // Load the Job PO with related data
+        $po = PurFGPO::with([
+            'vendor',
+            'details.product',
+            'details.variation.attribute_values',
+            'voucherDetails.product',
+        ])->findOrFail($id);
+
+        // Get dropdown data (same as create)
+        $coa = ChartOfAccounts::where('account_type', 'vendor')->get();
+        $fabrics = Products::where('item_type', 'raw')->get();
+        $articles = Products::whereIn('item_type', ['fg', 'mfg'])->get();
+        $attributes = ProductAttributes::with('values')->get();
+        $prodCat = ProductCategory::all();
+
+        return view('purchasing.fg-po.edit', compact(
+            'po',
+            'coa',
+            'fabrics',
+            'articles',
+            'attributes',
+            'prodCat'
+        ));
+    }
+
     public function store(Request $request)
     {
         \Log::info('Starting FGPO Store process', $request->all());
@@ -179,7 +206,6 @@ class PurFGPOController extends Controller
         }
     }
     
-    
 
     public function newChallan()
     {
@@ -213,11 +239,6 @@ class PurFGPOController extends Controller
 
         return view('purchasing.fg-po.receiving', compact('purpo'));
     }
-
-    // public function receiving($id) {
-    //     $purpo = PurFGPO::with(['details', 'details.product'])->findOrFail($id);
-    //     return view('purchasing.fg-po.receiving', compact('purpo'));
-    // }
 
     public function storeReceiving(Request $request)
     {
