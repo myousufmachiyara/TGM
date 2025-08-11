@@ -15,16 +15,17 @@
         </header>
         <div class="card-body">
           <div>
-            <div class="col-md-5" style="display:flex;">
-              <select class="form-control" style="margin-right:10px" id="columnSelect">
-                <option selected disabled>Search by</option>
-                <option value="1">by Delivery Date</option>
-                <option value="2">by Order Date</option>
-                <option value="3">by Vendor</option>
-              </select>
-              <input type="text" class="form-control" id="columnSearch" placeholder="Search By Column"/>
-
-            </div>
+            <form method="GET" action="{{ route('pur-fgpos.index') }}" class="mb-3 d-flex">
+              <div class="col-md-2" style="display:flex;">
+                <select name="status" class="form-control" style="margin-right:10px" onchange="this.form.submit()">
+                  <option value="">Filter by</option>
+                  <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All</option>
+                  <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                  <option value="Partially Received" {{ request('status') == 'Partially Received' ? 'selected' : '' }}>Partially Received</option>
+                  <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                </select>
+              </div>
+            <form>
           </div>
 
           <div class="modal-wrapper table-scroll">
@@ -35,7 +36,8 @@
                   <th width="10%">Vendor</th>
                   <th>Job ID</th>
                   <th>Order Date</th>
-                  <th width="60%">Items</th>
+                  <th width="50%">Items</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -46,7 +48,7 @@
                     <td width="10%">{{ $row->vendor->name ?? 'N/A' }}</td>
                     <td>{{ $row->doc_code }}-{{ $row->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
-                    <td width="60%">
+                    <td width="50%">
                       @foreach($row->details as $value)
                         <span class="px-2 m-1 text-light bg-dark">
                           {{ $value->product->name ?? 'N/A'  }}
@@ -56,6 +58,11 @@
                         </span>
                       @endforeach
                     </td>
+                    <td>
+                      <span class="{{ $row->status_class }}">
+                        {{ $row->status_text }}
+                      </span>
+                    </td>   
                     <td>
                       <a href="{{ route('pur-fgpos.print', $row->id) }}" class="text-success">
                         <i class="fa fa-print"></i>

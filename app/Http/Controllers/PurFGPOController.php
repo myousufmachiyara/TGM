@@ -19,11 +19,43 @@ use Illuminate\Support\Facades\DB;
 
 class PurFGPOController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $filter = $request->input('status'); // Values: pending, partially received, completed, all (optional)
+
         $purpos = PurFGPO::with(['vendor', 'details.product', 'details.variation.attribute_values'])->get();
 
-        return view('purchasing.fg-po.index', compact('purpos'));
+        foreach ($purpos as $po) {
+            // Total ordered quantity (sum of qty in PO details)
+            $totalOrderedQty = $po->details->sum('qty');
+
+            // Total received quantity from pur_fgpos_rec_details
+            $receivedQty = DB::table('pur_fgpos_rec_details')
+                ->join('pur_fgpos_rec', 'pur_fgpos_rec.id', '=', 'pur_fgpos_rec_details.pur_fgpos_rec_id')
+                ->where('pur_fgpos_rec.fgpo_id', $po->id)
+                ->sum('pur_fgpos_rec_details.qty');
+
+            // Determine status
+            if ($receivedQty <= 0) {
+                $po->status_text = 'Pending';
+                $po->status_class = 'badge bg-danger text-light';
+            } elseif ($receivedQty < $totalOrderedQty) {
+                $po->status_text = 'Partially Received';
+                $po->status_class = 'badge bg-warning text-dark';
+            } else {
+                $po->status_text = 'Completed';
+                $po->status_class = 'badge bg-success';
+            }
+        }
+
+        // Apply filter if needed
+        if ($filter && strtolower($filter) !== 'all') {
+            $purpos = $purpos->filter(function ($po) use ($filter) {
+                return strtolower($po->status_text) === strtolower($filter);
+            })->values(); // Reindex array
+        }
+
+        return view('purchasing.fg-po.index', compact('purpos', 'filter'));
     }
 
     public function create()
