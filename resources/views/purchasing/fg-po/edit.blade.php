@@ -173,9 +173,9 @@
                       <td><input type="number" id="item_width_{{ $fabIndex }}" class="form-control"
                           name="voucher_details[{{ $fabIndex }}][width]" value="{{ $fabric->width }}" required/></td>
                       <td><input type="text" id="item_unit_{{ $fabIndex }}" class="form-control"
-                          name="voucher_details[{{ $fabIndex }}][unit]" value="{{ $fabric->unit }}" disabled required/></td>
+                          name="voucher_details[{{ $fabIndex }}][unit]" value="{{ $fabric->product->measurement_unit }}" disabled required/></td>
                       <td><input type="number" id="item_total_{{ $fabIndex }}" class="form-control"
-                          value="{{ $fabric->item_rate * $fabric->qty }}" disabled/></td>
+                          value="{{ $fabric->rate * $fabric->qty }}" disabled/></td>
                       <td>
                           <button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs"><i class="fas fa-times"></i></button>
                           <button type="button" class="btn btn-primary btn-xs" onclick="addNewRow()"><i class="fa fa-plus"></i></button>
@@ -225,7 +225,7 @@
                 <label>Total Units (Estimated)</label>
                 <input type="number" class="form-control" id="total_units" disabled/>
               </div>
-              <div class="col-12 col-md-3">
+              <div class="col-12 col-md-5 mt-3">
                 <label>Attachment</label>
                 <input type="file" class="form-control" name="att[]" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
               </div>
