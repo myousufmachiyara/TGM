@@ -195,7 +195,7 @@
         <section class="card">
           <header class="card-header d-flex justify-content-between align-items-center">
             <h2 class="card-title mb-0">Voucher (Challan #)</h2>
-            <a class="btn btn-danger" onclick="generateVoucher()">Generate Challan</a>
+            <a class="btn btn-danger" onclick="regenerateChallan()">Generate Challan</a>
           </header>
           <div class="card-body">
             <div class="row pb-4">
@@ -250,8 +250,49 @@
 <script>
   $(document).ready(function(){
     tableTotal();
-    generateVoucher();
+    regenerateChallan();
   });
+  
+  function tableTotal() {
+      let totalFabricQty = 0;
+      let totalFabricAmount = 0;
+      let totalUnits = 0;
+
+      // Loop through fabric rows
+      document.querySelectorAll('#fabricTableBody tr').forEach(row => {
+          let qty = parseFloat(row.querySelector('input[name$="[qty]"]')?.value) || 0;
+          let rate = parseFloat(row.querySelector('input[name$="[rate]"]')?.value) || 0;
+          
+          totalFabricQty += qty;
+          totalFabricAmount += qty * rate;
+      });
+
+      // Loop through FG article rows (units orders)
+      document.querySelectorAll('#variationsTableBody tr').forEach(row => {
+          let units = parseFloat(row.querySelector('input[name$="[qty]"]')?.value) || 0;
+          totalUnits += units;
+      });
+
+      // Assign totals to their respective inputs
+      document.getElementById('total_fabric_qty').value = totalFabricQty.toFixed(2);
+      document.getElementById('total_fabric_amount').value = totalFabricAmount.toFixed(2);
+      document.getElementById('total_units').value = totalUnits.toFixed(2);
+  }
+
+  function regenerateChallan() {
+      let challanParts = [];
+      document.querySelectorAll('.detail-row').forEach(row => {
+          let prod = row.querySelector('.product_id');
+          let varSel = row.querySelector('.variation_id');
+          if (prod && prod.value) {
+              let prodText = prod.options[prod.selectedIndex].text || '';
+              let varText = varSel && varSel.value ? '-' + varSel.options[varSel.selectedIndex].text : '';
+              challanParts.push(prodText + varText);
+          }
+      });
+      document.getElementById('challan_code').value = challanParts.join(', ');
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
 
     let detailIndex = {{ count($po->details) }}; // Continue from existing count
