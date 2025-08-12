@@ -66,7 +66,7 @@
                   </select>
                 </div>
                 <div class="col-12 col-md-1">
-                  <label>Item Variations</label>
+                  <label>Variations</label>
                   <button type="button" class="d-block btn btn-success" id="generate-variations-btn" >Generate</button>
                 </div>
               </div>

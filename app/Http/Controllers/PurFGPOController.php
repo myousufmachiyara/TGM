@@ -76,7 +76,8 @@ class PurFGPOController extends Controller
             'vendor',
             'details.product',
             'details.variation.attribute_values',
-            'voucherDetails.product',
+            'voucherDetails',
+            
         ])->findOrFail($id);
 
         // Get dropdown data (same as create)
