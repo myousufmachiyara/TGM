@@ -69,23 +69,39 @@ class PurFGPOController extends Controller
         return view('purchasing.fg-po.create', compact('coa', 'fabrics', 'articles', 'attributes', 'prodCat'));
     }
 
-    public function edit($id)
-    {
-        // Load the Job PO with related data
-        $po = PurFGPO::with([
-            'vendor',
-            'details.product',
-            'details.variation.attribute_values',
-            'voucherDetails',
-            
-        ])->findOrFail($id);
+public function edit($id)
+{
+    $po = PurFGPO::with([
+        'vendor',
+        'details.product',
+        'details.variation.attribute_values',
+        'voucherDetails.product',
+        'voucherDetails.purPO',
+    ])->findOrFail($id);
 
-        // Get dropdown data (same as create)
-        $coa = ChartOfAccounts::where('account_type', 'vendor')->get();
-        $fabrics = Products::where('item_type', 'raw')->get();
-        $articles = Products::whereIn('item_type', ['fg', 'mfg'])->get();
-        $attributes = ProductAttributes::with('values')->get();
-        $prodCat = ProductCategory::all();
+    $coa = ChartOfAccounts::where('account_type', 'vendor')->get();
+    $fabrics = Products::where('item_type', 'raw')->get();
+    $articles = Products::whereIn('item_type', ['fg', 'mfg'])->get();
+    $attributes = ProductAttributes::with('values')->get();
+    $prodCat = ProductCategory::all();
+
+    // ✅ Products list for JS (with variations if needed)
+    $products = Products::with('variations')->get();
+
+    // ✅ Fabric + available purchase orders mapping
+    $fabricJs = \DB::table('pur_fgpos_voucher_details as pvd')
+        ->join('products as p', 'pvd.product_id', '=', 'p.id')
+        ->join('pur_pos as po', 'pvd.po_id', '=', 'po.id')
+        ->select(
+            'p.id as product_id',
+            'p.name as product_name',
+            'p.sku as product_sku',
+            'po.id as po_id',
+            'po.po_code'
+        )
+        ->get()
+        ->groupBy('product_id');
+
 
         return view('purchasing.fg-po.edit', compact(
             'po',
@@ -93,7 +109,9 @@ class PurFGPOController extends Controller
             'fabrics',
             'articles',
             'attributes',
-            'prodCat'
+            'prodCat',
+            'products',     // 👈 added
+            'fabricJs'      // 👈 added
         ));
     }
 

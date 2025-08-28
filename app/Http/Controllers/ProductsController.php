@@ -294,4 +294,14 @@ class ProductsController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function getVariations($id)
+    {
+        $item = Products::with('variations')->findOrFail($id);
+
+        return response()->json([
+            'variations' => $item->variations
+        ]);
+    }
+
 }

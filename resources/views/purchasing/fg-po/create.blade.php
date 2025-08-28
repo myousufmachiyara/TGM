@@ -67,10 +67,10 @@
                 </div>
                 <div class="col-12 col-md-1">
                   <label>Variations</label>
-                  <button type="button" class="d-block btn btn-success" id="generate-variations-btn" >Generate</button>
+                  <button type="button" class="d-block btn btn-success" id="generate-variations-btn" >Fetch</button>
                 </div>
               </div>
-              <div class="col-12 col-md-5 mt-3 ">
+              <div class="col-12 col-md-7 mt-3">
                 <table class="table table-bordered" id="variationsTable">
                   <thead>
                     <tr>
