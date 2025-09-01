@@ -32,10 +32,10 @@
               <thead>
                 <tr>
                   <th width="4%">S.No</th>
-                  <th >PO Code</th>
-                  <th>Date</th>
+                  <th width="8%">PO Code</th>
+                  <th width="8%">Date</th>
                   <th width="10%">Vendor</th>
-                  <th width="55%">Items</th>
+                  <th width="50%">Items</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -43,11 +43,11 @@
               <tbody>
                 @foreach ($purpos as $key => $row)
                   <tr>
-                    <td width="4%"> {{$key+1}}</td>
-                    <td > {{$row->po_code}}</td>
+                    <td> {{$key+1}}</td>
+                    <td> {{$row->po_code}}</td>
                     <td>{{ \Carbon\Carbon::parse($row->order_date)->format('d-m-y') }}</td>
-                    <td width="10%">{{ $row->vendor->name ?? 'N/A' }}</td>
-                    <td width="55%">{{ $row->details->map(function($d) {
+                    <td>{{ $row->vendor->name ?? 'N/A' }}</td>
+                    <td>{{ $row->details->map(function($d) {
                           return optional($d->product)->name . ' (' . optional($d->product)->id . ')';
                       })->filter()->implode(', ') }}</td>
                     <td>

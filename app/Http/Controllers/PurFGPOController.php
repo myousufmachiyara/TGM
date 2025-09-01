@@ -69,50 +69,80 @@ class PurFGPOController extends Controller
         return view('purchasing.fg-po.create', compact('coa', 'fabrics', 'articles', 'attributes', 'prodCat'));
     }
 
-public function edit($id)
-{
-    $po = PurFGPO::with([
-        'vendor',
-        'details.product',
-        'details.variation.attribute_values',
-        'voucherDetails.product',
-        'voucherDetails.purPO',
-    ])->findOrFail($id);
+    public function edit($id)
+    {
+        $purPo = PurFGPO::with([
+            'details.product',
+            'details.variation',
+            'voucherDetails.product',
+            'voucherDetails.purPO',
+            'attachments',
+            'challans'
+        ])->findOrFail($id);
 
-    $coa = ChartOfAccounts::where('account_type', 'vendor')->get();
-    $fabrics = Products::where('item_type', 'raw')->get();
-    $articles = Products::whereIn('item_type', ['fg', 'mfg'])->get();
-    $attributes = ProductAttributes::with('values')->get();
-    $prodCat = ProductCategory::all();
+        $coa       = ChartOfAccounts::where('account_type','vendor')->get();
+        $fabrics   = Products::where('item_type', 'raw')->get();
+        $articles  = Products::whereIn('item_type', ['fg', 'mfg'])->get();
+        $attributes= ProductAttributes::with('values')->get();
+        $prodCat   = ProductCategory::all();
 
-    // ✅ Products list for JS (with variations if needed)
-    $products = Products::with('variations')->get();
+        return view('purchasing.fg-po.edit', compact('purPo', 'coa', 'fabrics', 'articles', 'attributes', 'prodCat'));
+    }
 
-    // ✅ Fabric + available purchase orders mapping
-    $fabricJs = \DB::table('pur_fgpos_voucher_details as pvd')
-        ->join('products as p', 'pvd.product_id', '=', 'p.id')
-        ->join('pur_pos as po', 'pvd.po_id', '=', 'po.id')
-        ->select(
-            'p.id as product_id',
-            'p.name as product_name',
-            'p.sku as product_sku',
-            'po.id as po_id',
-            'po.po_code'
-        )
-        ->get()
-        ->groupBy('product_id');
+    public function update(Request $request, $id)
+    {
+        $purPo = PurFGPO::findOrFail($id);
 
+        $request->validate([
+            'vendor_id' => 'required|exists:chart_of_accounts,id',
+            'category_id' => 'required|exists:product_categories,id',
+            'order_date' => 'required|date',
+            'item_order' => 'required|array',
+            'item_order.*.product_id' => 'required|exists:products,id',
+            'item_order.*.variation_id' => 'required|exists:product_variations,id',
+            'item_order.*.sku' => 'required|string',
+            'item_order.*.qty' => 'required|integer|min:1',
+            'voucher_details' => 'required|array',
+            'voucher_details.*.product_id' => 'required|exists:products,id',
+            'voucher_details.*.qty' => 'required|numeric',
+            'voucher_details.*.item_rate' => 'required|numeric',
+        ]);
 
-        return view('purchasing.fg-po.edit', compact(
-            'po',
-            'coa',
-            'fabrics',
-            'articles',
-            'attributes',
-            'prodCat',
-            'products',     // 👈 added
-            'fabricJs'      // 👈 added
-        ));
+        DB::beginTransaction();
+        try {
+            $purPo->update([
+                'vendor_id'  => $request->vendor_id,
+                'order_date' => $request->order_date,
+                'category_id'=> $request->category_id,
+            ]);
+
+            // ✅ Replace details
+            $purPo->details()->delete();
+            foreach ($request->item_order as $detail) {
+                $purPo->details()->create($detail);
+            }
+
+            // ✅ Replace voucher details
+            $purPo->voucherDetails()->delete();
+            foreach ($request->voucher_details as $detail) {
+                $purPo->voucherDetails()->create($detail);
+            }
+
+            // ✅ Attachments
+            if ($request->hasFile('att')) {
+                foreach ($request->file('att') as $file) {
+                    $filePath = $file->store('attachments/fgpo_'.$purPo->id, 'public');
+                    $purPo->attachments()->create(['att_path' => $filePath]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('pur-fgpos.index')->with('success','FGPO Updated successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error','Update failed: '.$e->getMessage());
+        }
     }
 
     public function store(Request $request)
@@ -124,7 +154,7 @@ public function edit($id)
             'vendor_id' => 'required|exists:chart_of_accounts,id',
             'category_id' => 'required|exists:product_categories,id',
             'order_date' => 'required|date',
-            'product_id' => 'required|exists:products,id',
+            'item_name' => 'required|exists:products,id',
             'item_order' => 'required|array',
             'item_order.*.product_id' => 'required|exists:products,id',
             'item_order.*.variation_id' => 'required|exists:product_variations,id',
@@ -225,7 +255,6 @@ public function edit($id)
         }
     }
     
-
     public function newChallan()
     {
         $purpos = PurFGPO::get('id');

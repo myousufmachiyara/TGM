@@ -43,4 +43,9 @@ class PurFGPO extends Model
     {
         return $this->hasMany(PurFGPOAttachements::class, 'fgpo_id');
     }
+
+    public function challans()
+    {
+        return $this->hasMany(PurFgpoVoucherDetails::class, 'fgpo_id');
+    }
 }

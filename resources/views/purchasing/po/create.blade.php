@@ -83,7 +83,7 @@
                   <th>Quantity</th>
                   <th>Unit</th>
                   <th>Total</th>
-                  <th></th>
+                  <th ></th>
                 </tr>
               </thead>
               <tbody id="PurPOTbleBody">
@@ -106,9 +106,9 @@
                     <input type="text" id="unitSuffix1" class="form-control" placeholder="unit" disabled/>
                   </td>
                   <td><input type="number" id="item_total1" class="form-control" placeholder="Total" disabled/></td>
-                  <td>
-										<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button>
-                    <button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button></td>
+                  <td width="7%">
+										<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-sm" tabindex="1"><i class="fas fa-times"></i></button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addNewRow()" ><i class="fa fa-plus"></i></button></td>
                 </tr>
               </tbody>
             </table>
@@ -183,8 +183,8 @@
         cell5.innerHTML  = '<input type="number" name="details['+index+'][item_qty]" step="any" id="item_qty'+index+'"  onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
         cell6.innerHTML  = '<input type="text" id="unitSuffix'+index+'" class="form-control" placeholder="Quantity" disabled  />';
         cell7.innerHTML  = '<input type="number" id="item_total'+index+'" class="form-control" placeholder="Total" disabled/>';
-        cell8.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger" tabindex="1"><i class="fas fa-times"></i></button> '+
-                          '<button type="button" class="btn btn-primary" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
+        cell8.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-sm" tabindex="1"><i class="fas fa-times"></i></button> '+
+                          '<button type="button" class="btn btn-primary btn-sm" onclick="addNewRow()" ><i class="fa fa-plus"></i></button>';
         index++;
 
         tableTotal();
