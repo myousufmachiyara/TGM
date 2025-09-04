@@ -760,7 +760,7 @@ class PurFGPOController extends Controller
             <thead>
                 <tr style="background-color:#f2f2f2;">
                     <th width="30%"><strong>PO No./Fabric ID</strong></th>
-                    <th width="30%"><strong>Description</strong></th>
+                    <th width="28%"><strong>Description</strong></th>
                     <th width="8%"><strong>Width</strong></th>
                     <th width="10%"><strong>Qty</strong></th>
                     <th width="10%"><strong>Rate</strong></th>
