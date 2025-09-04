@@ -204,7 +204,7 @@ class PurFGPOController extends Controller
             'item_order.*.product_id' => 'required|exists:products,id',
             'item_order.*.variation_id' => 'required|exists:product_variations,id',
             'item_order.*.sku' => 'required|string',
-            'item_order.*.qty' => 'required|integer|min:1',
+            'item_order.*.qty' => 'required|integer',
             'voucher_amount' => 'required|numeric',
             'voucher_details' => 'required|array',
             'voucher_details.*.product_id' => 'required|exists:products,id',
@@ -747,26 +747,12 @@ class PurFGPOController extends Controller
         $pdf->SetFillColor(23, 54, 93); // Blue
         $pdf->SetTextColor(255, 255, 255); // White
         $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(50, 8, 'Job PO', 0, 1, 'C', 1);
+        $pdf->Cell(50, 8, 'Fabric Challan', 0, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0); // Reset to black
 
         $pdf->SetXY(10, 55);
 
         $pdf->SetFont('helvetica', '', 10);
-
-        // Header
-        $pdf->writeHTML('<h3 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Fabric Challan '.$voucherIds.'</h3>',true, false, true, false, '');
-
-        $html = '<table style="margin-bottom:5px">
-            <tr>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Job No: <span style="text-decoration: underline;color:#000">'.$purpos->doc_code.'-'.$purpos->id.'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Unit: <span style="color:#000">'.$purpos->vendor->name.'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Challan #: <span style="color:#000">'.$voucherIds.'</span></td>
-            </tr>
-        </table>';
-
-        $pdf->writeHTML($html, true, false, true, false, '');
 
         // Top Info Row (Vendor, PO No, Date)
         $challanTable = '
