@@ -715,6 +715,43 @@ class PurFGPOController extends Controller
 
         $pdf->AddPage(); // Start a new page for Challan
 
+        // Logo
+        $logoPath = public_path('assets/img/TGM-Logo.jpg');
+        if (file_exists($logoPath)) {
+            $pdf->Image($logoPath, 10, 10, 30);
+        }
+
+        // Company Info next to logo
+        $pdf->SetXY(45, 12);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->MultiCell(100, 5,
+            "The Great Master\nTariq Road Karachi.\nTel #",
+            0, 'L', false, 1, '', '', true, 0, false, true, 0, 'T'
+        );
+
+        // PO Details just below PO box
+        $pdf->SetXY(150, 12);
+        $invoiceInfo = '
+        <table cellpadding="2" style="font-size:10px;">
+            <tr><td><b>PO #</b></td><td>' . $purpos->doc_code.'-'.$purpos->id .'</td></tr>
+            <tr><td><b>Date</b></td><td>' . \Carbon\Carbon::parse($purpos->order_date)->format('d/m/Y') . '</td></tr>
+            <tr><td><b>Unit </b></td><td>' . $purpos->vendor->name . '</td></tr>
+        </table>';
+        $pdf->writeHTML($invoiceInfo, false, false, false, false, '');
+                
+        // Horizontal Line (left to PO box only)
+        $pdf->Line(10, 45, 150, 45); // Line ends just before the blue box
+
+        // Blue PO box (same position)
+        $pdf->SetXY(150, 41);
+        $pdf->SetFillColor(23, 54, 93); // Blue
+        $pdf->SetTextColor(255, 255, 255); // White
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Cell(50, 8, 'Job PO', 0, 1, 'C', 1);
+        $pdf->SetTextColor(0, 0, 0); // Reset to black
+
+        $pdf->SetXY(10, 55);
+
         $pdf->SetFont('helvetica', '', 10);
 
         // Header
