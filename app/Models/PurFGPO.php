@@ -12,6 +12,8 @@ class PurFGPO extends Model
 
     protected $table = 'pur_fgpos';
 
+    protected $casts = ['order_date' => 'datetime'];
+
     protected $fillable = ['doc_code', 'vendor_id', 'order_date', 'category_id'];
 
     public function vendor()

@@ -16,6 +16,7 @@ use App\Models\PurFGPOVoucherDetails;
 use App\Services\myPDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PurFGPOController extends Controller
 {
@@ -102,6 +103,7 @@ class PurFGPOController extends Controller
             'item_order.*.variation_id' => 'required|exists:product_variations,id',
             'item_order.*.sku' => 'required|string',
             'item_order.*.qty' => 'required|integer|min:1',
+            'voucher_amount' => 'required|numeric',
             'voucher_details' => 'required|array',
             'voucher_details.*.product_id' => 'required|exists:products,id',
             'voucher_details.*.qty' => 'required|numeric',
@@ -109,39 +111,82 @@ class PurFGPOController extends Controller
         ]);
 
         DB::beginTransaction();
+
         try {
+            \Log::info('Updating FGPO', ['fgpo_id' => $purPo->id, 'request' => $request->all()]);
+
+            // 1️⃣ Update FGPO main record
             $purPo->update([
-                'vendor_id'  => $request->vendor_id,
+                'vendor_id' => $request->vendor_id,
                 'order_date' => $request->order_date,
-                'category_id'=> $request->category_id,
+                'category_id' => $request->category_id,
             ]);
 
-            // ✅ Replace details
+            // 2️⃣ Delete old product details
             $purPo->details()->delete();
+
+            // 3️⃣ Delete old vouchers and voucher details
+            $voucherIds = $purPo->voucherDetails()->pluck('voucher_id')->unique();
+            if ($voucherIds->isNotEmpty()) {
+                PurFGPOVoucherDetails::whereIn('voucher_id', $voucherIds)->delete();
+                PaymentVoucher::whereIn('id', $voucherIds)->delete();
+            }
+
+            // 4️⃣ Add new product details
             foreach ($request->item_order as $detail) {
-                $purPo->details()->create($detail);
+                $purPo->details()->create([
+                    'product_id' => $detail['product_id'],
+                    'variation_id' => $detail['variation_id'],
+                    'sku' => $detail['sku'],
+                    'qty' => $detail['qty'],
+                ]);
             }
 
-            // ✅ Replace voucher details
-            $purPo->voucherDetails()->delete();
+            // 5️⃣ Create new Payment Voucher
+            $voucher = PaymentVoucher::create([
+                'ac_dr_sid' => $request->vendor_id,
+                'ac_cr_sid' => 4, // your credit account
+                'amount' => $request->voucher_amount,
+                'date' => $request->order_date,
+                'remarks' => 'Transaction Against FGPO',
+            ]);
+
+            // 6️⃣ Create new voucher details
             foreach ($request->voucher_details as $detail) {
-                $purPo->voucherDetails()->create($detail);
+                $purPo->voucherDetails()->create([
+                    'voucher_id' => $voucher->id,
+                    'po_id' => $detail['po_id'],
+                    'product_id' => $detail['product_id'],
+                    'qty' => $detail['qty'],
+                    'rate' => $detail['item_rate'],
+                    'width' => $detail['width'] ?? null,
+                    'description' => $detail['description'] ?? null,
+                ]);
             }
 
-            // ✅ Attachments
-            if ($request->hasFile('att')) {
-                foreach ($request->file('att') as $file) {
+            // 7️⃣ Handle attachments
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
                     $filePath = $file->store('attachments/fgpo_'.$purPo->id, 'public');
                     $purPo->attachments()->create(['att_path' => $filePath]);
                 }
             }
 
             DB::commit();
-            return redirect()->route('pur-fgpos.index')->with('success','FGPO Updated successfully');
+            \Log::info('FGPO Updated Successfully', ['fgpo_id' => $purPo->id]);
+
+            return redirect()->route('pur-fgpos.index')->with('success', 'FGPO updated successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error','Update failed: '.$e->getMessage());
+            \Log::error('FGPO Update Failed', [
+                'fgpo_id' => $purPo->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all()
+            ]);
+
+            return redirect()->route('pur-fgpos.index')->with('error', 'FGPO update failed: '.$e->getMessage());
         }
     }
 
@@ -202,7 +247,7 @@ class PurFGPOController extends Controller
                 'ac_cr_sid' => '4',
                 'amount' => $request->voucher_amount,
                 'date' => $request->order_date,
-                'remarks' => 'Transaction Against FGPO',
+                'remarks' => 'Transaction Against Job PO',
                 // 'ref_doc_id' => $fgpo->id,
                 // 'ref_doc_code' => 'FGPO',
             ]);

@@ -281,11 +281,21 @@ class PurPOController extends Controller
         $productId = $request->product_id;
         $poId = $request->po_id;
 
-        $width = PurPosDetail::where('item_id', $productId)
+        // Get the record
+        $details = PurPosDetail::where('item_id', $productId)
             ->where('pur_pos_id', $poId)
-            ->value('width');
+            ->first(['width', 'item_rate']); // fetch both columns
 
-        return response()->json(['width' => $width]);
+        if (!$details) {
+            return response()->json([
+                'error' => 'Product details not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'width' => $details->width,
+            'item_rate' => $details->item_rate
+        ]);
     }
 
     public function showAPI(PurPO $purpo)

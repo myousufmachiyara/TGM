@@ -63,7 +63,7 @@
 
                 <div class="col-12 col-md-4 mb-3">
                   <label>Item Name <a href="#" ><i class="fa fa-plus"></i></a></label>
-                  <select multiple data-plugin-selecttwo class="form-control select2-js" name="item_name" id="item_name" required>  <!-- Added name attribute for form submission -->
+                  <select multiple data-plugin-selecttwo class="form-control select2-js" name="item_name" id="item_name">  <!-- Added name attribute for form submission -->
                     <option value=""  disabled>Select Item</option>
                     @foreach ($articles as $item)
                       <option value="{{ $item->id }}">{{ $item->sku }}-{{ $item->name }}</option> 
@@ -155,7 +155,14 @@
                       <td><input type="number" name="voucher_details[{{ $k }}][width]" id="item_width_{{ $k }}" value="{{ $f->width }}" class="form-control"/></td>
                       <td><input type="text" name="voucher_details[{{ $k }}][unit]" id="item_unit_{{ $k }}" value="{{ $f->product->measurement_unit }}" class="form-control" disabled/></td>
                       <td><input type="number" id="item_total_{{ $k }}" class="form-control" value="{{ $f->qty * $f->rate }}" disabled/></td>
-                      <td> ...action buttons... </td>
+                      <td>
+                        <button type="button" class="btn btn-danger btn-xs" onclick="removeRow(this)">
+                          <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary btn-xs" onclick="addNewRow()">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -176,44 +183,53 @@
               <div class="row pb-4">
                 <div class="col-12 mt-3" id="voucher-container">
                     <div class="border p-3 mt-3">
-                      <h3 class="text-center text-dark">Payment Voucher</h3>
-                      <hr>
-                      <div class="d-flex justify-content-between text-dark">
-                        <p class="text-dark"><strong>Vendor:</strong> {{ $purPo->vendor->name ?? '' }}</p>
-                        <p class="text-dark"><strong>PO No:</strong> FGPO-{{ $purPo->id }}</p>
-                        <p class="text-dark"><strong>Date:</strong> </p>
-                      </div>
-
-                      <table class="table table-bordered mt-3">
-                        <thead>
-                          <tr>
-                            <th>Fabric Name</th>
-                            <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Rate</th>
-                            <th>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          @foreach($purPo->voucherDetails as $vd)
-                            <tr>
-                              <td>{{ $vd->product->name ?? '' }}</td>
-                              <td>{{ $vd->description }}</td>
-                              <td>{{ $vd->qty }} {{ $vd->product->measurement_unit ?? '' }}</td>
-                              <td>{{ $vd->rate }}</td>
-                              <td>{{ $vd->qty * $vd->rate }}</td>
-                            </tr>
-                          @endforeach
-                        </tbody>
-                      </table>
-
-                      <h4 class="text-end text-dark"><strong>Total Amount:</strong>  PKR</h4>
-                      <div class="d-flex justify-content-between mt-4">
-                        <div>
-                          <p class="text-dark"><strong>Authorized By:</strong></p>
-                          <p>________________________</p>
+                        <h3 class="text-center text-dark">Payment Voucher</h3>
+                        <hr>
+                        <div class="d-flex justify-content-between text-dark">
+                            <p class="text-dark"><strong>Vendor:</strong> {{ $purPo->vendor->name ?? '' }}</p>
+                            <p class="text-dark"><strong>PO No:</strong> FGPO-{{ $purPo->id }}</p>
+                            <p class="text-dark"><strong>Date:</strong> {{ $purPo->order_date?->format('d-m-Y') ?? '' }}</p>
                         </div>
-                      </div>
+
+                        <table class="table table-bordered mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Fabric Name</th>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Rate</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $totalAmount = 0; @endphp
+                                @foreach($purPo->voucherDetails as $vd)
+                                    @php
+                                        $lineTotal = $vd->qty * $vd->rate;
+                                        $totalAmount += $lineTotal;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $vd->product->name ?? '' }}</td>
+                                        <td>{{ $vd->description }}</td>
+                                        <td>{{ $vd->qty }} {{ $vd->product->measurement_unit ?? '' }}</td>
+                                        <td>{{ $vd->rate }}</td>
+                                        <td>{{ $lineTotal }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <h4 class="text-end text-dark"><strong>Total Amount:</strong> PKR {{ $totalAmount }}</h4>
+
+                        <!-- Hidden input for voucher_amount -->
+                        <input type="hidden" name="voucher_amount" value="{{ $totalAmount }}">
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <div>
+                                <p class="text-dark"><strong>Authorized By:</strong></p>
+                                <p>________________________</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
               </div>
@@ -259,7 +275,7 @@
 
             <footer class="card-footer text-end">
               <a class="btn btn-danger" href="{{ route('pur-fgpos.index') }}" >Discard</a>
-              <button type="submit" class="btn btn-primary">Create</button>
+              <button type="submit" class="btn btn-primary">Update</button>
             </footer>
           </section>
         </div>
@@ -314,7 +330,7 @@
         cell3.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" />';
         cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
         cell5.innerHTML  = '<input type="number" name="voucher_details['+index+'][qty]" step="any" id="item_qty_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Quantity" required/>';
-        cell6.innerHTML  = '<input type="number"  id="item_width_'+index+'" class="form-control" name="voucher_details['+index+'][width]" placeholder="Width" required/>';
+        cell6.innerHTML  = '<input type="number"  id="item_width_'+index+'" class="form-control" step="any" name="voucher_details['+index+'][width]" placeholder="Width" required/>';
         cell7.innerHTML  = '<input type="text" id="item_unit_'+index+'" class="form-control" name="voucher_details['+index+'][unit]" placeholder="M.Unit" disabled required/>';
         cell8.innerHTML  = '<input type="number" id="item_total_'+index+'" class="form-control" placeholder="Total" disabled/>';
         cell9.innerHTML  = '<button type="button" onclick="removeRow(this)" class="btn btn-danger btn-xs" tabindex="1"><i class="fas fa-times"></i></button> '+
@@ -594,6 +610,8 @@
                 },
                 success: function(response) {
                   $(`#item_width_${row}`).val(response.width ?? '');
+                  $(`#item_rate_${row}`).val(response.item_rate ?? '');
+
                 },
                 error: function() {
                   $(`#item_width_${row}`).val('');

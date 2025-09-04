@@ -529,6 +529,7 @@
                 },
                 success: function(response) {
                   $(`#item_width_${row}`).val(response.width ?? '');
+                  $(`#item_rate_${row}`).val(response.item_rate ?? '');
                 },
                 error: function() {
                   $(`#item_width_${row}`).val('');
