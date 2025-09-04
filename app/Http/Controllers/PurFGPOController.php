@@ -218,7 +218,7 @@ class PurFGPOController extends Controller
             // Step 1: Create FGPO record
             \Log::info('Creating FGPO record');
             $fgpo = PurFGPO::create([
-                'doc_code' => 'FGPO',
+                'doc_code' => 'JobPO',
                 'vendor_id' => $request->vendor_id,
                 'order_date' => $request->order_date,
                 'category_id' => $request->category_id,
@@ -475,47 +475,51 @@ class PurFGPOController extends Controller
 
         $pdf = new MyPDF;
 
-        // Set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('Job PO-'.$purpos->id);
-        $pdf->SetSubject('Job PO-'.$purpos->id);
+        $pdf->SetTitle('Job PO-' . $purpos->id);
+        $pdf->SetSubject('Job PO-' . $purpos->id);
         $pdf->SetKeywords('Job PO, TCPDF, PDF');
 
-        // Add a page
         $pdf->AddPage();
         $pdf->setCellPadding(1.2);
 
-        // Purchase Order Heading
-        $heading = '<h1 style="font-size:20px;text-align:center;font-style:italic;text-decoration:underline;color:#17365D">Job PO</h1>';
-        $pdf->writeHTML($heading, true, false, true, false, '');
+        // Logo
+        $logoPath = public_path('assets/img/TGM-Logo.jpg');
+        if (file_exists($logoPath)) {
+            $pdf->Image($logoPath, 10, 10, 30);
+        }
 
-        // Purchase Order Details Table
-        $html = '<table style="margin-bottom:5px">
-            <tr>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Job No: <span style="text-decoration: underline;color:#000">'.$purpos->doc_code.'-'.$purpos->id.'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Date: <span style="color:#000">'.\Carbon\Carbon::parse($purpos->order_date)->format('d-m-Y').'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Unit: <span style="color:#000">'.$purpos->vendor->name.'</span></td>
-                <td style="font-size:10px;font-weight:bold;color:#17365D">Challan #: <span style="color:#000">'.$voucherIds.'</span></td>
-            </tr>
+        // Company Info next to logo
+        $pdf->SetXY(45, 12);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->MultiCell(100, 5,
+            "The Great Master\nTariq Road Karachi.\nTel #",
+            0, 'L', false, 1, '', '', true, 0, false, true, 0, 'T'
+        );
+
+        // PO Details just below PO box
+        $pdf->SetXY(150, 12);
+        $invoiceInfo = '
+        <table cellpadding="2" style="font-size:10px;">
+            <tr><td><b>PO #</b></td><td>' . $purpos->doc_code.'-'.$purpos->id .'</td></tr>
+            <tr><td><b>Date</b></td><td>' . \Carbon\Carbon::parse($purpos->order_date)->format('d/m/Y') . '</td></tr>
+            <tr><td><b>Unit </b></td><td>' . $purpos->vendor->name . '</td></tr>
         </table>';
+        $pdf->writeHTML($invoiceInfo, false, false, false, false, '');
+                
+        // Horizontal Line (left to PO box only)
+        $pdf->Line(10, 45, 150, 45); // Line ends just before the blue box
 
-        // Vendor and Account Details
-        // $html .= '<table border="0.1" style="border-collapse: collapse;">
-        //     <tr>
-        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Vendor Name</td>
-        //         <td width="30%" style="font-size:10px;">'.$purpos->vendor->name.'</td>
-        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Address</td>
-        //         <td width="30%" style="font-size:10px;">'.$purpos->vendor->address.'</td>
-        //     </tr>
-        //     <tr>
-        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Phone</td>
-        //         <td width="30%" style="font-size:10px;">'.$purpos->vendor->phone_no.'</td>
-        //         <td width="20%" style="font-size:10px;font-weight:bold;color:#17365D">Remarks</td>
-        //         <td width="30%" style="font-size:10px;">'.$purpos->remarks.'</td>
-        //     </tr>
-        // </table>';
-        $pdf->writeHTML($html, true, false, true, false, '');
+        // Blue PO box (same position)
+        $pdf->SetXY(150, 41);
+        $pdf->SetFillColor(23, 54, 93); // Blue
+        $pdf->SetTextColor(255, 255, 255); // White
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Cell(50, 8, 'Job PO', 0, 1, 'C', 1);
+        $pdf->SetTextColor(0, 0, 0); // Reset to black
+
+        $pdf->SetXY(10, 55);
 
         // Items Table Header
         $html = '<table border="0.3" style="text-align:center;margin-top:5px">
