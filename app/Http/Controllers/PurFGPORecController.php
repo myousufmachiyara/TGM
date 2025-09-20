@@ -78,6 +78,64 @@ class PurFGPORecController extends Controller
         return redirect()->route('fgpo-receivings.index')->with('success', 'Receiving recorded successfully.');
     }
 
+    // Edit receiving
+    public function edit($id)
+    {
+        $receiving = PurFGPORec::with(['fgpo.details.product', 'fgpo.details.variation', 'details'])->findOrFail($id);
+
+        // Map received quantities per detail
+        $receivedQtys = $receiving->details->pluck('qty', 'variation_id')->toArray();
+
+        foreach ($receiving->fgpo->details as $detail) {
+            $alreadyReceived = PurFGPORecDetails::whereHas('receiving', function($q) use ($receiving){
+                $q->where('fgpo_id', $receiving->fgpo_id)->where('id', '!=', $receiving->id);
+            })->where('variation_id', $detail->variation_id)->sum('qty');
+
+            $detail->total_received = $alreadyReceived;
+            $detail->current_received = $receivedQtys[$detail->variation_id] ?? 0;
+            $detail->remaining_qty = $detail->qty - $detail->total_received;
+        }
+
+        return view('purchasing.fg-po-rec.edit', compact('receiving'));
+    }
+
+    // Update receiving
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'rec_date'      => 'required|date',
+            'received_qty'  => 'required|array',
+            'received_qty.*'=> 'nullable|integer|min:1',
+        ]);
+
+        $receiving = PurFGPORec::findOrFail($id);
+        $receiving->update([
+            'rec_date' => $request->rec_date,
+            'updated_by' => auth()->id(),
+        ]);
+
+        // Delete old details
+        $receiving->details()->delete();
+
+        // Save new details
+        foreach ($request->received_qty as $fgpoDetailId => $receivedQty) {
+            if ($receivedQty > 0) {
+                $orderDetail = PurFGPODetails::find($fgpoDetailId);
+                if ($orderDetail) {
+                    PurFGPORecDetails::create([
+                        'pur_fgpos_rec_id' => $receiving->id,
+                        'product_id'       => $orderDetail->product_id,
+                        'variation_id'     => $orderDetail->variation_id,
+                        'sku'              => $orderDetail->sku ?? '',
+                        'qty'              => $receivedQty,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('pur-fgpo-rec.index')->with('success', 'Receiving updated successfully.');
+    }
+
     public function print($id)
     {
         $rec = \App\Models\PurFGPORec::with(['fgpo.vendor', 'details.product'])->findOrFail($id);

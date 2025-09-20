@@ -41,7 +41,7 @@
                   <form action="{{ route('pur-fgpo-rec.destroy', $rec->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this receiving?');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="text-danger border-0 bg-transparent" title="Delete">
+                    <button type="submit" class="btn btn-link p-0 m-0 text-danger" title="Delete">
                       <i class="fa fa-trash"></i>
                     </button>
                   </form>
