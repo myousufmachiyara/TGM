@@ -138,15 +138,15 @@ class PurFGPORecController extends Controller
 
     public function print($id)
     {
-        $rec = \App\Models\PurFGPORec::with(['fgpo.vendor', 'details.product'])->findOrFail($id);
+        $rec = PurFGPORec::with(['fgpo.vendor', 'details.product'])->findOrFail($id);
 
         $pdf = new \App\Services\myPDF;
 
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('TGM');
-        $pdf->SetTitle('FGPO Receiving - ' . $rec->id);
-        $pdf->SetSubject('FGPO Receiving');
-        $pdf->SetKeywords('FGPO, TCPDF, PDF');
+        $pdf->SetTitle('Job Receiving - ' . $rec->id);
+        $pdf->SetSubject('Job Receiving');
+        $pdf->SetKeywords('Job, TCPDF, PDF');
 
         $pdf->AddPage();
         $pdf->setCellPadding(1.2);
@@ -171,7 +171,7 @@ class PurFGPORecController extends Controller
         <table cellpadding="2" style="font-size:10px;">
             <tr><td><b>GRN #</b></td><td>' . $rec->id . '</td></tr>
             <tr><td><b>Date</b></td><td>' . \Carbon\Carbon::parse($rec->date)->format('d/m/Y') . '</td></tr>
-            <tr><td><b>PO #</b></td><td>' . ($rec->fgpo->po_code ?? '-') . '</td></tr>
+            <tr><td><b>PO #</b></td><td>' . ($rec->fgpo->id ?? '-') . '</td></tr>
         </table>';
         $pdf->writeHTML($info, false, false, false, false, '');
 
@@ -192,19 +192,19 @@ class PurFGPORecController extends Controller
         $pdf->SetFillColor(23, 54, 93);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(50, 8, 'FGPO Receiving', 0, 1, 'C', 1);
+        $pdf->Cell(50, 8, 'Job Receiving', 0, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
 
         $pdf->SetXY(10, 63);
+        $pdf->SetFont('helvetica', '', 10);
 
         // Items Table
         $html = '<table border="0.3" cellpadding="4" style="font-size:10px;">
             <tr style="background-color:#f5f5f5;">
-                <th width="5%">S.#</th>
+                <th width="10%">S.#</th>
                 <th width="35%">Item</th>
-                <th width="15%">Qty</th>
-                <th width="15%">Rate</th>
-                <th width="30%">Amount</th>
+                <th width="35%">Variation</th>
+                <th width="20%" align="right">Qty</th>
             </tr>';
 
         $count = 0;
@@ -213,25 +213,23 @@ class PurFGPORecController extends Controller
         foreach ($rec->details as $item) {
             $count++;
             $product = $item->product;
+            $variation = $item->variation;
             $qty = $item->qty;
-            $rate = $item->rate;
-            $amount = $qty * $rate;
-            $grandTotal += $amount;
+            $grandTotal += $qty;
 
             $html .= '
             <tr>
                 <td align="center">' . $count . '</td>
                 <td>' . ($product->name ?? '-') . '</td>
-                <td align="center">' . $qty . '</td>
-                <td align="right">' . number_format($rate, 2) . '</td>
-                <td align="right">' . number_format($amount, 2) . '</td>
+                <td>' . ($variation->sku ?? '-') . '</td>
+                <td align="right">' . $qty . '</td>
             </tr>';
         }
 
         // Totals row
         $html .= '
         <tr>
-            <td colspan="4" align="right"><b>Total</b></td>
+            <td colspan="3" align="right"><b>Total</b></td>
             <td align="right"><b>' . number_format($grandTotal, 2) . '</b></td>
         </tr>
         </table>';
@@ -243,14 +241,14 @@ class PurFGPORecController extends Controller
         $lineWidth = 60;
         $yPosition = $pdf->GetY();
 
-        $pdf->Line(28, $yPosition, 20 + $lineWidth, $yPosition);
         $pdf->Line(130, $yPosition, 120 + $lineWidth, $yPosition);
         $pdf->Ln(5);
 
-        $pdf->SetXY(23, $yPosition);
-        $pdf->Cell($lineWidth, 10, 'Prepared / Checked By', 0, 0, 'C');
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->SetXY(125, $yPosition);
+        $pdf->Cell($lineWidth, 10, 'Received By ', 0, 0, 'C');
 
-        return $pdf->Output('FGPO-Rec-' . $rec->id . '.pdf', 'I');
+        return $pdf->Output('Job-Rec-' . $rec->id . '.pdf', 'I');
     }
 
 }

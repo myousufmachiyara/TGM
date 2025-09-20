@@ -54,18 +54,15 @@
               <li><a class="nav-link" href="{{ route('pur-po-rec.index') }}">PO Received</a></li>              	
               <li><a class="nav-link" href="{{ route('pur-fgpos.index') }}"> Job PO </a></li>
               <li><a class="nav-link" href="{{ route('pur-fgpo-rec.index') }}"> Job PO Receiving</a></li>
+              <li><a class="nav-link" href="{{ route('fgpo-bills.index') }}"> Job PO Bills </a></li>	
             </ul>
           </li>
 
-          <li class="nav-parent">
-            <a class="nav-link" href="#">
+          <li>
+            <a class="nav-link" href="{{ route('payment-vouchers.index') }}">
               <i style="font-size:16px" class="fa fa-money-bill" aria-hidden="true"></i>
-              <span>Finance</span>
+              <span>Payments</span>
             </a>
-            <ul class="nav nav-children">
-              <li><a class="nav-link" href="{{ route('fgpo-bills.index') }}"> PO Bills </a></li>	
-              <li><a class="nav-link" href="{{ route('payment-vouchers.index') }}"> Payment Vouchers</a></li>	
-            </ul>
           </li>
 
           <li class="nav-parent">
