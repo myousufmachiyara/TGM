@@ -13,7 +13,7 @@ class POBillsController extends Controller
      */
     public function index()
     {
-        return view('finance.fgpo-billing.index');
+        return view('purchasing.fgpo-billing.index');
     }
 
     /**
@@ -24,7 +24,7 @@ class POBillsController extends Controller
         $coa = ChartOfAccounts::all();  // Get all product categories
         $fgpo = PurFGPO::all();  // Get all product categories
 
-        return view('finance.fgpo-billing.create', compact('coa', 'fgpo'));
+        return view('purchasing.fgpo-billing.create', compact('coa', 'fgpo'));
     }
 
     /**
