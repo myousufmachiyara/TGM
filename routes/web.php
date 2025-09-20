@@ -13,6 +13,7 @@ use App\Http\Controllers\SubHeadOfAccController;
 use App\Http\Controllers\PaymentVoucherController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PurPORecController;
+use App\Http\Controllers\PurFGPORecController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -50,11 +51,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('pur-fgpos-received', [PurFGPOController::class, 'storeReceiving'])->name('pur-fgpos.store-rec');
     Route::get('pur-fgpos-new-challan', [PurFGPOController::class, 'newChallan'])->name('pur-fgpos.new-challan');
     Route::get('pur-fgpos-get-details', [PurFGPOController::class, 'getDetails'])->name('pur-fgpos.get-details');
+    Route::resource('pur-fgpo-rec', PurFGPORecController::class);
 
     Route::get('pur-pos/print/{id}', [PurPOController::class, 'print'])->name('pur-pos.print'); // Exceptional Route
     Route::get('pur-po-rec/print/{id}', [PurPORecController::class, 'print'])->name('pur-po-rec.print'); // Exceptional Route
     Route::get('pur-fgpos/print/{id}', [PurFGPOController::class, 'print'])->name('pur-fgpos.print'); // Exceptional Route
-
+    Route::get('pur-fgpo-rec/print/{id}', [PurFGPORecController::class, 'print'])->name('pur-fgpo-rec.print'); // Exceptional Rout
     // Billing
     Route::resource('fgpo-bills', POBillsController::class);
 

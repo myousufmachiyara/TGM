@@ -32,6 +32,6 @@ class PurFGPORec extends Model
      */
     public function details()
     {
-        return $this->hasMany(PurFGPOReceivingDetail::class, 'receiving_id');
+        return $this->hasMany(PurFGPORecDetails::class, 'pur_fgpos_rec_id');
     }
 }

@@ -61,9 +61,8 @@
                     padding: 60px 15px 0px 15px;
                 }
                 .sidebar-logo{
-                    width:50%;
+                    width:40%;
                 }	
-                
             }
         </style>
     </head>
@@ -110,7 +109,6 @@
         <header class="page-header">
             <div class="logo-container d-none d-md-block">
                 <div id="userbox" class="userbox" style="float:right !important;">
-                    <!-- <a class="btn btn-success" > POS System</a> -->
 
                     <a href="#" data-bs-toggle="dropdown" style="margin-right: 20px;">
                         <div class="profile-info"> 
