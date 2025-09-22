@@ -432,6 +432,7 @@ class PurFGPOController extends Controller
                     })->values(),
                     'products' => $products->map(function ($product) use ($receivedQty) {
                         return [
+                            'product_id'   => $product->product_id, // ✅ include product_id
                             'product_name' => optional($product->product)->name ?? 'N/A',
                             'ordered_qty' => $product->total_qty,
                             'received_qty' => $receivedQty->get($product->product_id)->total_received_qty ?? 0,

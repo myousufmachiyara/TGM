@@ -12,11 +12,7 @@ class FgpoBill extends Model
     protected $table = 'fgpo_bills';
 
     protected $fillable = [
-        'bill_date',
-        'vendor_id',
-        'ref_bill_no',
-        'total_amount',   // <-- needed (stored in controller + migration)
-        'created_by',     // <-- saved in controller
+        'vendor_id', 'bill_date', 'ref_bill_no',
     ];
 
     /**
@@ -24,7 +20,7 @@ class FgpoBill extends Model
      */
     public function vendor()
     {
-        return $this->belongsTo(ChartOfAccount::class, 'vendor_id');
+        return $this->belongsTo(ChartOfAccounts::class, 'vendor_id');
     }
 
     /**

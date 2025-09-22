@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="row">
-    <form action="{{ route('pur-fgpos.store-rec') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('fgpo-bills.store') }}" method="POST" enctype="multipart/form-data">
       @csrf
       @if ($errors->has('error'))
         <strong class="text-danger">{{ $errors->first('error') }}</strong>
@@ -136,6 +136,7 @@
         data: { po_ids: selectedPOs },
         success: function(response) {
           if (response.success) {
+            console.log(response.summary);
             populateTable(response.summary);
           } else {
             alert(response.message);
@@ -196,7 +197,10 @@
                 <input type="hidden" name="details[${poIndex}][products][${prodIndex}][product_id]" value="${product.product_id}">
               </td>
               <td>${orderedQty}</td>
-              <td>${receivedQty}</td>
+              <td>
+                ${receivedQty}
+                <input type="hidden" name="details[${poIndex}][products][${prodIndex}][received_qty]" value="${receivedQty}">
+              </td>
               <td>
                 <input type="number" class="form-control rate-input"
                   name="details[${poIndex}][products][${prodIndex}][rate]"

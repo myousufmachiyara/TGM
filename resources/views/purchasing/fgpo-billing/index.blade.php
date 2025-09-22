@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Finance | PO Bills')
+@section('title', 'Job PO | Bills')
 
 @section('content')
   <div class="row">
@@ -31,16 +31,41 @@
               <thead>
                 <tr>
                   <th>S.No</th>
-                  <th>Ref Document</th>
-                  <th>Debit Account</th>
-                  <th>Credit Account</th>
-                  <th>Amount</th>
-                  <th>Narration</th>
+                  <th>Date</th>
+                  <th>Vendor Name</th>
+                  <th>Ref Bill #</th>
+                  <th>PO Nos</th>
+                  <th>Total Amount</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                            
+                @forelse($bills as $index => $bill)
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ \Carbon\Carbon::parse($bill->bill_date)->format('d-m-Y') }}</td>
+                    <td>{{ $bill->vendor->name ?? 'N/A' }}</td>
+                    <td>{{ $bill->ref_bill_no ?? 'N/A' }}</td>
+                    <td>{{ $bill->po_numbers }}</td>
+                    <td>{{ number_format($bill->calculated_total, 2) }}</td>
+                    <td>
+                      <a href="{{ route('fgpo-bills.edit', $bill->id) }}" class="btn btn-sm btn-warning">
+                        <i class="fa fa-edit"></i>
+                      </a>
+                      <form action="{{ route('fgpo-bills.destroy', $bill->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="6" class="text-center">No bills found.</td>
+                  </tr>
+                @endforelse
               </tbody>
             </table>
           </div>

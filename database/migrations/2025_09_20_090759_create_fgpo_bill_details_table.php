@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('production_id'); // FK from fgpo_production
             $table->unsignedBigInteger('product_id'); // FK from product
             $table->decimal('rate', 15, 2)->default(0); // Rate
+            $table->decimal('received_qty', 15, 2)->nullable();
             $table->decimal('adjusted_amount', 15, 2)->default(0); // Adjusted Amount
             $table->timestamps();
 

@@ -12,11 +12,8 @@ class FgpoBillDetail extends Model
     protected $table = 'fgpo_bill_details';
 
     protected $fillable = [
-        'bill_id',
-        'production_id',
-        'product_id',
-        'rate',
-        'adjusted_amount',
+        'bill_id', 'production_id', 'product_id',
+        'rate', 'adjusted_amount' , 'received_qty'
     ];
 
     /**
