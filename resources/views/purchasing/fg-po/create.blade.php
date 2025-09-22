@@ -120,8 +120,8 @@
                       </select>  
                     </td>
                     <td>
-                      <select data-plugin-selecttwo class="form-control select2-js" id="poIDSelect0" onchange="fetchWidth(0)" name="voucher_details[0][po_id]" required>  <!-- Added name attribute for form submission -->
-                        <option value="0" selected>Select PO Id</option>
+                      <select data-plugin-selecttwo class="form-control select2-js" id="poIDSelect0" onchange="fetchWidth(0)" name="voucher_details[0][po_id]">  <!-- Added name attribute for form submission -->
+                        <option value="" selected>Select PO Id</option>
                       </select>  
                     </td>
                     <td><input type="text" name="voucher_details[0][description]" class="form-control" placeholder="Description"/></td>
@@ -244,7 +244,7 @@
                           '</select>';
 
         cell2.innerHTML  = '<select data-plugin-selecttwo id="poIDSelect'+index+'" class="form-control select2-js" onchange="fetchWidth('+index+')" name="voucher_details['+index+'][po_id]">'+
-                            '<option value="0" selected>Select PO Code</option>'+
+                            '<option value="" selected>Select PO Code</option>'+
                           '</select>';
         cell3.innerHTML  = '<input type="text" name="voucher_details['+index+'][description]" class="form-control" placeholder="Description" />';
         cell4.innerHTML  = '<input type="number" name="voucher_details['+index+'][item_rate]" step="any" id="item_rate_'+index+'" value="0" onchange="rowTotal('+index+')" class="form-control" placeholder="Rate" required/>';
@@ -483,7 +483,7 @@
         },
         success: function(response) {
           const dropdown = document.getElementById(`poIDSelect${row}`);
-          dropdown.innerHTML = '<option value="0">Select PO ID</option>'; // Clear & reset
+          dropdown.innerHTML = '<option value="">Select PO ID</option>'; // Clear & reset
 
           if (response.po_ids && response.po_codes) {
             response.po_ids.forEach((id, index) => {

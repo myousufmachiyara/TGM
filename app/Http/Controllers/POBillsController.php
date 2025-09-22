@@ -8,17 +8,12 @@ use Illuminate\Http\Request;
 
 class POBillsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         return view('purchasing.fgpo-billing.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $coa = ChartOfAccounts::all();  // Get all product categories
@@ -27,41 +22,82 @@ class POBillsController extends Controller
         return view('purchasing.fgpo-billing.create', compact('coa', 'fgpo'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'vendor_id' => 'required|exists:chart_of_accounts,id',
+            'bill_date' => 'required|date',
+            'ref_bill'  => 'nullable|string|max:255',
+            'details'   => 'required|array',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $bill = FgpoBill::create([
+                'vendor_id'    => $request->vendor_id,
+                'bill_date'    => $request->bill_date,
+                'ref_bill'     => $request->ref_bill,
+                'created_by'   => auth()->id(),
+                'total_amount' => 0,
+            ]);
+
+            $totalAmount = 0;
+
+            foreach ($request->details as $poDetail) {
+                $productionId   = $poDetail['production_id'];
+                $adjustedAmount = $poDetail['adjusted_amount'] ?? 0;
+
+                if (!empty($poDetail['products'])) {
+                    foreach ($poDetail['products'] as $product) {
+                        $rate = $product['rate'] ?? 0;
+
+                        FgpoBillDetail::create([
+                            'bill_id'       => $bill->id,
+                            'production_id' => $productionId,
+                            'product_id'    => $product['product_id'],
+                            'rate'          => $rate,
+                            'adjusted_amount' => $adjustedAmount, // saved for each product row
+                        ]);
+
+                        $totalAmount += $rate;
+                    }
+                }
+
+                // add adjustment once per PO (not per product)
+                $totalAmount += $adjustedAmount;
+            }
+
+            $bill->update([
+                'total_amount' => $totalAmount,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('pur-fgpos.index')->with('success', 'Bill added successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['error' => 'Error saving Bill: ' . $e->getMessage()]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //

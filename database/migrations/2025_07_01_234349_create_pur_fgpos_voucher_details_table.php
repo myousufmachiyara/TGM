@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('fgpo_id');
             $table->unsignedBigInteger('voucher_id');
             $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('po_id');
+            $table->unsignedBigInteger('po_id')->nullable();
             $table->string('product_sku')->nullable();
             $table->string('description')->nullable();
             $table->double('width', 15, 2);

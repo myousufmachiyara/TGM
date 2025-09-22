@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Finance | New Bill')
+@section('title', 'Job PO | Bills')
 
 @section('content')
   <div class="row">
@@ -152,10 +152,10 @@
       let tbody = $("#POBillTbleBody");
       tbody.empty();
 
-      summary.forEach(po => {
+      summary.forEach((po, poIndex) => {
         let fabricDetails = po.fabrics.map(f => {
           let rate = parseFloat(f.fabric_rate) || 0;
-          return `${f.fabric_name} (${rate.toFixed(2)})`;
+          return `${f.fabric_name} (${rate.toFixed(2)} ${f.fabric_unit})`;
         }).join(", ");
 
         let totalFabricQty = po.fabrics.reduce((sum, f) => sum + (parseFloat(f.fabric_qty) || 0), 0);
@@ -168,27 +168,40 @@
         let totalReceivedQty = po.products.reduce((sum, p) => sum + (parseFloat(p.received_qty) || 0), 0);
         let overallConsumption = totalReceivedQty > 0 ? (totalFabricQty / totalReceivedQty).toFixed(2) : "0.00";
 
+        // Fabric summary row
         let mainRow = `
           <tr class="table-secondary">
-            <td rowspan="${po.products.length + 1}">${po.fgpo_id}</td> 
+            <td rowspan="${po.products.length + 1}">${po.fgpo_id}
+              <input type="hidden" name="details[${poIndex}][production_id]" value="${po.fgpo_id}">
+            </td> 
             <td colspan="2"><strong>Fabric:</strong> ${fabricDetails}</td>
             <td><strong>Consumption:</strong> ${overallConsumption}</td>
             <td><strong>Fabric Amount:</strong> ${totalFabricAmount}</td>
-            <td><input type="number" class="form-control adjustment-input" placeholder="Adjusted Amount"></td>
+            <td>
+              <input type="number" name="details[${poIndex}][adjusted_amount]" class="form-control adjustment-input" placeholder="Adjusted Amount" value="0">
+            </td>
           </tr>
         `;
         tbody.append(mainRow);
 
-        po.products.forEach(product => {
+        // Product rows
+        po.products.forEach((product, prodIndex) => {
           let receivedQty = parseFloat(product.received_qty) || 0;
           let orderedQty = parseFloat(product.ordered_qty) || 0;
 
           let productRow = `
             <tr>
-              <td>${product.product_name}</td>
+              <td>
+                ${product.product_name}
+                <input type="hidden" name="details[${poIndex}][products][${prodIndex}][product_id]" value="${product.product_id}">
+              </td>
               <td>${orderedQty}</td>
               <td>${receivedQty}</td>
-              <td><input type="number" class="form-control rate-input" data-received-qty="${receivedQty}" value="0"></td>
+              <td>
+                <input type="number" class="form-control rate-input"
+                  name="details[${poIndex}][products][${prodIndex}][rate]"
+                  data-received-qty="${receivedQty}" value="0">
+              </td>
               <td class="total-amount">0.00</td>
             </tr>
           `;
@@ -196,6 +209,7 @@
         });
       });
 
+      // Auto-calc row totals
       $(".rate-input").on("input", function () {
         let rate = parseFloat($(this).val()) || 0;
         let receivedQty = parseFloat($(this).data("received-qty")) || 0;

@@ -260,7 +260,7 @@ class PurFGPOController extends Controller
                 PurFGPOVoucherDetails::create([
                     'fgpo_id' => $fgpo->id,
                     'voucher_id' => $voucher->id,
-                    'po_id' => $detail['po_id'],
+                    'po_id' => $detail['po_id'] ?? null,
                     'product_id' => $detail['product_id'],
                     'qty' => $detail['qty'],
                     'rate' => $detail['item_rate'],
@@ -396,13 +396,14 @@ class PurFGPOController extends Controller
                 'rate as fabric_rate',
                 DB::raw('SUM(qty) as total_fabric_qty'),
                 DB::raw('SUM(qty * rate) as total_fabric_amount'),
-                'products.name as fabric_name'
+                'products.name as fabric_name',
+                'products.measurement_unit as unit',
             )
                 ->leftJoin('products', 'pur_fgpos_voucher_details.product_id', '=', 'products.id')
                 ->whereIn('fgpo_id', $poIds)
-                ->groupBy('fgpo_id', 'product_id', 'products.name', 'rate')
+                ->groupBy('fgpo_id', 'product_id', 'products.name', 'rate', 'unit' )
                 ->get()
-                ->groupBy('fgpo_id'); // ✅ Grouping by PO ID to return multiple fabrics per PO
+                ->groupBy('fgpo_id');
 
             // 🚀 Fetch Received Quantity (if applicable)
             $receivedQty = DB::table('pur_fgpos_rec_details')
@@ -423,6 +424,7 @@ class PurFGPOController extends Controller
                     'fabrics' => $fabricDetails->get($fgpo_id, collect())->map(function ($fabric) {
                         return [
                             'fabric_name' => $fabric->fabric_name ?? 'N/A',
+                            'fabric_unit' => $fabric->unit ?? 'N/A',
                             'fabric_qty' => $fabric->total_fabric_qty ?? 0,
                             'fabric_rate' => $fabric->fabric_rate ?? 0,
                             'fabric_amount' => $fabric->total_fabric_amount ?? 0,
