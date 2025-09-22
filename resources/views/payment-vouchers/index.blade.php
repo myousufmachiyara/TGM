@@ -109,6 +109,19 @@
                             <input type="number" class="form-control" name="amount" id="update_amount" step="any" required>
                         </div>
                         <div class="col-lg-6 mb-2">
+                            <label>Payment Mode<span style="color: red;"><strong>*</strong></span></label>
+                            <select class="form-control select2-js" name="payment_mode" id="payment_mode" required>
+                                <option value="" disabled selected>Select Option</option>
+                                <option value="online">Online Transfer</option>
+                                <option value="cash">Cash</option>
+                                <option value="cheque">Cheque</option>
+                            </select>                        
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <label>Ref. No</label>
+                            <input type="text" class="form-control" name="reference_no" id="reference_no">
+                        </div>
+                        <div class="col-lg-6 mb-2">
                             <label>Attachments</label>
                             <input type="file" class="form-control" name="att[]" multiple accept=".zip,application/pdf,image/png,image/jpeg">
                         </div>
@@ -159,7 +172,7 @@
                                 @endforeach
                             </select>
                         </div>
-                              <div class="col-lg-6 mb-2">
+                        <div class="col-lg-6 mb-2">
                             <label>Account Credit<span style="color: red;"><strong>*</strong></span></label>
 
                             <select  data-plugin-selecttwo class="form-control select2-js" name ="ac_cr_sid" required>
@@ -173,7 +186,19 @@
                             <label>Amount<span style="color: red;"><strong>*</strong></span></label>
                             <input type="number" class="form-control" placeholder="Amount" value="0" step="any" name="amount" required>
                         </div>
-
+                        <div class="col-lg-6 mb-2">
+                            <label>Payment Mode<span style="color: red;"><strong>*</strong></span></label>
+                            <select class="form-control select2-js" name="payment_mode" required>
+                                <option value="" disabled selected>Select Option</option>
+                                <option value="online">Online Transfer</option>
+                                <option value="cash">Cash</option>
+                                <option value="cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <label>Ref. No</label>
+                            <input type="text" class="form-control" name="reference_no">
+                        </div>
                         <div class="col-lg-6 mb-2">
                             <label>Attachments</label>
                             <input type="file" class="form-control" name="att[]" multiple accept=".zip, appliation/zip, application/pdf, image/png, image/jpeg">

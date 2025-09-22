@@ -28,6 +28,8 @@ class PaymentVoucherController extends Controller
             'ac_cr_sid' => 'required|numeric|different:ac_dr_sid',
             'amount' => 'required|numeric|min:1',
             'remarks' => 'nullable|string',
+            'payment_mode' => 'required|string',
+            'reference_no' => 'nullable|string',
             'att.*' => 'nullable|file|max:2048',
         ]);
 
@@ -43,6 +45,8 @@ class PaymentVoucherController extends Controller
             'ac_dr_sid' => $data['ac_dr_sid'],
             'ac_cr_sid' => $data['ac_cr_sid'],
             'amount' => $data['amount'],
+            'payment_mode'  => $data['payment_mode'],
+            'reference_no'  => $data['reference_no'],
             'remarks' => $data['remarks'],
             'attachments' => $attachments,
         ]);
@@ -61,6 +65,8 @@ class PaymentVoucherController extends Controller
             'ac_cr_sid' => 'required|numeric|different:ac_dr_sid',
             'amount' => 'required|numeric|min:1',
             'remarks' => 'nullable|string',
+            'payment_mode' => 'required|string',
+            'reference_no' => 'nullable|string',
             'att.*' => 'nullable|file|max:2048',
         ]);
 
@@ -78,6 +84,8 @@ class PaymentVoucherController extends Controller
             'ac_dr_sid' => $data['ac_dr_sid'],
             'ac_cr_sid' => $data['ac_cr_sid'],
             'amount' => $data['amount'],
+            'payment_mode'  => $data['payment_mode'],
+            'reference_no'  => $data['reference_no'],
             'remarks' => $data['remarks'],
             'attachments' => $attachments,
         ]);

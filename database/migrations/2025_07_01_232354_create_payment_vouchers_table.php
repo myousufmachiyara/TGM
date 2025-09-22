@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('ac_cr_sid'); // credit account (chart_of_accounts.ac_code)
             $table->decimal('amount', 12, 2);
             $table->text('remarks')->nullable();
+            $table->string('payment_mode');
+            $table->string('reference_no')->nullable();
             $table->json('attachments')->nullable(); // Store multiple files as JSON
             $table->timestamps();
 

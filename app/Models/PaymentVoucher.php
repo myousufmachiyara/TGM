@@ -11,6 +11,8 @@ class PaymentVoucher extends Model
         'ac_dr_sid',
         'ac_cr_sid',
         'amount',
+        'payment_mode',
+        'reference_no',
         'remarks',
         'attachments'
     ];
