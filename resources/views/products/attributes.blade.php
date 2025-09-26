@@ -38,15 +38,15 @@
                                 <span class="badge bg-primary">{{ $value->value }}</span>
                             @endforeach
                         </td>
+      
                         <td>
-                        <button class="btn btn-warning btn-sm">
-                            Edit
-                        </button>
-                        <form action="{{ route('product-attributes.destroy', $item->id) }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
+                            <a href="#" class="text-primary"><i class="fa fa-edit"></i></a>
+
+                            <form action="{{ route('product-attributes.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-danger bg-transparent" style="border:none" onclick="return confirm('Are you sure?')"><i class="fa fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                     @endforeach
