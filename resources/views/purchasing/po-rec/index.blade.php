@@ -9,9 +9,8 @@
       <header class="card-header d-flex justify-content-between align-items-center">
         <h2 class="card-title">All PO Receivings</h2>
       </header>
-
       <div class="card-body">
-        <div class="table-responsive">
+        <div class="modal-wrapper table-scroll">
           <table class="table table-bordered table-striped mb-0" id="cust-datatable-default">
             <thead>
               <tr>
@@ -34,7 +33,7 @@
                   {{ $rec->details->sum('qty') }}
                 </td>
                 <td>
-                  <a href="{{ route('pur-po-rec.print', $rec->id) }}" class="text-success">
+                  <a href="{{ route('pur-po-rec.print', $rec->id) }}" class="text-success" target="_blank" rel="noopener noreferrer">
                     <i class="fa fa-print"></i>
                   </a>
                   <a href="{{ route('pur-po-rec.edit', $rec->id) }}" class="text-warning" title="Edit">
@@ -50,11 +49,6 @@
                 </td>
               </tr>
               @endforeach
-              @if($receivings->isEmpty())
-              <tr>
-                <td colspan="8" class="text-center">No receiving records found.</td>
-              </tr>
-              @endif
             </tbody>
           </table>
         </div>

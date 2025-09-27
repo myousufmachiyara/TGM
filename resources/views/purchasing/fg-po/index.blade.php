@@ -64,7 +64,7 @@
                       </span>
                     </td>   
                     <td>
-                      <a href="{{ route('pur-fgpos.print', $row->id) }}" class="text-success">
+                      <a href="{{ route('pur-fgpos.print', $row->id) }}" class="text-success" target="_blank" rel="noopener noreferrer">
                         <i class="fa fa-print"></i>
                       </a>
                       <a href="{{ route('pur-fgpos.rec', $row->id) }}" class="text-primary">

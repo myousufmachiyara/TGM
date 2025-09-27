@@ -10,6 +10,7 @@ use App\Models\ProductVariations;
 use App\Models\ProductAttributesValues;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 
@@ -32,8 +33,8 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate the request
-            $validatedData = $request->validate([
+            // First level validation
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|unique:products',
                 'description' => 'nullable|string',
                 'category_id' => 'required|exists:product_categories,id',
@@ -47,47 +48,65 @@ class ProductsController extends Controller
                 'opening_stock' => 'nullable|numeric|min:0',
                 'prod_att' => 'nullable|array',
                 'prod_att.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
+                'has_variations' => 'nullable|in:0,1',
                 'variations' => 'nullable|array',
-                'variations.*.price' => 'required|numeric|min:0',
-                'variations.*.stock' => 'required|numeric|min:0',
-                'variations.*.attribute_id' => 'required|exists:product_attributes,id',
-                'variations.*.attribute_value_id' => 'required|exists:product_attributes_values,id',
             ]);
-    
-            // Wrap entire logic in DB transaction
+
+            // Conditional validation for variations only if has_variations is 1
+            $validator->sometimes('variations.*.price', 'required|numeric|min:0', function ($input) {
+                return $input->has_variations == 1;
+            });
+
+            $validator->sometimes('variations.*.stock', 'required|numeric|min:0', function ($input) {
+                return $input->has_variations == 1;
+            });
+
+            $validator->sometimes('variations.*.attribute_id', 'required|exists:product_attributes,id', function ($input) {
+                return $input->has_variations == 1;
+            });
+
+            $validator->sometimes('variations.*.attribute_value_id', 'required|exists:product_attributes_values,id', function ($input) {
+                return $input->has_variations == 1;
+            });
+
+            // If validation fails, redirect back
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
+
+            $validatedData = $validator->validated();
+
+            // Begin transaction
             DB::beginTransaction();
-    
-            // Get category code
+
             $category = ProductCategory::findOrFail($validatedData['category_id']);
             $categoryCode = $category->cat_code;
-    
-            // Get latest product in this category
+
             $lastProduct = Products::where('category_id', $validatedData['category_id'])
                 ->orderByDesc('id')
                 ->first();
-    
+
             if ($lastProduct && preg_match('/(\d+)$/', $lastProduct->sku, $matches)) {
                 $lastNumber = (int) $matches[1];
             } else {
                 $lastNumber = 0;
             }
-    
+
             $nextSequence = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
             $sku = $categoryCode . '-' . $nextSequence;
-    
-            // Assign SKU
+
             $validatedData['sku'] = $sku;
-    
-            // Create the product
+
+            // Create product
             $product = Products::create($validatedData);
-    
-            // Handle variations
-            if ($request->has('variations')) {
+
+            // Variations (only if has_variations == 1)
+            if ($request->has('has_variations') && $request->has_variations == 1) {
                 foreach ($request->variations as $variation) {
                     $attrValue = ProductAttributesValues::findOrFail($variation['attribute_value_id']);
                     $variationSlug = Str::slug($attrValue->value);
                     $variationSku = $sku . '-' . strtoupper($variationSlug);
-    
+
                     ProductVariations::create([
                         'product_id' => $product->id,
                         'price' => $variation['price'],
@@ -98,8 +117,8 @@ class ProductsController extends Controller
                     ]);
                 }
             }
-    
-            // Handle images
+
+            // Attach images
             if ($request->hasFile('prod_att')) {
                 foreach ($request->file('prod_att') as $image) {
                     $imagePath = $image->store('products/images', 'public');
@@ -109,15 +128,15 @@ class ProductsController extends Controller
                     ]);
                 }
             }
-    
-            DB::commit(); // Commit all if everything is successful
-    
+
+            DB::commit();
+
             return redirect()->route('products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
-            DB::rollBack(); // Rollback everything on any failure
+            DB::rollBack();
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-    }
+    }   
     
     public function show($id)
     {
@@ -213,6 +232,17 @@ class ProductsController extends Controller
             $toDelete = array_diff($existingVariationIds, $processedIds);
             ProductVariations::whereIn('id', $toDelete)->delete();
 
+            if ($request->filled('remove_image_ids')) {
+                $idsToRemove = explode(',', $request->remove_image_ids);
+
+                $attachments = ProductAttachements::whereIn('id', $idsToRemove)->get();
+
+                foreach ($attachments as $attachment) {
+                    Storage::disk('public')->delete($attachment->image_path);
+                    $attachment->delete();
+                }
+            }
+            
             // Handle new attachments
             if ($request->hasFile('prod_att')) {
                 foreach ($request->file('prod_att') as $image) {

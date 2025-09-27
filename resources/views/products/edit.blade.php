@@ -28,7 +28,7 @@
             <div class="col-12 col-md-2 mb-2">
               <label>Category <span class="text-danger">*</span></label>
               <select class="form-control select2-js" name="category_id" required>
-                <option value="" disabled>Select Category</option>
+                <option value="" disabled {{ old('category_id', $product->category_id) ? '' : 'selected' }}>Select Category</option>
                 @foreach ($prodCat as $item)
                   <option value="{{ $item->id }}" {{ old('category_id', $product->category_id) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                 @endforeach
@@ -102,12 +102,18 @@
 
             <div class="col-12 col-md-3 mb-2">
               <label>Images</label>
-              <input type="file" class="form-control" name="prod_att[]" multiple accept="image/*">
+              <input type="file" class="form-control" name="prod_att[]" multiple accept="image/*" id="imageUpload">
+              <div id="previewContainer" class="mt-2 d-flex flex-wrap gap-2"></div>
               <div class="mt-2 d-flex flex-wrap gap-2">
                 @foreach ($product->attachments as $img)
-                  <img src="{{ asset('public/storage/' . $img->image_path) }}" style="max-width:100px; border:1px solid #ccc; border-radius:5px; padding:4px">
+                  <div class="position-relative" style="display:inline-block;">
+                    <img src="{{ asset('public/storage/' . $img->image_path) }}" style="max-width:100px; border:1px solid #ccc; border-radius:5px; padding:4px">
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 remove-existing-img-btn" style="transform: translate(50%, -50%)" data-id="{{ $img->id }}">&times;</button>
+                  </div>
                 @endforeach
               </div>
+              <input type="hidden" name="remove_image_ids" id="remove_image_ids" value="">
+
             </div>
           </div>
         </div>
@@ -153,10 +159,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="col-6">
-              <div id="previewContainer" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;margin-bottom:20px;"></div>
             </div>
           </div>
         </div>
@@ -248,6 +250,149 @@
           }
       });
   });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    let removeImageIds = [];
+
+    document.querySelectorAll('.remove-existing-img-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const imgId = this.dataset.id;
+        removeImageIds.push(imgId);
+        this.closest('div').remove(); // remove image preview
+        document.getElementById('remove_image_ids').value = removeImageIds.join(',');
+      });
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const fileInput = document.getElementById("imageUpload");
+    const previewContainer = document.getElementById("previewContainer");
+
+    if (!fileInput || !previewContainer) return;
+
+    fileInput.addEventListener("change", function (event) {
+      const files = Array.from(event.target.files);
+      previewContainer.innerHTML = "";
+
+      files.forEach((file, index) => {
+        if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("image-preview-wrapper");
+            wrapper.style.position = "relative";
+
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.style.maxWidth = "150px";
+            img.style.maxHeight = "150px";
+            img.style.border = "1px solid #ccc";
+            img.style.borderRadius = "5px";
+            img.style.padding = "5px";
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.classList.add("btn", "btn-sm", "btn-danger");
+            removeBtn.innerHTML = "&times;";
+            removeBtn.style.position = "absolute";
+            removeBtn.style.top = "5px";
+            removeBtn.style.right = "5px";
+
+            removeBtn.addEventListener("click", () => {
+              files.splice(index, 1);
+              updateFileInput(files);
+              wrapper.remove();
+            });
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(removeBtn);
+            previewContainer.appendChild(wrapper);
+          };
+
+          reader.readAsDataURL(file);
+        }
+      });
+
+      function updateFileInput(updatedFiles) {
+        const dataTransfer = new DataTransfer();
+        updatedFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+      }
+    });
+  });
+
+  const files = Array.from(event.target.files);
+  const previewContainer = document.getElementById("previewContainer");
+  previewContainer.innerHTML = "";
+
+  files.forEach((file, index) => {
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("image-preview-wrapper");
+        wrapper.style.position = "relative";
+
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.style.maxWidth = "150px";
+        img.style.maxHeight = "150px";
+        img.style.border = "1px solid #ccc";
+        img.style.borderRadius = "5px";
+        img.style.padding = "5px";
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.classList.add("btn", "btn-sm", "btn-danger");
+        removeBtn.innerHTML = "&times;";
+        removeBtn.style.position = "absolute";
+        removeBtn.style.top = "5px";
+        removeBtn.style.right = "5px";
+
+        removeBtn.addEventListener("click", () => {
+          files.splice(index, 1);
+          updateFileInput(files);
+          wrapper.remove();
+        });
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(removeBtn);
+        previewContainer.appendChild(wrapper);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Store updated FileList to input
+  function updateFileInput(updatedFiles) {
+    const dataTransfer = new DataTransfer();
+    updatedFiles.forEach(file => dataTransfer.items.add(file));
+    document.getElementById("imageUpload").files = dataTransfer.files;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const itemTypeSelect = document.getElementById('item_type');
+    const mfgSection = document.getElementById('div-mfg');
+
+    function toggleMfgSection() {
+      if (itemTypeSelect.value === 'mfg') {
+        mfgSection.style.display = 'block';
+      } else {
+        mfgSection.style.display = 'none';
+      }
+    }
+
+    itemTypeSelect.addEventListener('change', toggleMfgSection);
+
+    // Trigger on page load in case value is already set to mfg
+    toggleMfgSection();
+  });
+
+});
+
 </script>
 
 @endsection

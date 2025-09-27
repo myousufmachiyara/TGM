@@ -125,7 +125,9 @@
 				
               <div class="col-12 col-md-3 mb-2">
                 <label>Images</label>
-                <input type="file" class="form-control" name="prod_att[]" id="imageUpload" multiple accept="image/png, image/jpeg, image/jpg, image/webp">  
+                <input type="file" class="form-control" name="prod_att[]" id="imageUpload" multiple accept="image/png, image/jpeg, image/jpg, image/webp">
+                <div id="previewContainer" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+                <input type="hidden" id="removedImages" name="removed_images" value="">
                 @error('prod_att')<div class="text-danger">{{ $message }}</div>@enderror
               </div>
             </div>
@@ -320,29 +322,98 @@
       toggleDivs();
     });
 
+    let selectedFiles = [];
+
     document.getElementById("imageUpload").addEventListener("change", function(event) {
-        const files = event.target.files;
         const previewContainer = document.getElementById("previewContainer");
+        const files = Array.from(event.target.files); // Convert FileList to Array
+        selectedFiles = files; // Store selected files
         previewContainer.innerHTML = ""; // Clear previous previews
 
-        for (let file of files) {
-            if (file && file.type.startsWith("image/")) {
+        files.forEach((file, index) => {
+            if (file.type.startsWith("image/")) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    const imageWrapper = document.createElement("div");
+                    imageWrapper.style.position = "relative";
+
                     const img = document.createElement("img");
                     img.src = e.target.result;
-                    img.style.maxWidth = "200px"; // Adjust preview size
-                    img.style.maxHeight = "200px";
+                    img.style.maxWidth = "150px";
+                    img.style.maxHeight = "150px";
                     img.style.border = "1px solid #ddd";
                     img.style.borderRadius = "5px";
-                    img.style.padding = "5px";
-                    previewContainer.appendChild(img);
+                    img.style.margin = "5px";
+                    img.style.display = "block";
+
+                    const removeBtn = document.createElement("button");
+                    removeBtn.innerText = "×";
+                    removeBtn.type = "button";
+                    removeBtn.className = "btn btn-sm btn-danger";
+                    removeBtn.style.position = "absolute";
+                    removeBtn.style.top = "5px";
+                    removeBtn.style.right = "5px";
+                    removeBtn.title = "Remove image";
+
+                    removeBtn.onclick = function() {
+                        selectedFiles.splice(index, 1);
+                        renderPreviews();
+                    };
+
+                    imageWrapper.appendChild(img);
+                    imageWrapper.appendChild(removeBtn);
+                    previewContainer.appendChild(imageWrapper);
                 };
                 reader.readAsDataURL(file);
             }
-        }
+        });
     });
 
+    // Re-render preview from selectedFiles
+    function renderPreviews() {
+        const previewContainer = document.getElementById("previewContainer");
+        previewContainer.innerHTML = "";
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageWrapper = document.createElement("div");
+                imageWrapper.style.position = "relative";
+
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.maxWidth = "150px";
+                img.style.maxHeight = "150px";
+                img.style.border = "1px solid #ddd";
+                img.style.borderRadius = "5px";
+                img.style.margin = "5px";
+
+                const removeBtn = document.createElement("button");
+                removeBtn.innerText = "×";
+                removeBtn.type = "button";
+                removeBtn.className = "btn btn-sm btn-danger";
+                removeBtn.style.position = "absolute";
+                removeBtn.style.top = "5px";
+                removeBtn.style.right = "5px";
+                removeBtn.title = "Remove image";
+
+                removeBtn.onclick = function() {
+                    selectedFiles.splice(index, 1);
+                    renderPreviews();
+                };
+
+                imageWrapper.appendChild(img);
+                imageWrapper.appendChild(removeBtn);
+                previewContainer.appendChild(imageWrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Create new DataTransfer object to update input
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        document.getElementById("imageUpload").files = dt.files;
+    }
     
     function toggleDivs() {
       var type = $('#item_type').val();

@@ -416,7 +416,10 @@ class PurPOController extends Controller
         $pdf->Ln(5);
 
         $pdf->SetXY(23, $yPosition);
-        $pdf->Cell($lineWidth, 10, 'Prepared / Checked By', 0, 0, 'C');
+        $pdf->Cell($lineWidth, 10, 'Approved By', 0, 0, 'C');
+
+        $pdf->SetXY(125, $yPosition);
+        $pdf->Cell($lineWidth, 10, 'Received By', 0, 0, 'C');
 
         return $pdf->Output($purpos->po_code. '.pdf', 'I');
     }

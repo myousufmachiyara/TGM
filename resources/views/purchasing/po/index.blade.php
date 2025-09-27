@@ -56,7 +56,7 @@
                       </span>
                     </td>                    
                     <td>
-                      <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success">
+                      <a href="{{ route('pur-pos.print', $row->id) }}" class="text-success" target="_blank" rel="noopener noreferrer">
                         <i class="fa fa-print"></i>
                       </a>
                       <a href="{{ route('pur-po-rec.createForm', $row->id) }}" class="text-primary">

@@ -146,6 +146,8 @@ class PurFGPOController extends Controller
             $voucher = PaymentVoucher::create([
                 'ac_dr_sid' => $request->vendor_id,
                 'ac_cr_sid' => 4, // your credit account
+                'payment_mode' => 'credit',
+                'reference_no' => 'Job PO#' . $id,
                 'amount' => $request->voucher_amount,
                 'date' => $request->order_date,
                 'remarks' => 'Transaction Against FGPO',
@@ -155,7 +157,7 @@ class PurFGPOController extends Controller
             foreach ($request->voucher_details as $detail) {
                 $purPo->voucherDetails()->create([
                     'voucher_id' => $voucher->id,
-                    'po_id' => $detail['po_id'],
+                    'po_id' => ($detail['po_id'] ?? null) == 0 ? null : $detail['po_id'],
                     'product_id' => $detail['product_id'],
                     'qty' => $detail['qty'],
                     'rate' => $detail['item_rate'],
@@ -246,6 +248,8 @@ class PurFGPOController extends Controller
                 'ac_dr_sid' => $request->vendor_id,
                 'ac_cr_sid' => '4',
                 'amount' => $request->voucher_amount,
+                'payment_mode' => 'credit',
+                'reference_no' => 'Job PO#' . $fgpo->id,
                 'date' => $request->order_date,
                 'remarks' => 'Transaction Against Job PO',
                 // 'ref_doc_id' => $fgpo->id,
@@ -260,7 +264,7 @@ class PurFGPOController extends Controller
                 PurFGPOVoucherDetails::create([
                     'fgpo_id' => $fgpo->id,
                     'voucher_id' => $voucher->id,
-                    'po_id' => $detail['po_id'] ?? null,
+                    'po_id' => ($detail['po_id'] ?? null) == 0 ? null : $detail['po_id'],
                     'product_id' => $detail['product_id'],
                     'qty' => $detail['qty'],
                     'rate' => $detail['item_rate'],
