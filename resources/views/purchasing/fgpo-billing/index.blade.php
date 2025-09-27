@@ -17,9 +17,8 @@
             <div class="col-md-5" style="display:flex;">
               <select class="form-control" style="margin-right:10px" id="columnSelect">
                 <option selected disabled>Search by</option>
-                <option value="1">by Delivery Date</option>
-                <option value="2">by Order Date</option>
-                <option value="3">by Vendor</option>
+                <option value="1">Date</option>
+                <option value="2">vendor</option>
               </select>
               <input type="text" class="form-control" id="columnSearch" placeholder="Search By Column"/>
 
@@ -40,7 +39,7 @@
                 </tr>
               </thead>
               <tbody>
-                @forelse($bills as $index => $bill)
+                @foreach($bills as $index => $bill)
                   <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($bill->bill_date)->format('d-m-Y') }}</td>
@@ -61,11 +60,7 @@
                       </form>
                     </td>
                   </tr>
-                @empty
-                  <tr>
-                    <td colspan="7" class="text-center">No bills found.</td>
-                  </tr>
-                @endforelse
+                @endforeach
               </tbody>
             </table>
           </div>
